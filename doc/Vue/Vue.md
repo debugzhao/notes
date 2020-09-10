@@ -249,3 +249,35 @@ methods: {
 ##### 作用
 
 > webpack是js应用的静态 `模块` `打包`工具
+
+#### Vue CLI脚手架使用
+
+##### Vue CLI安装
+
+1. 2.x版本全局安装
+
+   ```shell
+   npm install -g @vue/cli -init
+   ```
+
+2. 3.x版本全局安装
+
+   ```shell
+   npm install -g @vue/cli
+   ```
+
+##### Vue CLI创建工程
+
+1. 2.x版本创建工程
+
+   ```shell
+   vue init webpack project-name
+   ```
+
+2. 3.x版本创建工程
+
+   ```
+   vue create project-name
+   ```
+
+   
