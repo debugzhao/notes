@@ -221,3 +221,31 @@ methods: {
 ##### 4.作用域插槽
 
 父组件替换插槽的标签，但是内容是由子组件提供的
+
+```html
+<div id="app">
+    <cpn>
+        <!--在父组件处使用子组件提供的引用接口，进而获取子组件内部的数据-->
+        <template slot-scope="slot">
+            <span>{{slot.data.join(" - ")}}</span>
+        </template>
+    </cpn>
+</div>
+
+<template id="cpn">
+    <div>
+        <!--子组件提供一个向外引用数据的引用接口,引用的名称可以自己定义-->
+        <slot :data="pL">
+            <ul>
+                <li v-for="item in pL">{{item}}</li>
+       	     </ul>
+        </slot>
+    </div>
+</template>
+```
+
+#### webpack
+
+##### 作用
+
+> webpack是js应用的静态 `模块` `打包`工具
