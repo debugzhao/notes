@@ -280,4 +280,173 @@ methods: {
    vue create project-name
    ```
 
-   
+
+#### Vue Router
+
+##### 路由基本概念
+
+概念：路由就是通过互联网把数据从原地址转发到目的地址的活动
+
+> 路由器提供了两种机制：路由和转发
+>
+> 1. 路由决定了数据包从源地址到目的地址的路径
+> 2. 转发将输入端的数据转移到合适的输出端
+>
+> 路由中有一个非常重要的概念叫做路由表
+>
+> 1. 路由表的本质上就是一个映射表，决定了数据包的指向
+
+##### 前端渲染，后端渲染
+
+1. 后端渲染
+
+   - 后端渲染技术
+
+     JSP（Java Serve Page）、PHP
+
+   - 过程
+
+     后端代码主要包括 html + css + java。java代码从数据库读取数据，并将动态地渲染到页面中。后端直接将渲染好的页面发送给前端，前端直接展示即可（此时的前端代码包括html css）
+
+   - 后端路由
+
+     后端处理URL和页面之间的映射关系
+
+2. 前端渲染
+
+   - 过程
+
+     用户初次输入一个网址时，会请求`静态资源服务器`，返回基本的html + css + js，后面用户的操作会进行ajax请求，请求后端接口获取数据，然后由浏览器执行js代码生成对应的div标签，进行渲染。 
+
+     后端只负责提供数据，不负责任何页面的内容
+
+3. 前端路由
+
+   - 概念
+
+     SPA（单页副应用）模式用的就是前端路由，整个网页只有一个页面，初始加载页面的时候会把整个html + css + js全部加载出来（但是不会全部显示），通过输入不同的URL，映射到相应的组件再进行渲染
+
+   - 特点
+
+     SPA最主要的特点是在前后端分离的基础上加了一层前端路由，也就是前端来维护路由规则
+
+   - 核心
+
+     改变URL，但是页面不进行整体的刷新
+
+##### URL的hash与history机制
+
+当在浏览器的控制台输入 `location.hash = 'index'`时，请求的url会发生改变，但是不会向后端服务器发起请求；`history.pushState({},'',"me")`也是同样的机制。这样就可以实现单页面副应用。
+
+##### 基本使用
+
+```js
+// 1.导入路由相关依赖
+import VueRouter from "vue-router"
+import Vue from "vue"
+import About from "../components/About";
+import Home from "../components/Home";
+
+//2.通过Vue.use(插件)来安装使用插件
+Vue.use(VueRouter)
+
+//3.创建Vue.router对象
+const router = new VueRouter({
+  //3.1配置路由和组件的映射关系
+  routes:[
+    {
+      path: "/",
+      redirect: "/home" //路径的重定向
+    },
+    {
+      path: "/home",
+      component: Home
+    },
+    {
+      path: "/about",
+      component: About
+    }
+  ],
+  mode: "history"  //将URL模式从hash模式改为history模式
+})
+
+//4.将创建的router实例导入到vue实例中
+export default router
+```
+
+##### router和route的区别
+
+router是创建的全局的路由实例，route是当点活跃的路由对象
+
+##### 路由懒加载
+
+需求：
+
+> 当打包构建应用时，dist包下的关于业务逻辑的js代码会变得非常庞大，会影响页面的加载时间。如果我们能够将不同路由对应的组件分别打包成不同的js文件，然后当路由被访问时才加载对应的组件，这种高效的加载加载就是懒加载。
+
+解决问题：
+
+> 路由懒加载的主要作用是将不同的组件打包成不同的js文件，只有当该路由被访问到时，才会加载该组件。
+
+代码实现：
+
+```js
+const router = new VueRouter({
+  //3.1配置路由和组件的映射关系
+  routes:[
+    {
+      path: "/",
+      redirect: "/home"
+    },
+    {
+      path: "/home",
+      component: () => import("../components/Home")
+    },
+    {
+      path: "/about",
+      component: () => import("../components/About")
+    },
+    {
+      path: "/user/:userName",
+      component: () => import("../components/User")
+    }
+  ],
+  mode: "history"  //将URL模式从hash模式改为history模式
+})
+```
+
+##### 嵌套路由
+
+```js
+{
+  path: "/home",
+  component: () => import("../components/Home"),
+  children: [
+    {
+      path: "/home",
+      redirect: "/home/news"
+    },
+    {
+      path: "news",
+      component: () => import("../components/HomeNews")
+    },
+    {
+      path: "message",
+      component: () => import("../components/HomeMessage")
+    }
+  ]
+},
+```
+
+##### 参数传递
+
+##### 导航守卫
+
+##### keep-alive
+
+#### VueX
+
+#### Axios（网络请求封装）
+
+
+
