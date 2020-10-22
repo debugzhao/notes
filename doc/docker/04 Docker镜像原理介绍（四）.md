@@ -138,7 +138,7 @@ Navicat连接测试
 
 1. 概念
 
-   docker file就是为了生成docker镜像的脚本
+   docker file实际上是一个脚本文件，可以通过docker file实现自定义构建镜像
 
 2. 常用参数
 
@@ -228,3 +228,41 @@ EXPOSE 8080
 CMD /usr/local/apach-tomcat-8.5.55/bin/startup.sh && tail -f /usr/local/apach-tomcat-8.5.55/bin/logs/catalina.out
 ```
 
+### 发布镜像
+
+#### 发布镜像到Docker Hub
+
+1. 登录docker hub
+
+   ```shell
+   root@root:/# docker login -u geek20
+   ```
+
+2. 发布镜像
+
+   ```shell
+   # 相关命令： docker push 仓库名称/镜像名:TAG
+   
+   root@root:/# docker push myentos:0.1
+   The push refers to repository [docker.io/library/myentos]
+   cd0919d221f7: Preparing 
+   60ef431ad130: Preparing 
+   291f6e44771a: Preparing 
+   denied: requested access to the resource is denied   # 在这里显示被拒绝，原因：发布的镜像一定要指定仓库名称，发布镜像的tag
+   
+   # 解决方案：为镜像指定tag信息
+   docker tag c175571689a2 geek20/mycentos:1.0
+   
+   # 然后重新发布镜像
+   docker push  geek20/mycentos:1.0
+   ```
+
+#### 发布镜像到阿里云
+
+1. 创建命名空间，仓库
+
+   ![image-20201022114249296](https://i.loli.net/2020/10/22/qUpkJitzmEvgsKu.png)
+
+2. 发布镜像步骤
+
+   ![image-20201022114713562](https://i.loli.net/2020/10/22/sZ3PL1li7dIY5NB.png)
