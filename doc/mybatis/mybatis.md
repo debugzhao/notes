@@ -273,3 +273,24 @@ public class StudentEntity {
    ```
 
 ##### 一对多查询
+
+```xml
+<select id="findTeacherById" resultMap="TeacherStudent">
+    select
+        s.id sid,s.name sname,t.name tname,t.id tid
+    from
+        student s,teacher t
+    where
+        s.tid = t.id and t.id = #{tid}
+</select>
+<resultMap id="TeacherStudent" type="Teacher">
+    <result property="id" column="tid"/>
+    <result property="name" column="tname"/>
+    <collection property="studentList" ofType="Student">
+        <result property="id" column="sid"/>
+        <result property="name" column="sname"/>
+        <result property="tid" column="tid"/>
+    </collection>
+</resultMap>
+```
+
