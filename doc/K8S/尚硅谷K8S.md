@@ -107,6 +107,113 @@
 2. 各个Pod之间通过overlay network实现通讯
 3. pod与service之间的通讯：各个节点的IpTables规则
 
+##### Flanneld数据转换机制
+
+![image-20210214092720559](https://i.loli.net/2021/02/14/EmzlPFBUd3HvNVj.png)
+
+#### k8s常见资源类型
+
+##### 名称空间资源
+
+1. 工作负载型资源（WorkLoad）
+
+   Pod、RS、deployment、
+
+2. 服务发现与负载均衡型资源
+
+   service、Ingress
+
+3. 配置与存储型资源
+
+   Volume（存储卷）、CSI（容器存储接口，可以扩展各种第三方存储卷）
+
+4. 特殊类型存储卷
+
+   ConfigMap（当做配置中心类使用的资源类型）、Serect（保存敏感数据）、DownwardAPI（把外部环境中的信息输入给容器）
+
+##### 集群级别资源
+
+`NameSpace ` `Node` `Role` `ClusterRole`
+
+##### 元数据级别资源
+
+`HPA `、`PodTemplate`、`LimitRange`
+
+### 资源清单
+
+#### 资源清单概念
+
+在k8s中，我们一般使用yaml文件来创建符合我们预期结果的pod，这样的yaml文件我们一般称之为资源清单
+
+#### 常用字段
+
+##### 资源清单格式
+
+```yaml
+apiVersion: 
+ group/apiversion # 如果没有给定 group 名称，那么默认为 core，可以使用 kubectl api-
+versions: # 获取当前 k8s 版本上所有的 apiVersion 版本信息( 每个版本可能不同 )
+kind: #资源类别
+metadata: #资源元数据
+name:
+ namespace:
+ lables:
+annotations: # 主要目的是方便用户阅读查找
+spec: # 期望的状态（disired state）
+status: # 当前状态，本字段有 Kubernetes 自身维护，用户不能去定义
+```
+
+##### 资源清单示例
+
+```yaml
+apiVersion: v
+kind: Pod
+metadata:
+  name: pod-demo
+  namespace: default
+ labels:
+    app: myapp
+spec:
+  containers:
+    - name: myapp
+    - image: hub.atguigu.com
+    - name: busyBox
+    - command:
+      - "/bin/sh"
+```
+
+#### Pod生命周期
+
+![image-20210220181137709](https://i.loli.net/2021/02/20/axbYtiRMFJC8NGr.png)
+
+1. Init C
+
+   容器运行之前做一些初始化操作
+
+2. Start
+
+   容器开始运行之前执行一下Start脚本
+
+3. Readiness
+
+   就绪检测
+
+4. Liveness
+
+   生命检测
+
+5. Stop
+
+   容器开始运行之前执行一下End脚本
+
+#### Init C
+
+#### 探针
+
+#### start stop 相位
+
+### 资源控制器
+
 
 
 
