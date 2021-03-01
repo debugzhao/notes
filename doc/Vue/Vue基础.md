@@ -80,6 +80,38 @@ v-pre指令用于跳过这个标签元素和它的子元素的编译过程，显
 
 ##### v-model
 
+- 作用
+
+  Vue中使用v-model来实现表单与data数据的双向绑定
+
+- 原理
+
+  v-model本质上是一个语法糖，其背后是基于两个操作实现的
+
+  1. v-bind绑定表单的value属性
+  2. v-on给表单绑定input事件
+
+- 代码示例
+
+  ```html
+  <!--<input type="text" v-model="message">-->
+  <input type="text" :value="message" @input="message = $event.target.value">
+  ```
+
+- 修饰符
+
+  1. lazy修饰符
+
+     v-model指令默认情况下是实时绑定输入框中的数据的，而lazy修饰符可以让input输入框失去焦点或者键入回车之后再绑定data数据
+
+  2. number修饰符
+
+     默认情况下无论我们在input输入框中输入数字还是字母都会被当做字符串来处理，number修饰符可以让我们在输入数字的时候自动解析成数字来处理
+
+  3. trim修饰符
+
+     如果input输入库中的字符串的前后两端有很多空格，trim修饰符可以自动帮我们去掉空格
+
 #### Vue基础知识
 
 ##### 计算属性
@@ -117,6 +149,14 @@ computed: {
    在一个{{message}}模板中，可以定义多个filter函数对message处理
 
    可以给filter过滤器函数传入多个参数，但是过滤器默认的第一个参数是是模板中message的值，所以如果要传入自定义参数的话，得从参数的第二个位置往后传
+
+##### JS高阶函数的使用
+
+```javascript
+const array = [1, 2, 3, 4, 5, 6];
+let total = array.filter(n => n % 2 ===0).map(n => n * 2).reduce((preValue, n) => preValue + n) ;
+console.log(total);
+```
 
 #### ES6 
 
