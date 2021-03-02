@@ -167,5 +167,166 @@ ES5之前没有作用域的概念，ES6以后才添加了作用域的概念，�
 - ES5中的var没有块级作用域
 - ES6中的let有块级作用域
 
+### Vue进阶
+
+##### 全局组件和局部组件
+
+- 全局组件
+
+  注册的全局组件在别的Vue实例中也可以使用
+
+  ```javascript
+  //2.注册全局组件
+  Vue.component("my-com",component1);
+  ```
+
+- 局部组件
+
+  注册的布局组件只能在当前Vue实例中使用
+
+  ```javascript
+  //2.注册局部组件
+  let app = new Vue({
+      el: '#app',
+      components: {
+          com1: component1
+      }
+  })
+  ```
+
+##### 组件内部数据的存放
+
+- 注意事项
+
+  Vue要求组件内部的数据必须存放在data函数中。为什么data必须是一个函数？因为组件在复用的过程中如果data是一个函数，则每次调用data时会返回一个新的数据，在改变该组件的data时不会影响到其他组件的data
+
+- 示例代码
+
+  ```html
+  <template id="cpn">
+      <div>
+          <p>组件内部的数据:{{context}}</p>
+      </div>
+  </template>
+  
+  Vue.component('myCom', {
+      template: '#cpn',
+      data() {
+          return {
+          	context: '我是组件内部的数据'
+          }
+      }
+  })
+  ```
+
+##### 组件通信（父传子）
+
+- 实现方案
+
+  通过props属性向子组件传递数据
+
+##### 组件通信（子传父）
+
+- 实现方案
+
+  通过自定义事件向父组件发送消息
+
+##### 组件访问（父访问子）
+
+- 需求
+
+  父组件想要获取子组件的data
+
+- 实现方式
+
+  - $children
+
+    父组件直接获取其所有的子组件
+
+    ```javascript
+    console.log(this.$children);
+    ```
+
+  - $refs
+
+    通过ref属性手动指定需要访问的组件
+
+    ```javascript
+    console.log(this.$refs.third.context);
+    ```
+
+- 示例代码
+
+##### 组件访问（子访问父）
+
+- 实现方式
+
+  $parent
+
+##### slot插槽
+
+- 应用场景
+
+  - 组件插槽的作用是为了让我们封装的组件具有更加灵活的扩展性
+  - 让使用者可以决定组件内部到底使用什么标签
+
+- 分类
+
+  - 具名插槽
+
+    在创建插槽的时候通过name属性给定具体的名字，在使用插槽的时候通过slot属性来指定要替换的插槽
+
+  - 作用域插槽
+
+    > 父组件模板的所有东西都只会在父级作用域内编译，并不会读取到子集作用域的属性；子组件模板的所有东西都只会在子级作用域内编译
+
+    **作用域插槽的本质需求：**是在父组件中拿到子组件中定义的数据
+
+    ```html
+    <div id="app">
+        <h3>{{message}}</h3>
+        <cpn></cpn>
+        <cpn>
+            <template slot-scope="slot">
+                <span>{{slot.data.join(' - ')}}</span>
+            </template>
+        </cpn>
+    </div>
+    
+    <template id="cpn">
+        <div>
+            <!--作用域插槽：对外提供一个名字叫list的插槽作用域-->
+            <slot :data="languages">
+                <ul>
+                    <li v-for="item in languages">{{item}}</li>
+                </ul>
+            </slot>
+        </div>
+    </template>
+    ```
+
+- 示例代码
+
+  ```html
+  <div id="app">
+      <h3>{{message}}</h3>
+      <cpn>
+          <button slot="center">中间按钮</button>
+      </cpn>
+      <cpn>
+          <button slot="left">返回</button>
+      </cpn>
+  </div>
+  
+  <template id="cpn">
+      <div>
+          <span>组件内容</span>
+          <slot name="left"><span>左侧插槽</span></slot>
+          <slot name="center"><span>中间插槽</span></slot>
+          <slot name="right"><span>右侧插槽</span></slot>
+      </div>
+  </template>
+  ```
+
 
 
