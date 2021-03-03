@@ -322,11 +322,276 @@ ES5之前没有作用域的概念，ES6以后才添加了作用域的概念，�
       <div>
           <span>组件内容</span>
           <slot name="left"><span>左侧插槽</span></slot>
-          <slot name="center"><span>中间插槽</span></slot>
+          <slot name="center"><span>中间插槽</span></slot>	
           <slot name="right"><span>右侧插槽</span></slot>
       </div>
   </template>
   ```
+
+##### 箭头函数中的this
+
+箭头函数中的this是如何查找的？向外层作用域一层一层查找this，直到有this的定义为止
+
+##### 前端渲染&后端渲染
+
+1. 前端渲染
+
+   前后端分离开发
+
+2. 后端渲染
+
+   通过JSP或者PHP技术，当用户请求服务器的时候，服务器就返回一个已经渲染好的HMTL/CSS网页，这种就是服务端渲染/后端渲染
+
+##### 前端路由&后端路由
+
+1. 前端路由
+
+2. 后端路由
+
+   由后端处理URL和页面之间的映射关系
+
+### Webpack
+
+##### 概念
+
+webpack是现代JavaScript应用的**模块化打包**工具。在项目开发中，我们通常使用webpack来处理js代码，并且webpack会自动帮我们管理js代码之间的依赖关系。
+
+例如：将ES6规范的代码转换成ES5规范的代码；将TS代码转换成js代码；将scss代码、less代码转换成css代码；将.vue文件转换成.js文件等等
+
+![image-20210302140026481](https://i.loli.net/2021/03/02/cMmPTvqrdRf7h6z.png)
+
+##### 使用
+
+```shell
+# webpack打包命令
+webpack ./src/main.js ./dist/bundle.js
+```
+
+```javascript
+// 使用CommonJS模块化规范导入
+const {add, multi} = require('./mathUtils')
+
+console.log(add(20, 30));
+console.log(multi(20, 30));
+
+// 使用ES6模块化规范导出
+import {name, age} from './info'
+
+console.log(name);
+console.log(age);
+```
+
+##### webpack配置
+
+1. package.json文件 （执行 npm init命令会生成该文件）
+
+   如果一个项目依赖于node环境，则会有package.json文件进行管理配置相关的包
+
+   ```json
+   "scripts": {
+       "test": "echo \"Error: no test specified\" && exit 1",
+       // 执行脚本里面的命令会优先执行本地的webpack命令
+       "build": "webpack" 
+     },
+   ```
+
+2. 本地安装webpack开发时依赖
+
+   ```shell
+   npm install webpack@3.6.0 --save-dev
+   ```
+
+   此时`package.json`文件就会出现如下配置项
+
+   ```json
+   "devDependencies": {
+       "webpack": "^3.6.0"
+     }
+   ```
+
+##### loader处理css文件 
+
+1. loader使用场景
+
+   将scss代码、less代码转换成css代码
+
+   打包css文件至指定的js文件
+
+2. [安装loader](https://www.webpackjs.com/loaders/css-loader/)
+
+   ```shell
+   npm install --save-dev css-loader
+   ```
+
+##### ES6转ES5
+
+引入babel依赖
+
+### Vue-CLI
+
+##### CLI2
+
+1. 安装
+
+   ```shell
+   # 在安装CLI3的基础上执行如下指令
+   npm install @vue/cli-init -g
+   ```
+
+2. 创建项目
+
+   ```shell
+   vue init webpack project-name
+   ```
+
+3. 创建项目过程详解
+
+   ![image-20210302193834196](https://i.loli.net/2021/03/02/GF9lf1v43EnLdYb.png)
+
+   
+
+##### CLI3
+
+1. 安装
+
+   ```shell
+   npm install -g @vue/cli
+   ```
+
+2. 创建项目
+
+   ```shell
+   vue create project-name
+   ```
+
+##### runtime-complier和runtime-only区别
+
+1. runtime-comliler
+
+   使用runtime-comliler编译项目的过程如下：template（组件） -> ast（抽象语法树） -> render（render函数）-> vdom（虚拟dom）-> UI（前端UI）
+
+   <img src="https://i.loli.net/2021/03/02/u1lqJsNybIh49xM.png" alt="image-20210302222039225" style="zoom: 80%;" />
+
+2. runtime-only
+
+   使用runtime-only编译项目的过程如下：render（render函数）-> vdom（虚拟dom）-> UI（前端UI）
+
+   如上图所示runtime-only的编译过程少了前两个步骤，所以相对来说**性能更高**，**代码量更少**
+
+### Vue-Router
+
+#### 认识路由
+
+##### 概念
+
+路由（routing）就是通过互联网把数据从源地址发送到目的地址的过程
+
+##### 路由机制
+
+1. 路由
+
+   路由决定了数据包从源地址发送到目的地址的路径
+
+2. 转发
+
+   转发就是将数据从源地址选择合适的路径发送到目的地址
+
+#### 基本使用
+
+##### 使用步骤
+
+1. 创建vue组件
+
+2. 配置vue组件和路径映射关系
+
+   ```javascript
+   export default new Router({
+     // 通过history方式修改URL
+     mode: 'history',
+     routes: [
+       {
+         // 配置首页重定向路径
+         path: '',
+         redirect: '/home'
+       },
+       {
+         path: '/home',
+         component: Home
+       },
+       {
+         path: '/about',
+         component: About
+       }
+     ]
+   })
+   ```
+
+3. 使用路由 `router-link` 和 `router-view`
+
+**改变URL但是不让页面重新刷新**
+
+1. 改变URL的hash值
+
+   ```java
+   location.hash = 'aaa'
+   ```
+
+2. 修改history对象的URL属性
+
+   ```
+   history.pushState({}, '', 'home')
+   ```
+
+##### router-link常用属性
+
+1. tag属性
+
+   可以指定router-link渲染成什么组件
+
+2.  replace属性
+
+   使用replace属性不会留下history记录，所以不能使用后退键返回到上一个页面
+
+3. active-class属性
+
+   当router-link匹配路由成功时，会自动给当前元素设置一个名字是router-link-active的class，所以通过设置active-class属性可以修改默认的class名称
+
+##### 通过代码实现路由跳转
+
+```javascript
+methods: {
+    homeClick() {
+      this.$router.push('/home')
+    },
+    aboutClick() {
+      this.$router.push('/about')
+    }
+}
+```
+
+##### 动态路由的使用
+
+#### 嵌套路由
+
+#### 参数传递
+
+#### 导航守卫
+
+#### keep-alive
+
+### VueX
+
+### Axios  
+
+
+
+
+
+
+
+
+
+
 
 
 
