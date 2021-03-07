@@ -61,7 +61,7 @@ v-pre指令用于跳过这个标签元素和它的子元素的编译过程，显
 
 ##### v-show
 
-**区别：**v-if 和 v-show都可以表示一个元素能否被渲染，二者区别：v-if的条件表达式为false时，压根不会有对应的元素在DOM中；v-show的条件表达式为false时，仅仅是将元素的display属性设置为none
+**区别：**v-if 和 v-show都可以表示一个元素能否被渲染，二者区别：v-if的条件表达式为false时，压根不会有对应的元素在DOM中；v-show的条件表达式为false时，仅仅是将元素的display属性设置为Dnone
 
 **如何选择：**
 
@@ -571,27 +571,437 @@ methods: {
 
 ##### 动态路由的使用
 
+##### $router 和  $route
+
+1. $router
+
+   $router是vue-router插件创建的router对象
+
+2. $route
+
+   $route是当前处于活跃状态的路由
+
+##### 路由懒加载
+
+1. 解释
+
+   用到时才会加载某个路由对应的组件（性能相对于直接全部加载会更高）
+
+2. 代码示例
+
 #### 嵌套路由
+
+##### 代码示例
+
+```javascript
+{
+  path: '/home',
+  component: () => import('../components/Home'),
+  children: [
+    {
+      path: '',
+      redirect: 'news'
+    },
+    {
+      path: 'news',
+      component: () => import('../components/HomeNews')
+    },
+    {
+      path: 'message',
+      component: () => import('../components/HomeMessage')
+    }
+  ]
+}
+```
 
 #### 参数传递
 
-#### 导航守卫
+##### 通过params方式传递参数
+
+传递的是一个字符串，该参数会以URI的方式拼接在URL中
+
+```html
+<router-link :to="'/user/' + userId">用户</router-link>
+```
+
+##### 通过query方式传递参数
+
+传递的是一个对象，该参数会以&符号拼接在URL中
+
+```html
+<router-link :to="{path: '/profile', query: {name: '赵静超', age: 24}}">档案</router-link>
+```
+
+#### 全局导航守卫（拦截器）
+
+```javascript
+// 调用router对象的beforeEach方法实现全局导航守卫
+router.beforeEach( ((to, from, next) => {
+  document.title = to.matched[0].meta.title;
+  next();
+}))
+```
 
 #### keep-alive
 
+1. keep-alive是Vue内置的一个组件，可以是被包含的标签处于活跃状态（可以避免被重新渲染）
+
+   ```javascript
+   export default {
+     name: "Home",
+     data() {
+       return{
+         path: '/home'
+       }
+     },
+     created () {
+       console.log('Home组件被创建')
+     },
+     // 这两个函数只有在当前组件被保持活跃状态，使用了keep-alive标签时，才有效
+     destroyed () {
+       console.log('Home组件被销毁')
+     },
+     activated () {
+       this.$router.push(this.path)
+       console.log('Home组件的路由处于活跃状态')
+     },
+     deactivated () {
+       console.log('Home组件的路由处于不活跃状态！')
+     },
+     beforeRouteLeave(to, from, next){
+       console.log(this.$route.path);
+       this.path = this.$route.path;
+       next();
+     }
+   }
+   ```
+
+2. router-view也是一个组件，如果该组件被keep-alive标签包起来，那么路径匹配到的视图的数据会被缓存进内存中
+
+   ```html
+   <keep-alive><router-view/></keep-alive>
+   ```
+
+### Promise
+
+##### 应用场景
+
+对异步网络请求的封装
+
+```javascript
+new Promise(((resolve, reject) => {
+    setTimeout(() => {
+        // 请求成功的时候调用resolve方法
+        // resolve('Hello Vue.js')
+
+        // 请求失败的时候调用reject方法
+        reject('error message')
+    }, 2000)
+})).then(data => {
+    console.log(data)
+}).catch(error => {
+    console.log(error)
+})
+```
+
+##### Promise的三种状态
+
+1. pending等待状态
+
+   正在进行网络请求的时候就处于等待状态
+
+2. fullfill满足状态
+
+   当我们主动调用resolve方法就处于满足状态，并且会回调then方法
+
+3. rejetc拒绝状态
+
+   当我们主动调用reject方法时就处于拒绝状态，并且会回调catch方法 
+
+##### Promise链式调用
+
+```javascript
+new Promise(((resolve, reject) => {
+    setTimeout(() => {
+        console.log('开始进行第1次网络请求，消耗两秒...')
+        resolve('第1次网络请求成功，调用请求成功后的回调函数...')
+    }, 2000)
+})).then(data => {
+    console.log(data)
+
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve('开始进行第二次网络请求，耗时2秒...')
+        }, 2000)
+    })
+}).then(data1 => {
+    console.log(data1 + '第二次网络请求成功')
+
+    return new Promise(((resolve, reject) => {
+        setTimeout(() => {
+            reject('开始进行第三次网络请求，耗时2秒...')
+        }, 2000)
+    }))
+}).catch(data2 => {
+    console.log(data2 + '第三次网络请求失败')
+})
+```
+
+##### Promise.all方法
+
+```javascript
+// 需求场景：这里同时有两个网络请求，当两个网络请求都成功时，再处理某一个业务
+// 提示：并不知道哪个网络请求先完成
+
+Promise.all([
+    new Promise(((resolve, reject) => {
+        setTimeout(() => {
+            console.log('result1结束')
+            resolve('result1')
+        }, 2000)
+    })),
+    new Promise(((resolve, reject) => {
+        setTimeout(() => {
+            console.log('result2结束')
+            resolve('result2')
+        }, 1000)
+    }))
+]).then(results => {
+    console.log(results)
+})
+```
+
 ### VueX
+
+##### 概念
+
+Vuex是一个专门为vue.js应用程序开发的**状态管理工具**
+
+##### 本质
+
+Vuex采用的是**集中式、响应式 存储管理**所有组件的状态，并且以相应的规则以一种可预测的方式发生变化
+
+##### 应用场景
+
+1. 用户的登陆状态（token）、userId、用户位置信息
+2. 购物车中的商品信息
+
+##### Vuex管理共享状态流程
+
+<img src="https://i.loli.net/2021/03/04/ECgnbd4eVNIrcvJ.png" alt="image-20210304201723647" style="zoom:80%;" />
+
+##### Vuex核心概念
+
+1. State（存放状态）
+
+   单一状态树
+
+2. Getters（类似计算属性）
+
+3. Mutations（处理同步操作）
+
+   1. 组成部分
+
+      1. 事件类型
+      2. 回调函数
+
+   2. 实现方式
+
+      传入事件类型，然后调用回调函数
+
+      ```javascript
+      // 定义事件类型
+      mutations: {
+          increment(state) {
+              state.counter ++;
+          }
+      }
+      
+      methods: {
+          addition(){
+              // 传入事件类型，调用回调函数
+              this.$store.commit('increment')
+          }
+      }
+      ```
+
+   3. 携带参数提交事件
+
+      ```javascript
+      mutations: {
+        incrementCount(state, count){
+          state.counter += count;
+        }
+      }
+      ```
+
+      ```javascript
+      methods: {
+        addCount(count){
+          this.$store.commit('incrementCount', count)
+        }
+      }
+      ```
+
+   4. 提交风格
+
+4. Action（处理异步操作）
+
+   ```javascript
+   // 提交同步方法
+   mutations: {
+     //mutations对象里面只能实现同步方法
+     syncUpdateInfo(){
+       this.state.info.name = 'lucas';
+     }
+   },
+   ```
+
+   ```javascript
+   // 分发同步方法
+   actions: {
+     /**
+      * 异步修改store中的信息
+      * @param context 上下文
+      */
+     asyncUpdateInfo1(context){
+       setTimeout(() => {
+         context.commit('syncUpdateInfo');
+       }, 2000)
+     }
+   }
+   ```
+
+   ```javascript
+   methods: {
+     updateInfoFun1(){
+       this.$store.dispatch('asyncUpdateInfo1')
+     }
+   }
+   ```
+
+5. Mudule（分模块保存数据）
 
 ### Axios  
 
+##### 基本GET请求
 
+```javascript
+axios({
+  url: 'http://123.207.32.32:8000/home/multidata'
+}).then(data => {
+  console.log(data)
+})
+```
 
+##### 带有参数的GET请求
 
+```javascript
+axios({
+  url: 'http://152.136.185.210:8000/api/w6/home/data',
+  params: {
+    type: 'pop',
+    page: 1
+  }
+}).then(data => {
+  console.log(data)
+})
+```
 
+##### 并发请求
 
+```javascript
+axios.all([
+  axios({
+    url: 'http://123.207.32.32:8000/home/multidata'
+  }),
+  axios({
+    url: 'http://152.136.185.210:8000/api/w6/home/data',
+    params: {
+      type: 'pop',
+      page: 1
+    }
+  })
+]).then(data => {
+  console.log(data)
+})
+```
 
+##### 全局配置
 
+![image-20210305173655512](https://i.loli.net/2021/03/05/iKztlwXPyO3CWn5.png)
 
+##### Axios的封装
 
+```javascript
+import axios from 'axios'
+
+export function request(config){
+  //1.创建axios实例
+  let instance = axios.create({
+    baseURL: 'http://123.207.32.32:8000',
+    timeout: 5000
+  })
+  //2.发送真正的网络请求
+  return instance(config);
+}
+```
+
+```javascript
+import {request} from './network/request'
+
+request({
+  url: '/home/multidata'
+}).then(data => {
+  console.log(data)
+}).catch(err => {
+  console.log(err)
+})
+```
+
+##### Axios拦截器的使用
+
+1. 请求拦截器
+
+   1. 请求成功拦截器使用场景
+      1. 拦截掉一些不符合服务器的请求
+      2. 每次发送网络请求的时候，在界面上展示loading图标
+      3. 某些请求（登陆请求）必须在headers中携带Token，如果token失效或者没有携带Token则将页面重定向到登陆页面
+   2.  请求失败拦截器
+
+2. 响应拦截器
+
+   1. 响应成功拦截器
+   2. 响应失败拦截器
+
+3. 代码示例
+
+   ```javascript
+   export function request(config){
+     //1.创建axios实例
+     let instance = axios.create({
+       baseURL: 'http://123.207.32.32:8000',
+       timeout: 5000
+     })
+   
+     //请求拦截器
+     instance.interceptors.request.use(config => {
+       console.log(config);
+       return config;
+     }, error => {
+       console.log("请求失败：" + error)
+     })
+   
+     //响应拦截器
+     instance.interceptors.response.use(result => {
+       return result.data;
+     }, error => {
+       console.log('响应失败' + error)
+     })
+     //2.发送真正的网络请求
+     return instance(config);
+   }
+   ```
 
 
 
