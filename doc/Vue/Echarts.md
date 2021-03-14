@@ -279,7 +279,38 @@
 
       5. dispose：销毁实例，销毁之后实例无法再次被使用
 
-         
+   ### Koa2快速入手
+
+   #### 快速开始
+
+   ```javascript
+   // 1.创建Koa对象
+   const Koa = require('koa')
+   const app = new Koa();
+   // 2.编写响应函数(中间件)
+   /**
+    * context,web容器的上下文
+    * next，下一个中间件
+    */
+   app.use((context, next) => {
+   	console.log(context.request.url);
+   	context.response.body = 'Hello Koa'
+   })
+   // 3.绑定端口号:3000
+   app.listen(3000)
+   ```
+
+   #### 项目准备
+
+   项目准备
+
+   总耗时中间件
+
+   响应头中间件
+
+   业务逻辑中间件
+
+   允许跨域
 
    
 
