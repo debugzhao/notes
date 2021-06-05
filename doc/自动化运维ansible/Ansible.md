@@ -1,0 +1,147 @@
+### Ansible相关文件
+
+#### 配置文件
+
+- /etc/ansible/ansible.cfg  主配置文件，用来配置ansible的工作特性
+- /etc/ansible/host   主机清单文件，用来配置需要通过ansible来管理的主机
+- /etc/ansible/roles/  存放角色的目录
+
+#### Ansible相关工具
+
+- /usr/bin/ansible 主程序，临时命令执行工具
+- /usr/bin/ansible-doc 查看配置文档，模块功能查看工具
+- /usr/bin/ansible-galaxy 下载/上传优秀代码或Roles模块的官网平台
+- /usr/bin/ansible-playbook 定制自动化任务，编排剧本工具
+- /usr/bin/ansible-pull 远程执行命令的工具
+- /usr/bin/ansible-vault 文件加密工具
+- /usr/bin/ansible-console 基于Console界面与用户交互的执行工具
+
+
+
+```shell
+
+```
+
+
+
+##### ansible
+
+此工具通过ssh协议，实现对远程主机的配置管理、应用部署、任务执行等功能
+
+建议：在使用此工具之前，首先配置ansible主控端能基于秘钥认证的方式联系被管理的各个节点
+
+范例：通过sshpass实现批量基于key的验证
+
+```shell
+# 生成公钥
+ssh-keygen
+
+# 拷贝公钥到某一台服务器上
+ssh-copy-id 172.20.38.71
+```
+
+**ansible命令的选项说明**
+
+```shell
+--version              # 显示版本
+-m moudle              # 显示指定模块
+-v                     # 详细过程 -vv -vvv更详细过程
+--list-hosts           # 显示被控端主机列表
+-K, --ask-pass         # 提示输入ssh连接密码，默认key验证
+-C, --check            # 检查，并不执行
+-T, --timeout=TIMEOUT  # 执行命令超时时间，默认10s
+-u, --user=REMOTE_USER # 执行远程执行的用户
+-b, --become           # 替代旧版的sudo 切换
+-K, --ask-become-pass  # 提示输入sudo时的口令
+```
+
+**ping命令使用**
+
+```shell
+[root@ansible .ssh]# ansible all -m ping
+172.20.38.17 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.20.38.71 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.20.18.165 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+**查看ansible正在管理的机器**
+
+```shell
+[root@ansible .ssh]# ansible all --list-hosts
+  hosts (3):
+    172.20.18.165
+    172.20.38.71
+    172.20.38.17
+[root@ansible .ssh]# ansible appservers  --list-hosts
+  hosts (3):
+    172.20.38.71
+    172.20.38.17
+    172.20.18.165
+```
+
+**通配符**
+
+```shell
+ansible "*" -m ping
+```
+
+**或关系**
+
+```shell
+ansible "webservers:appservers" -m ping
+```
+
+**逻辑与**
+
+```shell
+# 在webservers清单中并且还在appservers清单中的主机
+ansible "webservers:&appservers" -m ping
+```
+
+**逻辑非**
+
+```shell
+# 在webservers清单中但是不在appservers清单中的主机
+# 注意：此处用单引号
+ansible 'webservers:&appservers' -m ping
+```
+
+##### ansible-galaxy
+
+此工具会从http://galaxy.ansible.com下载相应的roles
+
+```shell
+# 列出所有已经安装的galaxy
+ansible-galaxy list
+# 安装galaxy
+ansible-galaxy install geerlingguy
+# 删除galaxy
+ansible-galaxy remove geerlingguy
+```
+
+
+
+
+
+
+
+
+
