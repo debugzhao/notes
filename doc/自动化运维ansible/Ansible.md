@@ -6,7 +6,7 @@
 - /etc/ansible/host   主机清单文件，用来配置需要通过ansible来管理的主机
 - /etc/ansible/roles/  存放角色的目录
 
-#### Ansible相关工具
+#### ansible相关工具
 
 - /usr/bin/ansible 主程序，临时命令执行工具
 - /usr/bin/ansible-doc 查看配置文档，模块功能查看工具
@@ -15,14 +15,6 @@
 - /usr/bin/ansible-pull 远程执行命令的工具
 - /usr/bin/ansible-vault 文件加密工具
 - /usr/bin/ansible-console 基于Console界面与用户交互的执行工具
-
-
-
-```shell
-
-```
-
-
 
 ##### ansible
 
@@ -137,7 +129,7 @@ ansible-galaxy install geerlingguy
 ansible-galaxy remove geerlingguy
 ```
 
-
+#### ansible常用模块详解
 
 
 
