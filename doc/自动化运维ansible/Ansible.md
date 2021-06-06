@@ -251,9 +251,63 @@ echo myhostname is `hostname`
 }
 ```
 
+##### Copy模块
 
+从ansible主控端复制文件到远程主机
 
+##### Fetch模块
 
+从远程主机提取文件到主控端，目前不支持目录
+
+```shell
+ansible all -m fetch -a "src=/etc/redhat-release dest=/data/os"
+
+[root@ansible os]# tree
+.
+├── 172.20.18.165
+│   └── etc
+│       └── redhat-release
+├── 172.20.38.17
+│   └── etc
+│       └── redhat-release
+└── 172.20.38.71
+    └── etc
+        └── redhat-release
+
+6 directories, 3 files
+```
+
+##### File模块
+
+设置文件属性
+
+```shell
+# 创建文件
+ansible webservers -m file -a "path=/data/test.txt state=touch"
+
+# 更改权限和所属组
+ansible webservers -m file -a "path=/data/test.txt group=bin mode=600"
+
+# 查看文件详情
+ansible webservers  -a "ls -l /data/test.txt"
+```
+
+##### Unarchive模块
+
+**功能：**压缩包解压缩
+
+**实现方式：**
+
+1. 将ansible主机上的压缩包上传至远程主机的指定目录，然后解压缩，设置copy=yes
+2. 将远程主机的某个压缩包解压到指定目录，设置copy=no
+
+```shell
+ansible webservers  -m unarchive -a 'src=/data/etc.tar.gz dest=/data copy=yes'
+```
+
+##### Archive模块
+
+**功能：**压缩文件
 
 
 
