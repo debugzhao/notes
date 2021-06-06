@@ -416,6 +416,102 @@ ansible 172.20.18.165 -m setup
 }
 ```
 
+#### PlayBook
+
+##### playbook介绍
+
+![image-20210606135515598](https://i.loli.net/2021/06/06/U17cV6esakvGJuP.png)
+
+##### playbook核心组件
+
+- hosts：远程操作的主机列表
+- task：任务集
+- variables：playbook中调用的内置变量或者自定义的变量
+- templates：模板
+- handlers：和notify结合使用，在特定条件下才触发的操作
+- tags：标签 指定某条任务执行，用以选择运行执行playbook中的部分代码
+
+##### hosts远程主机列表组件
+
+```yaml
+- hosts: webservers:appservers
+```
+
+##### remote_user组件
+
+remote_user可以用在host和task标签中，用来表示通过什么用户来执行指令
+
+```yaml
+- hosts: webservers:appservers
+  remote_user: root
+```
+
+##### task列表和action组件
+
+```yaml
+---
+- hosts: webservers
+  remote_user: root
+  tasks:
+    - name: install httpd # 安装httpd服务(该键值对为描述性语言，没有实际意义)
+      yum: name=httpd
+    - name: start httpd   # 启动httpd服务
+      service: name=httpd state=started enabled=yes
+```
+
+##### playbook命令
+
+格式
+
+```shell
+ansible-playbook <filename.yml> ... [options]
+```
+
+常见选项
+
+```yaml
+-C --check      # 只检查可能会发生的改变，但是不执行真正的操作
+--list-hosts    # 列出运行任务的主机
+--list-tags     # 列出tag
+--list-task     # 列出task
+--limit 主机列表 # 只针对主机列表中的主机执行任务
+-v -vv -vvv     # 显示过程
+```
+
+范例
+
+```shell
+ansible-playbook mysql_user.yml --check   # 只做检查
+ansible-playbook mysql_user.yml --limit  172.20.18.164
+```
+
+#### PlayBook实战
+
+利用playbook创建mysql账户
+
+```shell
+---
+# create mysql user and group
+
+- hosts: appservers
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+    - name: create group
+      group: name=mysql system=yes gid=306
+    - name: create user
+      user: name=mysql system=yes group=mysql shell=/sbin/nologin create_home=no home=/data/mysql uid=306
+```
+
+```shell
+# 预检查yml文件是否有语法错误
+ansible-playbook -C mysql_user.yml
+
+# 执行yml task
+ansible-playbook mysql_user.yml
+```
+
 
 
 
