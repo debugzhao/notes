@@ -6,7 +6,7 @@
 - /etc/ansible/host   主机清单文件，用来配置需要通过ansible来管理的主机
 - /etc/ansible/roles/  存放角色的目录
 
-#### ansible相关工具
+#### Ansible相关工具
 
 - /usr/bin/ansible 主程序，临时命令执行工具
 - /usr/bin/ansible-doc 查看配置文档，模块功能查看工具
@@ -16,7 +16,7 @@
 - /usr/bin/ansible-vault 文件加密工具
 - /usr/bin/ansible-console 基于Console界面与用户交互的执行工具
 
-##### ansible
+##### Ansible
 
 此工具通过ssh协议，实现对远程主机的配置管理、应用部署、任务执行等功能
 
@@ -32,7 +32,7 @@ ssh-keygen
 ssh-copy-id 172.20.38.71
 ```
 
-**ansible命令的选项说明**
+**Ansible命令的选项说明**
 
 ```shell
 --version              # 显示版本
@@ -47,7 +47,7 @@ ssh-copy-id 172.20.38.71
 -K, --ask-become-pass  # 提示输入sudo时的口令
 ```
 
-**ping命令使用**
+**Ping命令使用**
 
 ```shell
 [root@ansible .ssh]# ansible all -m ping
@@ -129,7 +129,133 @@ ansible-galaxy install geerlingguy
 ansible-galaxy remove geerlingguy
 ```
 
-#### ansible常用模块详解
+##### ansible-pull
+
+此工具会推送ansible命令至远程，效率无限提升， 但是对运维要求较高
+
+##### ansible-playbook
+
+此工具用于编写playbool任务
+
+**yml文件示例：**
+
+```yaml
+---
+- hosts: webservers
+  remote_user: root
+  tasks:
+    - name: hello word
+      command: /usr/bin/wall hello world
+```
+
+调用yml文件：
+
+```shell
+ansible-playbook hello.yml
+```
+
+##### ansible-vault
+
+此工具用于加密/解密yml文件
+
+```shell
+# 加密文件
+ansible-vault encrypt hello.yml
+# 解密文件
+ansible-vault decrypt hello.yml
+```
+
+##### ansible-console
+
+此工具可以通过交互方式执行命令
+
+```shell
+[root@ansible ~]# ansible-console
+Welcome to the ansible console.
+Type help or ? to list commands.
+
+root@all (3)[f:5]$ list
+172.20.18.165
+172.20.38.71
+172.20.38.17d
+root@appservers (3)[f:5]$ cd dbservers
+root@dbservers (1)[f:5]$ list
+172.20.18.165
+root@dbservers (1)[f:5]$ forks
+Usage: forks <number>
+root@dbservers (1)[f:5]$ forks 10
+```
+
+#### Ansible常用模块详解
+
+##### Command模块
+
+在远程主机执行命令，command为默认模块，可以忽略-m选项
+
+```shell
+# 查看webservers主机列表的操作系统信息
+ansible webservers -m command -a 'cat /etc/centos-release'
+
+# 先切换目录，再查看操作系统版本信息
+ansible webservers -m command -a 'chdir=/etc cat centos-release'
+```
+
+##### Shell模块
+
+shell模块和command模块功能类似，支持一些特殊字符
+
+```shell
+[root@ansible ~]# ansible webservers -m shell -a 'echo $HOSTNAME'
+172.20.38.71 | CHANGED | rc=0 >>
+71instance
+172.20.18.165 | CHANGED | rc=0 >>
+localhost.localdomain
+```
+
+##### Script模块
+
+在远程主机上运行ansible服务器上的脚本文件
+
+test.sh脚本文件
+
+```shell
+#!/bin/bash
+echo myhostname is `hostname`
+```
+
+```shell
+[root@ansible data]# ansible webservers  -m script -a '/data/test.sh'
+172.20.18.165 | CHANGED => {
+    "changed": true,
+    "rc": 0,
+    "stderr": "Shared connection to 172.20.18.165 closed.\r\n",
+    "stderr_lines": [
+        "Shared connection to 172.20.18.165 closed."
+    ],
+    "stdout": "myhostname is localhost.localdomain\r\n",
+    "stdout_lines": [
+        "myhostname is localhost.localdomain"
+    ]
+}
+172.20.38.71 | CHANGED => {
+    "changed": true,
+    "rc": 0,
+    "stderr": "Shared connection to 172.20.38.71 closed.\r\n",
+    "stderr_lines": [
+        "Shared connection to 172.20.38.71 closed."
+    ],
+    "stdout": "myhostname is 71instance\r\n",
+    "stdout_lines": [
+        "myhostname is 71instance"
+    ]
+}
+```
+
+
+
+
+
+
 
 
 
