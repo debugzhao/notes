@@ -309,6 +309,113 @@ ansible webservers  -m unarchive -a 'src=/data/etc.tar.gz dest=/data copy=yes'
 
 **功能：**压缩文件
 
+##### Hostname模块
+
+**功能：**管路目标主机的主机名
+
+```shell
+ansible 172.20.38.17  -m hostname -a 'name=17instance
+```
+
+##### Cron模块
+
+![image-20210606102502583](https://i.loli.net/2021/06/06/M3t2S4YnNHwgeyb.png)
+
+##### Yum模块
+
+**功能：**安装软件
+
+```shell
+# 软件安装
+ansible all  -m yum -a 'name=httpd'
+# 软件卸载
+ansible all  -m yum -a 'name=httpd state=absent'
+```
+
+##### Service模块
+
+**功能：** 启动/关闭服务
+
+```shell
+# 查看主机打开了哪些端口
+ansible all -a 'ss -ntl'
+
+# 启动httpd服务
+ansible all -m service -a 'name=httpd state=started' 
+
+# 停止httpd服务
+ansible all -m service -a 'name=httpd state=stopped' 
+
+# 开机启动httpd服务
+ansible all -m service -a 'name=httpd state=started enabled=yes' 
+```
+
+##### User模块
+
+**功能：**管理用户
+
+```shell
+# 创建用户
+ansible all -m user -a 'name=nginx uid=89 groups="nginx" system=yes shell=/sbin/nologin create_home=no home=/data/nginx non_unique=yes'
+
+# 删除用户以及家目录等数据
+ansible all -m user -a 'name=nginx state=absent remove=yes'
+```
+
+##### Group模块
+
+**功能：**管理组
+
+```shell
+# 创建组
+ansible all -m group -a 'name=nginx gid=88 system=yes'
+
+# 删除组
+ansible all -m group -a 'name=nginx state=absent'
+```
+
+##### Lineinfile模块
+
+**功能：**该功能sed命令类似，可以通过正则表达式来替换文件内容
+
+##### Replace模块
+
+**功能：**该功能sed命令类似，可以通过正则表达式来替换文件内容
+
+##### Setup模块
+
+**功能：**收集远程主机信息
+
+```shell
+ansible 172.20.18.165 -m setup
+```
+
+```shell
+# 过滤特定键
+[root@ansible data]# ansible all -m setup -a 'filter=ansible_distribution_major_version'
+172.20.38.71 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_distribution_major_version": "7",
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false
+}
+172.20.18.165 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_distribution_major_version": "7",
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false
+}
+172.20.38.17 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_distribution_major_version": "7",
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false
+}
+```
+
 
 
 
