@@ -487,7 +487,7 @@ ansible-playbook mysql_user.yml --limit  172.20.18.164
 
 #### PlayBook实战
 
-利用playbook创建mysql账户
+##### 利用playbook创建mysql账户
 
 ```shell
 ---
@@ -512,9 +512,175 @@ ansible-playbook -C mysql_user.yml
 ansible-playbook mysql_user.yml
 ```
 
+##### 利用playbook安装并启动nginx
 
+```yaml
+---
+# install nginx
+- hosts: localservers
+  remote_user: root
+  tasks:
+    - name: add group nginx
+      user: name=nginx state=present
+    - name: add user nginx
+      user: name=nginx state=present group=nginx
+    - name: Install Nginx
+      yum: name=nginx state=present
+    - name: change index page
+      copy: src=index_page/index.html dest=/usr/share/nginx/html/index.html
+    - name: Start Nginx
+      service: name=nginx state=started enabled=yes
+```
 
+##### playbook中使用handlers和notify
 
+handlers的本质是task list，类似于MySQL触发器触发事件的行为，其中task主要关注当资源发生变化时，才会采取一定的操作。
+
+而notify中定义的action可以用在在每个play最后才被触发，这样可以避免又多次发生改变时，每次都会触发handlers，仅在所有变化完成后一次性地执行操作。
+
+在notify中列出来的操作被称为handler，即notify调用handler中的操作
+
+**httpd.yml配置文件**
+
+```shell
+# 修改files/httpd.conf配置文件，实现触发handler的功能
+
+---
+# http service yml
+
+- hosts: webservers
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+    - name: install httpd
+      yum: name=httpd state=present
+    - name: install configure file
+      copy: src=files/httpd.conf dest=/etc/httpd/conf
+      notify: restart httpd service
+    - name: ensure apache is running
+      service: name=httpd state=started enabled=yes
+
+  handlers:
+    - name: restart httpd service
+      service: name=httpd state=restarted
+```
+
+**执行yml文件**
+
+```shell
+# 执行yml文件
+ansible-playbook  httpd.yml
+
+# 查看httpd开放的端口
+ansible webservers -a 'ss -ntl | grep 8888'
+```
+
+##### playbook中使用tags组件
+
+在playbook文件中，可以利用tags组件，为特定的task指定标签。当在执行playbook时，可以只执行特定的tags，而非整个playbook文件
+
+```yaml
+---
+# http service yml
+
+- hosts: webservers
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+    - name: install httpd
+      yum: name=httpd state=present
+    - name: install configure file
+      copy: src=files/httpd.conf dest=/etc/httpd/conf
+      tags: conf
+    - name: start httpd service
+      tags: service
+      service: name=httpd state=started enabled=yes
+```
+
+**选择指定标签执行**
+
+```shell
+ansible-playbook -t conf,service httpd_tags.yml
+```
+
+#### PlayBook中变量使用
+
+##### 使用setup模块中的变量
+
+```yaml
+---
+- hosts: webservers
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+    - name: create log file
+      file: name=/var/log/{{ansible_distribution}}.log state=touch
+```
+
+##### 在playbook命令行中定义变量
+
+##### 在playbook文件中定义变量
+
+```yaml
+[root@ansible playbook]# cat var2.yml
+---
+- hosts: webservers
+  remote_user: root
+  gather_facts: no
+
+  vars:
+    - username: user1
+    - groupname: group1
+
+  tasks:
+    - name: create group
+      group: name={{ groupname  }} state=present
+    - name: create user
+      user: name={{ username  }} group={{ groupname  }} state=present
+```
+
+##### 使用变量文件
+
+**变量文件**
+
+```yaml
+[root@ansible playbook]# cat vars.yml
+---
+# variables file
+package_name: vsftpd
+service_name: vsftpd
+```
+
+**playbook文件**
+
+```yaml
+[root@ansible playbook]# cat install_ftpd.yml
+---
+# install vsftpd
+- hosts: webservers
+  remote_user: root
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: install package
+      yum: name={{ package_name  }}
+      tags: install
+    - name: start service
+      service: name={{ service_name  }} state=started enabled=yes
+```
+
+##### 主机清单文件中定义变量
+
+#### template模板
+
+![image-20210607100701033](https://i.loli.net/2021/06/07/wqBP5lC7NmJtKby.png)
+
+##### 
 
 
 
