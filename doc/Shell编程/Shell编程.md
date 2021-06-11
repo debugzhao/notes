@@ -275,6 +275,59 @@ root@ansible ~]# echo $RANDOM
 - seq 起始值 结束值
 - seq 起始值 步长 结束值
 
+```shell
+# 可以使用-s 来替换默认的换行分隔符
+[root@ansible ~]# seq -s " " 10
+1 2 3 4 5 6 7 8 9 10
+
+# -w 显示等宽效果
+[root@ansible ~]# seq -w 8 10
+08
+09
+10
+
+# 指定步长
+[root@ansible ~]# seq -s " " -w 0 50 500
+000 050 100 150 200 250 300 350 400 450 500
+```
+
+##### bc计算器实现小数运算
+
+```shell
+[root@ansible ~]#  bc
+bc 1.06.95
+Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006 Free Software Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty'.
+
+199.00*4.53
+901.47
+scale=3
+199.00*4.53
+901.470
+quit
+```
+
+##### bc计算器的免交互方式（利用管道符实现）
+
+```shell
+[root@ansible ~]# a=12.34
+[root@ansible ~]# echo "$a"
+12.34
+[root@ansible ~]# echo "$a*45.6" | bc
+562.70
+```
+
+```shell
+[root@ansible ~]# A=12.34;B=12.43
+[root@ansible ~]# echo "$A >= $B" | bc
+0
+[root@ansible ~]# echo "$A < $B" | bc
+1
+```
+
+
+
 
 
 
