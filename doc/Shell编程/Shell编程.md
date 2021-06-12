@@ -326,6 +326,83 @@ quit
 1
 ```
 
+#### 字符串处理
+
+##### 字符串截取
+
+```shell
+# expr substr $var1 起始位置 截取长度
+
+[root@ansible ~]# var=CentOS6.5
+[root@ansible ~]# expr substr $var 1 6
+CentOS
+```
+
+
+
+```shell
+# 命令输出 | cut -c 起始位置-结束位置
+# 命令输出 | cut -d '分隔符' -f 字段编号
+
+[root@ansible ~]# var=CentOS6.5
+[root@ansible ~]# echo $var | cut -c 5-6
+OS
+[root@ansible ~]# echo $var | cut -d "t" -f2
+OS6.5
+```
+
+##### 字符串替换
+
+```shell
+# 替换第一个字符串
+${var/oldString/newString}
+# 替换所有的字符串
+${var//oldString/newString}
+```
+
+##### tr单个字母替换
+
+```shell
+# 命令输出 | tr 'abc' 'ABC' (将所以的单个字母a替换成A b替换成B c替换成C)
+# 命令输出 | tr -d 'abc' (删除所有'abc'字符)
+```
+
+##### 字符串路径分割
+
+```shell
+# dirname 取目录名称
+# basename 取文件名称
+```
+
+##### 使用随机字符串
+
+常见的随机性工具
+
+- 随机变量：RANDOM
+- uuid：uudigen
+- 特殊设备文件：head -1 /dev/urandom
+
+```shell
+echo $RANDOM | md5sum
+head -1 /dev/urandom | md5sum | cut -8
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
