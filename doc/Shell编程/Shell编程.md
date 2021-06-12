@@ -387,7 +387,51 @@ echo $RANDOM | md5sum
 head -1 /dev/urandom | md5sum | cut -8
 ```
 
+##### 命令替换
 
+1. 使用 ` 反撇号实现
+
+   ```shell
+   [maple@localhost /]$ which tr
+   /usr/bin/tr
+   [maple@localhost /]$ rpm -qf /usr/bin/tr
+   coreutils-8.22-24.el7_9.2.x86_64
+   [maple@localhost /]$ rpm -qf `which tr`
+   coreutils-8.22-24.el7_9.2.x86_64
+   ```
+
+2. 使用 $() 表达式实现
+
+   ```shell
+   # 方便嵌套使用
+   [maple@localhost /]$ echo $(which tr)
+   /usr/bin/tr
+   [maple@localhost /]$ rpm -qf  $(which tr)
+   coreutils-8.22-24.el7_9.2.x86_64
+   [maple@localhost /]$ rpm -qi $(rpm -qf $(which tr))   # 查看tr所属软件包的用意 以及描述
+   Name        : coreutils
+   Version     : 8.22
+   Release     : 24.el7_9.2
+   Architecture: x86_64
+   Install Date: Wed 24 Feb 2021 04:58:59 PM CST
+   Group       : System Environment/Base
+   Size        : 14594210
+   License     : GPLv3+
+   Signature   : RSA/SHA256, Wed 18 Nov 2020 10:16:51 PM CST, Key ID 24c6a8a7f4a80eb5
+   Source RPM  : coreutils-8.22-24.el7_9.2.src.rpm
+   Build Date  : Tue 17 Nov 2020 06:24:59 AM CST
+   Build Host  : x86-01.bsys.centos.org
+   Relocations : (not relocatable)
+   Packager    : CentOS BuildSystem <http://bugs.centos.org>
+   Vendor      : CentOS
+   URL         : http://www.gnu.org/software/coreutils/
+   Summary     : A set of basic GNU tools commonly used in shell scripts
+   Description :
+   These are the GNU core utilities.  This package is the combination of
+   the old GNU fileutils, sh-utils, and textutils packages.
+   ```
+
+   
 
 
 
