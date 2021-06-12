@@ -431,11 +431,62 @@ head -1 /dev/urandom | md5sum | cut -8
    the old GNU fileutils, sh-utils, and textutils packages.
    ```
 
-   
+#### 条件测试
 
+> 脚本的识别能力
+>
+> - 前一条命令是否执行成功
+> - 文件或者目录的读写状态
+> - 数值大小
+> - 字符串是否匹配
 
+##### 返回状态值 $?
 
+```shell
+# 输出0 表示执行成功
+[maple@localhost /]$ ls -ld /root  &> /dev/null; echo $?
+0
 
+# 输出非0 表示执行失败
+[maple@localhost /]$ ls -ld /rootx  &> /dev/null; echo $?
+2
+```
+
+##### 专用测试工具test
+
+test 选项 文件/目录
+
+| 选项 | 选项描述                                |
+| ---- | --------------------------------------- |
+| -e   | 检测对象是存在(Exist)，是 返回真        |
+| -d   | 检测对象是目录(Directory)，是 返回真    |
+| -f   | 检测对象是文件(File)，是 返回真         |
+| -w   | 检测对象有可写权限(Write)，是 返回真    |
+| -r   | 检测对象有可读权限(Read)，是 返回真     |
+| -x   | 检测对象有可执行权限(eXcute)，是 返回真 |
+
+```shell
+[maple@localhost /]$ test -f /etc/hosts; echo $?
+0
+```
+
+##### 字符串比较
+
+| 测试选项 | 含义             |
+| -------- | ---------------- |
+| =        | 两个字符串相同   |
+| !=       | 两个字符串不相同 |
+| -z       | 字符串值相同     |
+| -n       | 字符串值不相同   |
+
+```shell
+# 判断当前用户是否为root用户，是则输出
+[maple@localhost /]$ [ $USER = 'root' ] && echo $USER
+
+# 判断当前位置是否不在/tmp 目录
+[maple@localhost /]$ [ $PWD != '/tmp' ] && echo $PWD
+/
+```
 
 
 
