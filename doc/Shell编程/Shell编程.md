@@ -488,6 +488,43 @@ test 选项 文件/目录
 /
 ```
 
+#### 流程控制
+
+```shell
+[root@hplap2104 lucas]# cat check_mount_dir.sh
+#!/bin/bash
+MOUNT_DIR="/media/cdrom"
+if [ ! -d ${MOUNT_DIR} ]
+then
+  mkdir -p ${MOUNT_DIR}
+fi
+```
+
+```shell
+[root@hplap2104 lucas]# cat pinghost.sh
+#!/bin/bash
+ping -c 3 -i 0.2 -W 3 $1 &> /dev/null
+if [ $? -eq 0 ]; then
+  echo "host $1 is up"
+else
+  echo "host $1 is down"
+fi
+```
+
+```shell
+[root@hplap2104 lucas]# cat  grade.sh
+#!/bin/bash
+read -p "please input the grade(0-100): " FS
+
+if [ $FS -ge 80 ] && [ $FS -le 100 ];then
+  echo "$FS grade, youxiu"
+elif [ $FS -ge 60 ] && [ $FS -le 79 ]; then
+  echo "$FS grade, lianghao"
+else
+  echo "$FS buhege"
+fi
+```
+
 
 
 
