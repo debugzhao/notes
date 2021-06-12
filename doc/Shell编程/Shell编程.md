@@ -525,7 +525,42 @@ else
 fi
 ```
 
+##### for循环
 
+```shell
+[root@hplap2104 lucas]# cat user.txt
+zhaojingchao
+lucas
+andre
+
+[root@hplap2104 lucas]# cat add_user_for.sh
+#!/bin/bash
+USERS=$(cat /home/lucas/user.txt)
+for username in ${USERS}; do
+  id $username &> /dev/null
+  if [ $? -ne 0 ]; then
+    useradd $username
+    echo "123456" | passwd --stdin $username
+  fi
+done
+```
+
+##### while循环
+
+```shell
+[root@hplap2104 lucas]# cat breakwhile.sh
+#!/bin/bash
+
+while read -p "please input num that you want to sum (0 is exit): " num
+do
+  if [ ${num} -eq 0 ]; then
+    break
+  fi
+  SUM=$[SUM+num]
+done
+
+echo "the sum num is ${SUM}"
+```
 
 
 
