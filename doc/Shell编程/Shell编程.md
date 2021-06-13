@@ -562,6 +562,26 @@ done
 echo "the sum num is ${SUM}"
 ```
 
+#### 编写脚本服务器
+
+##### 函数
+
+##### case语句
+
+```shell
+[root@hplap2104 lucas]# cat case.sh
+#!/bin/bash
+read -p "please input a character: " KEY
+case "$KEY" in
+  [a-z]|[A-Z])
+    echo "letter..." ;;
+  [0-9])
+    echo "digital..." ;;
+  *)
+    echo "others"
+esac
+```
+
 
 
 
