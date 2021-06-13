@@ -338,8 +338,6 @@ quit
 CentOS
 ```
 
-
-
 ```shell
 # 命令输出 | cut -c 起始位置-结束位置
 # 命令输出 | cut -d '分隔符' -f 字段编号
@@ -582,7 +580,120 @@ case "$KEY" in
 esac
 ```
 
+#### 文本排序及统计
 
+```shell
+-S # 按照文档大小降序排序
+-t # 按照修改时间降序排序
+-r # 反转排序
+
+# 按照文件大小降序排序
+ls -lh -S
+# 按照修改时间升序排序
+ls -lh -rt
+
+# 查看最大的文件
+[root@hplap2104 lucas]# ls -S | head -1
+grade.sh
+```
+
+##### uniq去重工具
+
+```shell
+# 使用cut工具对passwd文件的文本内容使用：进行分割，然后取出第七列，最后重定向到login_shell.txt文件中
+cut -d: -f7 /etc/passwd > login_shell.txt
+```
+
+```shell
+# 使用uniq工具去重查看文本（最终还是有重复文本现象）
+[root@hplap2104 lucas]# uniq login_shell.txt
+/bin/bash
+/sbin/nologin
+/bin/sync
+/sbin/shutdown
+/sbin/halt
+/sbin/nologin
+/bin/bash 
+```
+
+##### sort排序工具
+
+1. 基本用法
+
+   ```shell
+   # sort 文件名
+   # 命令 | sort
+   ```
+
+2. 常用命令选项
+
+   ```shell
+   -u # 去除重复行
+   -n # 按照数字顺序升序排序
+   -r # 反向排序
+   -k # 优先对第几列的内容进行排序
+   ```
+
+```shell
+# 先使用sort工具对对文本进行排序，然后在进行去重(真正做到去重效果)
+
+# 先排序，再去重
+[root@hplap2104 lucas]# sort login_shell.txt | uniq
+/bin/bash
+/bin/sync
+/sbin/halt
+/sbin/nologin
+/sbin/shutdown
+
+# 结合 -c选项统计重复次数
+[root@hplap2104 lucas]# sort login_shell.txt | uniq -c
+      4 /bin/bash
+      1 /bin/sync
+      1 /sbin/halt
+     12 /sbin/nologin
+      1 /sbin/shutdown
+```
+
+```shell
+ps -aux | head -1; ps -aux | sort -nr -k4
+```
+
+#### 文本处理的特殊应用
+
+##### tac命令(反序输出文本行内容)
+
+```shell
+[root@hplap2104 lucas]# head -3 /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+[root@hplap2104 lucas]# head -3 /etc/passwd | tac
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+bin:x:1:1:bin:/bin:/sbin/nologin
+root:x:0:0:root:/root:/bin/bash
+```
+
+##### rev命令（反序输出字符内容）
+
+```shell
+[root@hplap2104 lucas]# head -3 /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+[root@hplap2104 lucas]# head -3 /etc/passwd | rev
+hsab/nib/:toor/:toor:0:0:x:toor
+nigolon/nibs/:nib/:nib:1:1:x:nib
+nigolon/nibs/:nibs/:nomead:2:2:x:nomead
+```
+
+##### tee整合重定向
+
+```shell
+[root@ansible shell]# uname -r | tee uname.txt
+3.10.0-1160.el7.x86_64
+```
+
+#### xargs多参数处理
 
 
 
