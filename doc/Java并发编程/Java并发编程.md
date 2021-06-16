@@ -48,15 +48,108 @@
 
 ##### 应用之提高效率
 
-### Java线程
+### 3. Java线程
 
 #### 本章内容
 
-#### 创建和运行线程
+1. 创建和运行线程
+2. 查看线程
+3. 线程API
+4. 线程状态
+
+#### 3.1 创建和运行线程
 
 ##### Thread
 
+```java
+@Slf4j(topic = "c.test")
+public class TheadTest {
+    public static void main(String[] args) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                log.info("running...");
+            }
+        };
+        thread.start();
+        log.info("test");
+    }
+}
+```
+
 ##### Runnable
+
+```java
+@Slf4j(topic = "RunnableTest")
+public class RunnableTest {
+    public static void main(String[] args) {
+        Runnable runnable = new Runnable(){
+            @Override
+            public void run() {
+                log.info("running...");
+            }
+        };
+        Thread thread = new Thread(runnable, "t1");
+        thread.start();
+
+        lambda();
+    }
+
+    private static void lambda() {
+        Thread thead1 = new Thread(() -> log.info("lambda test..."), "thead1");
+        thead1.start();
+    }
+}
+```
+
+#### 3.2 查看和杀死进程
+
+##### Windows
+
+1. tasklist 查看进程
+
+2. taskkill杀死进程
+
+   ```shell
+   tasklist | findstr java
+   taskkill /F /PID 进程id
+   ```
+
+3. jps 查看java进程
+
+##### Linux
+
+1. ps -ef 查看所有进程信息
+2. ps -fT -p <PID> 查看某个进程的所有线程信息
+3. kill 杀死进程
+4. top 实时查看进程信息
+5. top -H -p <PID> 查看某个进程的所有线程信息
+
+##### Java
+
+1. jps 查看所有java进程
+
+2. jstack <PID> 查看java进程的线程状态
+
+3. jconsole 查看某个java进程的所有线程运行状态（图形化界面）
+
+4. jconsole 远程监控配置
+
+   ```shell
+   java -Djava.rmi.server.hostname=`ip地址` -Dcom.sun.management.jmxremote -
+   Dcom.sun.management.jmxremote.port=`连接端口` -Dcom.sun.management.jmxremote.ssl=是否安全连接 -
+   Dcom.sun.management.jmxremote.authenticate=是否认证 java类
+   ```
+
+#### 3.3 线程运行原理
+
+##### 栈和栈帧
+
+
+
+##### 线程上下文切换
+
+
 
 
 
