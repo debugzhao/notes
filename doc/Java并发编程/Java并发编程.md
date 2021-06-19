@@ -183,6 +183,64 @@ public class RunnableTest {
 | sleep(n)          | static | 使当前线程休眠n毫秒，休眠是让出cpu的时间片给其他线程使用 |                                                              |
 | yield()           | static | 提示线程调度器让出当前线程对CPU的使用                    | 主要是为了测试和调度使用                                     |
 
+#### 3.5 start() & run()
+
+**区别：**直接调用run方法本质上主线程执行run方法里面的代码，并没有起到异步执行的作用；调用start方法的原理是：新开启一个线程，让新创建的线程去执行run方法的代码
+
+```java
+@Slf4j(topic = "StartRunTest")
+public class StartRunTest {
+    public static void main(String[] args) {
+        Thread thread = new Thread("thread1") {
+            @Override
+            public void run() {
+                log.info("thread1 running...");
+            }
+        };
+        thread.run();
+        log.info("main thread running...");
+    }
+}
+
+12:37:33.792 [main] INFO StartRunTest - thread1 running...
+12:37:33.794 [main] INFO StartRunTest - main thread running...
+```
+
+**线程启动前后的状态变化**
+
+```java
+@Slf4j(topic = "ThreadStatusTest")
+public class ThreadStatusTest {
+    public static void main(String[] args) {
+        Thread thread = new Thread("thread1") {
+            @Override
+            public void run() {
+                log.info("thread1 running...");
+            }
+        };
+        log.info("线程启动之前状态：{}", thread.getState());
+        thread.start();
+        log.info("线程启动之后状态：{}", thread.getState());
+    }
+}
+
+12:47:28.068 [main] INFO ThreadStatusTest - 线程启动之前状态：NEW
+12:47:28.074 [main] INFO ThreadStatusTest - 线程启动之后状态：RUNNABLE
+12:47:28.075 [thread1] INFO ThreadStatusTest - thread1 running...
+```
+
+
+
+#### 3.6 sleep() & yield() 
+
+#### 3.7 join() 方法详解
+
+##### 3.8 interrupt方法详解
+
+
+
+
+
 
 
 
