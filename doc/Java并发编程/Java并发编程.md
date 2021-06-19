@@ -209,7 +209,7 @@ public class StartRunTest {
 **线程启动前后的状态变化**
 
 ```java
-@Slf4j(topic = "ThreadStatusTest")
+ @Slf4j(topic = "ThreadStatusTest")
 public class ThreadStatusTest {
     public static void main(String[] args) {
         Thread thread = new Thread("thread1") {
@@ -229,19 +229,115 @@ public class ThreadStatusTest {
 12:47:28.075 [thread1] INFO ThreadStatusTest - thread1 running...
 ```
 
-
+*一个线程如果处于`RUNNABLE`状态，则不能再次调用start方法，否则会抛异常*
 
 #### 3.6 sleep() & yield() 
+
+##### sleep方法
+
+1. 调用sleep方法会让线程从running状态切换为 timed waiting状态
+
+2. 其他实现可以使用interrupt方法打断正在睡眠的线程，这是sleep方法会抛出 `InterruptException`
+
+   ```java
+   @Slf4j(topic = "Test7Interrupt")
+   public class Test7Interrupt {
+   
+       public static void main(String[] args) throws InterruptedException {
+           Thread thread = new Thread("thread1") {
+               @Override
+               public void run() {
+                   log.info("thread1线程进入睡眠状态");
+                   try {
+                       Thread.sleep(2000);
+                   } catch (InterruptedException e) {
+                       log.info("thread1线程被唤醒");
+                       e.printStackTrace();
+                   }
+               }
+           };
+           thread.start();
+   
+           Thread.sleep(1000);
+           log.info("main线程开始打断 thread1线程");
+           thread.interrupt();
+       }
+   }
+   
+   Connected to the target VM, address: '127.0.0.1:4839', transport: 'socket'
+   15:22:23.271 [thread1] INFO Test7Interrupt - thread1线程进入睡眠状态
+   15:22:24.270 [main] INFO Test7Interrupt - main线程开始打断 thread1线程
+   15:22:24.270 [thread1] INFO Test7Interrupt - thread1线程被唤醒
+   java.lang.InterruptedException: sleep interrupted
+   Disconnected from the target VM, address: '127.0.0.1:4839', transport: 'socket'
+   	at java.lang.Thread.sleep(Native Method)
+   	at com.kuhan.ops.monitor.system.Test7Interrupt$1.run(Test7Interrupt.java:20)
+   ```
+
+   
+
+3. 睡眠结束后的线程未必可以立即执行（只有抢占到时间片资源的线程才可以执行）
+
+4. 建议使用TimeUnit的Sleep方法来代替Thread的Sleep方法，来提升可读性
+
+##### yield方法
+
+```java
+Runnable task2 = () -> {
+    int count = 0;
+    while (true) {
+        // 当前线程拿到时间片资源以后将其让出去，让给其他线程执行
+        Thread.yield();
+        System.out.println("        ------>task2: " + count ++);
+    }
+};
+```
+
+1. 调用yield方法会使当前线程从`RUNNING`执行状态切换为`RUNNABLE`就绪状态，然后调度执行其他线程
+2. 具体的实现依赖操作系统的任务调度器
+
+##### 区别
+
+调用sleep方法之后线程处于`TIMED_WATIING`阻塞状态、调用yield方法之后线程处于`RUNNABLE`就绪状态，调度器会把时间片分给就绪状态的线程而不会分给阻塞状态的线程 
+
+##### 线程优先级
+
+1. 线程优先级会提示调度器优先调度该线程，但是它仅仅是提示作用，因为线程调度器可以**忽略**它
+2. 如果CPU比价忙，那么优先级高的线程有更多的机会获得时间片；但是如果CPU闲时，线程优先级几乎不起作用
+
+```java
+@Slf4j(topic = "Test8Yield")
+public class Test8Yield {
+
+    public static void main(String[] args){
+        Runnable task1 = () -> {
+          int count = 0;
+          while (true) {
+              System.out.println("------>task1: " + count ++);
+          }
+        };
+        Runnable task2 = () -> {
+            int count = 0;
+            while (true) {
+                // 当前线程拿到时间片资源以后将其让出去，让给其他线程执行
+                // Thread.yield();
+                System.out.println("        ------>task2: " + count ++);
+            }
+        };
+
+        Thread thread1 = new Thread(task1, "task1");
+        Thread thread2 = new Thread(task2, "task2");
+        thread1.setPriority(Thread.MIN_PRIORITY);
+        thread2.setPriority(Thread.MAX_PRIORITY);
+
+        thread1.start();
+        thread2.start();
+    }
+}
+```
+
+
 
 #### 3.7 join() 方法详解
 
 ##### 3.8 interrupt方法详解
-
-
-
-
-
-
-
-
-
