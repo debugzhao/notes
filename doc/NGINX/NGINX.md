@@ -1,4 +1,4 @@
-## NGINX教程
+## 900NGINX教程
 
 ### 1.基本概念
 
@@ -56,9 +56,126 @@ nginx version: nginx/1.17.10
 
 #### 2.3NGINX配置文件
 
+NGINX配置文件由三部分组成
+
+##### 全局块
+
+从配置文件开始到events内容，主要会配置NGINX服务器整体运行的指令
+
+```shell
+# worker_processes 值越大，可以支持的并发处理数量也越多
+worker_processes  1;
+```
+
+##### events块
+
+events块涉及的指令主要影响NGINX服务器与用户的网络连接
+
+```shell
+events {
+    # 支持最大的连接数
+    worker_connections  1024;
+}
+```
+
+##### http块
+
+这部分是NGINX服务器配置最频繁地部分。**代理**、**缓存**、**日志**定义等大部分功能以及**第三方模块**的配置都是在这里配的
+
+注意http块包括**http全局块**和**server块**
+
+1. http全局块
+
+   http全局块配置包括文件引入、MIME-TYPE定义、日志自定义、连接超时时间、单链接请求数上线等等
+
+2. server块
+
 ### 3.NGINX配置实例
 
-#### 3.1反向代理配置
+#### 3.1反向代理配置1
+
+![反向代理配置（tomcat）](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/反向代理配置（tomcat）.31fk6t0pqpg0.png)
+
+前提Tomcat服务配置好
+
+1. 修改windows环境中该目录下hosts文件
+
+   `C:\Windows\System32\drivers\etc`，打开`hosts文件`添加`172.20.18.164 www.tomcat.com`
+
+2. 在NGINX中进行请求转发的配置（反向代理配置）
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/nginx配置（Tomcat）.61hyzt8cgp00.png" alt="nginx配置（Tomcat）" style="zoom:50%;" />
+
+#### 3.1反向代理配置2
+
+##### 实现效果
+
+使用nginx反向代理，根据访问的路径不同跳转到不同的服务中。
+
+```shell
+# nginx监听端口为9001
+# http:127:0.0.1:9001/edu --跳转--> 127.0.0.1:8080
+# http:127:0.0.1:9001/vod --跳转--> 127.0.0.1:8081
+```
+
+##### 准备工作
+
+1. 准备两台tomcat服务器，一个是8080端口，一个是9080端口
+2. 分别创建文件夹和测试页面
+
+##### 具体配置
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/9001配置.69s0tb9hx5w0.png" alt="9001配置" style="zoom:67%;" />
+
+```shell
+    server {
+        listen       9001;
+        server_name 172.20.18.164;
+
+        location ~ /edu/ {
+            proxy_pass http://172.20.18.164:8080;
+        }
+
+        location ~ /vod/ {
+            proxy_pass http://172.20.18.164:9080;
+        }
+    }
+```
+
+##### 测试
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/8080server.2aemytoeqw00.png" alt="8080server" style="zoom:50%;" />
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/9080sever.7krtx5kx34k0.png" alt="9080sever" style="zoom:50%;" />
+
+##### location格式
+
+location有两种格式：
+
+1. 匹配uri类型，有四种参数可选，当然也可以不带参数
+
+   ```shell
+   location [ = | ~ | ~* | ^~ ] uri { ... }
+   ```
+
+2. 命名location，用@来标识，类似于定义goto语句块。
+
+   ```shell
+   location @name { ... }
+   ```
+
+location匹配参数解释
+
+| 参数 | 解释                                                         |
+| ---- | ------------------------------------------------------------ |
+| 空   | location后没有参数直接跟着URI，表示前缀匹配，代表跟请求中的URI从头开始匹配。 |
+| ~    | 执行一个正则匹配，区分大小写。                               |
+| ~*   | 执行一个正则匹配，不区分大小写。                             |
+| ^~   | 普通字符匹配，多用来匹配目录。                               |
+| =    | 执行普通字符精确匹配。                                       |
+| @    | "@" 定义一个命名的 location，@定义的locaiton名字一般用在内部定向<br/>例如error_page, try_files命令中。它的功能类似于编程中的goto。 |
+
+
 
 #### 3.2负载均衡配置
 
