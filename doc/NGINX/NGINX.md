@@ -24,7 +24,17 @@ Nginx是一个高性能的HTTP和反向代理web服务器，特点是占用内�
 
 #### 1.3负载均衡
 
+单个服务器解决不了的性能瓶颈问题，我们可以增加服务器的数量，然后将请求分发到不同的服务器上。将原先请求集中到单个服务器的情况改为请求分发到不同的服务器上，这就是所谓的负载均衡
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/负载均衡.6pzwwr6auco0.png" alt="负载均衡" style="zoom: 50%;" />
+
+
+
 #### 1.4动静分离
+
+为了加快网站的解析速度，可以把静态资源和动态资源由不同的服务器来解析，降低原来单个服务的压力
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/动静分离.2zdbhcu32fo0.png" alt="动静分离" style="zoom: 50%;" />
 
 ### 2.NGINX安装、常用命令和配置文件
 
