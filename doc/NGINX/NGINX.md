@@ -226,7 +226,7 @@ location匹配参数解释
    按照后端服务器的响应时间分配，**响应时间越短则优先分配**
 
    ```shell
-   upstream myserver {
+   upstream myserver {    
    	server 172.20.18.164:8080;
    	server 172.20.18.164:9080;
    	fair;
@@ -234,6 +234,31 @@ location匹配参数解释
    ```
 
 #### 3.3动静分离配置
+
+  NGINX动静分离就是把动态请求和静态请求分开，可以理解为使用NGINX处理静态页面，tomcat处理动态页面。
+
+动静分离从目前实现上讲大致分为两种：一种是纯粹地把静态文件独立成单独的域名，放在单独的服务器上，也是目前主流推崇的方案；另一种是把动态文件和静态文件混合分布，使用NGINX分隔。
+
+通过使用`location`指定不同的后缀名实现不同请求的转发。通过使用`expires`参数设置，可以配置浏览器的缓存过期时间，减少与服务器之间的请求，**本质上是在浏览器端产生缓存**
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/动静分离请求.ulxcyq7q4q8.png" alt="动静分离请求" style="zoom:50%;" />
+
+##### 准备工作
+
+1. 准备静态资源，用于访问
+
+   ```shell
+   [root@localhost data]# tree
+   .
+   ├── images
+   │   └── test.png
+   └── www
+       └── test.html
+   ```
+
+   
+
+2. 
 
 #### 3.4高可用集群配置
 
