@@ -175,9 +175,63 @@ location匹配参数解释
 | =    | 执行普通字符精确匹配。                                       |
 | @    | "@" 定义一个命名的 location，@定义的locaiton名字一般用在内部定向<br/>例如error_page, try_files命令中。它的功能类似于编程中的goto。 |
 
-
-
 #### 3.2负载均衡配置
+
+##### 实现效果
+
+浏览器输入http://172.20.18.164/edu/index.html，将请求分发到8080端口和9080端口，以实现负载均衡效果
+
+##### NGINX配置
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/负载均衡实战1.2o7hjlnt0l80.png" alt="负载均衡实战1" style="zoom:50%;" />
+
+##### 负载均衡策略
+
+1. 轮询策略
+
+   每个请求按照时间注意分配到不同的后端服务器，如果服务器down掉，**NGINX可以自动剔除服务器**
+
+   ```shell
+   upstream myserver {
+   	server 172.20.18.164:8080;
+   	server 172.20.18.164:9080;
+   }
+   ```
+
+2. weight加权策略
+
+   weight表示权重，默认权重为1，权重越高流量被分发到的概率越大
+
+   ```shell
+   upstream myserver {
+   	server 172.20.18.164:8080 weight=5;
+   	server 172.20.18.164:9080 weight=10;
+   }
+   ```
+
+3. ip_hash方式
+
+   每个请求按照客户端的ip的hash结果进行分配，这样每个客户端都会固定访问到同一个后端服务器，可以**解决session共享的问题**
+
+   ```shell
+   upstream myserver {
+   	ip_hash;
+   	server 172.20.18.164:8080;
+   	server 172.20.18.164:9080;
+   }
+   ```
+
+4. fair方式（第三方）
+
+   按照后端服务器的响应时间分配，**响应时间越短则优先分配**
+
+   ```shell
+   upstream myserver {
+   	server 172.20.18.164:8080;
+   	server 172.20.18.164:9080;
+   	fair;
+   }
+   ```
 
 #### 3.3动静分离配置
 
