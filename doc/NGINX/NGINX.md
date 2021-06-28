@@ -256,11 +256,35 @@ location匹配参数解释
        └── test.html
    ```
 
-   
+2. 配置
 
-2. 
+   ```shell
+       location /www/ {
+           root  /data/;
+           index  index.html index.htm;
+       }
+   
+       location /image/ {
+           root   /data/;
+           autoindex on;
+       }
+   ```
 
 #### 3.4高可用集群配置
+
+1. 简单的负载均衡实现方案
+
+   ![普通负载均衡](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/普通负载均衡.35k8ox9hz8o0.png)
+
+   多台tomcat服务器可以实现负载均衡效果，但是NGINX服务器挂掉，服务就不可用
+
+2. 高可用集群方案架构实现
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/NGINX高可用效果.24rlscgbnwg0.png" alt="NGINX高可用效果" style="zoom:50%;" />
+
+   配置多台NGINX服务器，其中一台作为**主NGINX服务器**，另外一台作为**从NGINX服务器**。 当主服务器宕机之后就把请求切换至从服务器，从服务器实现流量的分发。
+
+   此外需要第三方软件`keepalived`实现检测主服务器/从服务器是否存活（脚本实现），
 
 ### 4.NGINX原理
 
