@@ -42,6 +42,18 @@ Nginx是一个高性能的HTTP和反向代理web服务器，特点是占用内�
 
 #### 2.2NGINX常用命令
 
+```shell
+# 查看版本
+[root@localhost sbin]# ./nginx -v
+nginx version: nginx/1.17.10
+
+# 关闭
+[root@localhost sbin]# ./nginx -s stop
+
+# 重新加载NGINX配置文件
+[root@localhost sbin]# ./nginx -s reload
+```
+
 #### 2.3NGINX配置文件
 
 ### 3.NGINX配置实例
