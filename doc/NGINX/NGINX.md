@@ -310,7 +310,7 @@ location匹配参数解释
     notification_email_from Alexandre.Cassen@firewall.loc
     smtp_server 192.168.6.129
     smtp_connect_timeout 30
-    router_id LVS_DEVEL	#唯一不重复
+      LVS_DEVEL	#唯一不重复
    }
    
    #脚本配置
@@ -350,14 +350,43 @@ location匹配参数解释
     fi
    fi
    ```
-   
-   
 
 ### 4.NGINX原理
 
+##### NGINX的master&worker架构图
 
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/master&worker.2lvhwtslwmc0.png" alt="master&worker" style="zoom:50%;" />
 
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/worker是如何工作的.5dl3n9r5qz40.png" alt="worker是如何工作的" style="zoom:50%;" />
 
+ 查看nginx相关的进程
+
+```shell
+[root@localhost nginx]# ps -ef | grep nginx
+root      1294     1  0 18:07 ?        00:00:00 nginx: master process ./nginx
+nobody    1295  1294  0 18:07 ?        00:00:00 nginx: worker process
+```
+
+##### master&worker机制好处
+
+1. 可以使用`nginx -s reload`进行热部署，方便`work进程`的热部署操作
+2. 每个work进程是独立的进程，如果有一个worker进程出问题，其他正常工作的work进程则继续争抢任务，不会影响服务的中断
+
+##### 设置多少个work合适
+
+nginx同redis都采用io多路复用机制，每个work都是一个独立的进程，通过异步非阻塞的方式来处理请求，即使上万个请求也不在话下。所以每个work进程都可以把cpu的性能发挥到极致。**所以work进程如何服务器cpu数量相等是最合适的。**设置少了会造成CPU资源的浪费，设置多了会造成CPU频繁地上下文切换所带来的性能损耗
+
+##### 连接数 worker_connection
+
+1. 发送请求，占用了 woker 的几个连接数？
+
+   2 或者 4 个
+
+2. nginx 有一个 master，有四个 woker，每个 woker 支持最大的连接数 1024，支持的 最大并发数是多少？
+
+   普通的静态访问最大并发数是： worker_connections * worker_processes /2，
+
+   而如果是 HTTP 作 为反向代理来说，最大并发数量应该是 worker_connections * worker_processes/4。
 
 
 
