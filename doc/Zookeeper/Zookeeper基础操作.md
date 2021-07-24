@@ -16,7 +16,37 @@ Zookeeper从设计模式的角度理解，是一个基于**观察者模式**的�
 4. zookeeper将会发送服务器节点下线的通知事件
 5. 客户端收到注册中心的通知后，会重新获取当前在线的服务器列表，并注册监听
 
+综合以上的zookeeper事件通知流程，可以任务**zookeeper = 文件系统 + 事件通知系统**
+
 #### 1.2 特点
+
+1. zookeeper架构
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.515abz6kb3o0.png" alt="image" style="zoom:50%;" />
+
+2. zookeeper特点
+
+   1. zookeeper集群中只有一个leader，可以有多个follower
+
+      写数据操作只能往leader里面写，读数据可以从多个follower读
+
+   2. 集群中只要有**半数以上**的服务器存活，zookeeper集群就能正常服务，所有zookeeper适合安装**奇数台**服务器
+
+   3. 全局数据一直性
+
+      每个节点中都持久化了一份相同的数据副本，client无论连接到哪个server，数据都是一致的
+
+   4. 更新请求顺序执行
+
+      来自同一个客户端的更新请求，按照其发送的顺序依次执行
+
+   5. 数据更新原子性
+
+      一次数据更新要么成功，要么失败
+
+   6. 实时性
+
+      在一定的时间范围内，client可以读到其他客户端更新的最新数据
 
 #### 1.3 数据结构
 
