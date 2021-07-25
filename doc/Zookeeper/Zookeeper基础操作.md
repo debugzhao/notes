@@ -212,6 +212,39 @@ server.5=172.20.18.165:2888:3888
 
 ##### ZK集群启动和停止脚本
 
+```java
+#!/bin/bash
+
+case $1 in
+"start") {
+	for i in 172.20.18.163 172.20.18.164 172.20.18.165
+	do
+		echo -------------- zookeeper start -----------------
+		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh start"
+	done
+}
+;;
+"stop") {
+	for i in 172.20.18.163 172.20.18.164 172.20.18.165
+	do
+		echo -------------- zookeeper stop -----------------
+		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh stop"
+	done
+}
+;;
+"status") {
+	for i in 172.20.18.163 172.20.18.164 172.20.18.165
+	do
+		echo -------------- zookeeper status -----------------
+		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh status"
+	done
+}
+;;
+esac
+```
+
+
+
 #### 3.2 客户端命令行操作
 
 ##### 命令行语法
