@@ -219,7 +219,7 @@ case $1 in
 "start") {
 	for i in 172.20.18.163 172.20.18.164 172.20.18.165
 	do
-		echo -------------- zookeeper start -----------------
+		echo -------------- zookeeper $i start -----------------
 		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh start"
 	done
 }
@@ -227,7 +227,7 @@ case $1 in
 "stop") {
 	for i in 172.20.18.163 172.20.18.164 172.20.18.165
 	do
-		echo -------------- zookeeper stop -----------------
+		echo -------------- zookeeper $i stop -----------------
 		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh stop"
 	done
 }
@@ -235,7 +235,7 @@ case $1 in
 "status") {
 	for i in 172.20.18.163 172.20.18.164 172.20.18.165
 	do
-		echo -------------- zookeeper status -----------------
+		echo -------------- zookeeper $i status -----------------
 		ssh $i "/usr/local/zookeeper-3.5.7/bin/zkServer.sh status"
 	done
 }
@@ -243,11 +243,19 @@ case $1 in
 esac
 ```
 
-
-
 #### 3.2 客户端命令行操作
 
 ##### 命令行语法
+
+| 基本命令  | 功能描述                                                     |
+| --------- | ------------------------------------------------------------ |
+| ls path   | 查看当前znode 的子节点【可监听】<br />-w 监听子节点变化<br />-s 附加次级信息 |
+| create    | 普通创建<br />-s 含有序列<br />-e 临时创建（重启或者超时消失） |
+| get path  | 获得节点的值【可监听】<br />-w 监听节点内容变化<br />-s 附加次级信息 |
+| set       | 设置节点的具体值                                             |
+| stat      | 查看节点状态                                                 |
+| delete    | 删除节点                                                     |
+| deleteall | 递归删除所有节点                                             |
 
 ##### znode节点数据类型
 
