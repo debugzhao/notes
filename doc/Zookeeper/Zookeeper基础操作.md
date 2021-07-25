@@ -158,6 +158,46 @@ server.5=172.20.18.165:2888:3888
 
 ##### ❗选举机制（面试重点）
 
+假设集群中一共五个服务器
+
+> 1. SID
+>
+>    服务器id，用来唯一标识zookeeper集群中的节点，和myid保持一致
+>
+> 2. ZXID
+>
+>    事务id，用来标识每一次服务器状态的变更
+>
+> 3. Epoch
+>
+>    每个leader的任期代号。没有leader时同一轮投票过程中的逻辑时钟值是相同的，每投完一次票这个数值就会增加
+
+1. 第一次启动选举机制
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1bkeiyl3ek80.png" alt="image" style="zoom:50%;" />
+
+   1. 阶段1：server1启动
+
+      server 1启动发起一次选举，首先server1 **投自己一票**。此时server1的的票数没有超过半数以上（3票），选举无法完成，server1 的状态保持为`LOOKING状态`
+
+   2. 阶段2：server2启动
+
+      server2 启动，再次发起一次选举。server1和serve2分别**投递自己一票**并且交换自己的选票信息（**myid**）。此时server1 发现server2的myid比自己的大，于是将自己的选票投递给server2。此时server1票数为0票，server2票为2票，没有超过半数3票，选举失败。server1，server2分别保持`LOOKING状态`
+
+   3. 阶段3：server3启动
+
+      server3启动，再次发起一次选举。此时server1和server2分别将自己的票数投递给server3（**server3的myid最大**），投票结束。此时投票结果为：server1票数0票，server2票数0票，server3票数3票。此时server3的票数已经超过半数以上，server3选举为`leader`，server1和server2更新状态为`FOLLOWING`，server3更新状态为`LEADING`
+
+   4. 阶段4：server4启动
+
+      server4启动，发起一次选举。此时server1和server2已经不是`LOOKING状态`，不会更改选票信息。交换选票信息结果为：server3票数为3票，server4票数为4票，此时server4少数服从多数，更改选票信息为server3，并将自己的状态更改为`FOLLOWING`
+
+   5. 阶段5：server5启动
+
+      server5启动，同server4一样当小弟
+
+2. 非第一次启动选举机制
+
 ##### ZK集群启动和停止脚本
 
 #### 3.2 客户端命令行操作
