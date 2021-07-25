@@ -50,7 +50,39 @@ Zookeeper从设计模式的角度理解，是一个基于**观察者模式**的�
 
 #### 1.3 数据结构
 
+ZooKeeper 数据模型的结构与 Unix 文件系统很类似，整体上可以看作是**一棵树**，每个 节点称做一个 ZNode。每一个 ZNode 默认能够**存储 1MB** 的数据，每个 ZNode 都可以通过 其**路径作为唯一标识**
+
 #### 1.4 应用场景
+
+1. 统一命名服务
+
+   在分布式环境下，经常需要对应用/服 务进行统一命名，便于识别
+
+   例如：IP不容易记住，而域名容易记住
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.49f24e5oozg0.png" alt="image" style="zoom: 50%;" />
+
+2. 统一配置管理
+
+   分布式环境下，配置文件同步非常常见。一般要求一个集群中，所有节点的配置信息是 一致的，对配置文件修改后，希望能够快速同步到各个 节点上。
+
+   可将配置信息写入ZooKeeper上的一个Znode，可将配置信息写入ZooKeeper上的一个Znode，一 旦Znode中的数据被修改，ZooKeeper将通知 各个服务器同步最新的配置文件
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3zqlewlnje80.png" alt="image" style="zoom:50%;" />
+
+3. 统一集群管理
+
+   分布式环境中，实时掌握每个节点的状态是必要的，ZooKeeper可以实现实时监控节点状态变化。可将节点信息写入ZooKeeper上的一个ZNode。监听这个ZNode可获取它的实时状态变化
+
+4. 节点动态上下线
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.at1paxwaia0.png" alt="image" style="zoom: 50%;" />
+
+5. 软负载均衡
+
+   在Zookeeper中记录每台服务器的访问数，让访问数最少的服务器去处理最新的客户端请求
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6ipswp27q2g0.png" alt="image" style="zoom: 50%;" />
 
 ### 2 本地安装
 
