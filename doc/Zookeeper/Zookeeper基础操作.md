@@ -172,7 +172,7 @@ server.5=172.20.18.165:2888:3888
 >
 >    每个leader的任期代号。没有leader时同一轮投票过程中的逻辑时钟值是相同的，每投完一次票这个数值就会增加
 
-1. 第一次启动选举机制
+1. 第一次启动时的选举机制
 
    <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1bkeiyl3ek80.png" alt="image" style="zoom:50%;" />
 
@@ -196,7 +196,19 @@ server.5=172.20.18.165:2888:3888
 
       server5启动，同server4一样当小弟
 
-2. 非第一次启动选举机制
+2. 非第一次启动时的选举机制
+
+   1. 当zookeeper集群中的一台服务器出现以下任意两种情况时，就会进行leader选举
+
+      1. 服务器初始化启动
+      2. 服务器运行期间无法和leader通信
+
+   2. 当一台机器进入leader选举流程时，集群可能处于以下两种情况
+
+      1. 集群中的leader节点没有挂掉
+      2. 集群中的leader节点挂掉了
+
+      <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6launj51syw0.png" alt="image" style="zoom:67%;" />
 
 ##### ZK集群启动和停止脚本
 
