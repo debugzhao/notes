@@ -90,6 +90,45 @@ ZooKeeper 数据模型的结构与 Unix 文件系统很类似，整体上可以�
 
 #### 2.2 配置参数解读
 
+```yaml
+  1 # The number of milliseconds of each tick
+  2 tickTime=2000
+  3 # The number of ticks that the initial
+  4 # synchronization phase can take
+  5 initLimit=10
+  6 # The number of ticks that can pass between
+  7 # sending a request and getting an acknowledgement
+  8 syncLimit=5
+  9 # the directory where the snapshot is stored.
+ 10 # do not use /tmp for storage, /tmp here is just
+ 11 # example sakes.
+ 12 dataDir=/usr/local/zookeeper-3.5.7/data
+ 13 # the port at which the clients will connect
+ 14 clientPort=2181
+```
+
+1. tickTime=2000
+
+   zookeeper客户端和服务器通信心跳时间，单位毫秒
+
+   <img src="C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20210725094237278.png" alt="image-20210725094237278" style="zoom:67%;" />
+
+2. initLimit=10
+
+   leader 和follower初始建立连接时最多可以容忍的心跳数，10次 * 2000ms = 20s 也就是第一次通信时超过20s 还没有建立连接，leader则认为follow挂掉
+
+3. syncLimit=5
+
+   leader 和followe同步次数限制，超过 5次 * 2000ms = 10s 连接失败，leader则认为follower挂掉
+
+4. dataDir
+
+   zookeeper保存数据的目录
+
+5. clientPort
+
+   端口号
+
 ### 3 集群操作
 
 #### 3.1 集群操作
