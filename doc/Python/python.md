@@ -112,6 +112,65 @@ False
    3 9
    ```
 
+##### 列表生成式
+
+1. 普通列表生成式
+
+   ```python
+   >>> [x * x for x in range(1, 11)]
+   [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+   ```
+
+2. 带判断的列表生成式
+
+   ```python
+   >>> [x * x for x in range(1, 11) if x % 2 == 0]
+   [4, 16, 36, 64, 100]
+   ```
+
+3. 双重循环列表生成式
+
+   ```python
+   >>> [m + n for m in 'ABC' for n in 'XYZ']
+   ['AX', 'AY', 'AZ', 'BX', 'BY', 'BZ', 'CX', 'CY', 'CZ']
+   ```
+
+##### 生成器
+
+如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。在Python中，这种一边循环一边计算的机制，称为生成器：generator。
+
+要创建一个generator，有很多种方法。第一种方法很简单，只要把一个列表生成式的`[]`改成`()`，就创建了一个generator：
+
+```python
+>>> L = [x * x for x in range(10)]
+>>> L
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+>>> g = (x * x for x in range(10))
+>>> g
+<generator object <genexpr> at 0x1022ef630>
+
+>>> next(g)
+0
+>>> next(g)
+1
+>>> next(g)
+4
+```
+
+**如果一个函数定义中包含`yield`关键字，那么这个函数就不再是一个普通函数，而是一个generator：**
+
+```python
+def fib(max):
+    n, a, b = 0, 0, 1
+    while n < max:
+        yield b
+        a, b = b, a + b
+        n = n + 1
+    return 'done'
+```
+
+
+
 
 
 #### 小技巧
