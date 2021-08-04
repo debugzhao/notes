@@ -451,9 +451,109 @@ root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
 
 ##### 节点删除与查看
 
+1. 删除子节点
+
+   ```shell
+   delete /chengxuyuan/python
+   ```
+
+2. 递归删除子节点
+
+   ```shell
+   deleteall /chengxuyuan
+   ```
+
+3. 查看节点状态信息（不查看数据信息）
+
+   ```shell
+   stat /chengxuyuan/java
+   ```
+
 #### 3.3 客户端API操作
 
+> 前提：保证 hadoop103、hadoop104、hadoop105 服务器上 Zookeeper 集群服务端启动
+
 ##### IDEA环境搭建
+
+1. pom文件
+
+   ```xml
+   <dependencies>
+       <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <version>RELEASE</version>
+       </dependency>
+   
+       <dependency>
+           <groupId>org.apache.logging.log4j</groupId>
+           <artifactId>log4j-core</artifactId>
+           <version>2.8.2</version>
+       </dependency>
+   
+       <dependency>
+           <groupId>org.apache.zookeeper</groupId>
+           <artifactId>zookeeper</artifactId>
+           <version>3.5.7</version>
+       </dependency>
+   </dependencies>
+   ```
+
+2. log4j.properties配置文件
+
+   ```properties
+   log4j.rootLogger=INFO, stdout
+   log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+   log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+   log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m%n
+   log4j.appender.logfile=org.apache.log4j.FileAppender
+   log4j.appender.logfile.File=target/spring.log
+   log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
+   log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
+   ```
+
+3. ZookeeperClient
+
+   ```java
+   package com.geek;
+   
+   import org.apache.zookeeper.*;
+   import org.apache.zookeeper.data.ACL;
+   import org.junit.Before;
+   import org.junit.Test;
+   
+   import java.io.IOException;
+   
+   /**
+    * @author: lucas.zhao@kuhantech.com
+    * @date: 2021/8/4 22:15
+    * @description:
+    */
+   public class ZookeeperClientTest {
+   
+       private final String connectString = "172.20.18.163:2181,172.20.18.164:2181,172.20.18.165:2181";
+   
+       private final int sessionTimeout = 2000;
+   
+       private ZooKeeper zookeeperClient;
+   
+       @Before
+       public void init() throws IOException {
+           zookeeperClient = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
+               @Override
+               public void process(WatchedEvent watchedEvent) {
+   
+               }
+           });
+       }
+   
+       @Test
+       public void createNode () throws KeeperException, InterruptedException {
+           String createNodeName = zookeeperClient.create("/geek", "lucas.zhao".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+           System.out.println(createNodeName);
+       }
+   }
+   ```
 
 ##### 创建zookeeper客户端
 
