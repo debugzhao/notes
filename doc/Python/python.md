@@ -169,7 +169,42 @@ def fib(max):
     return 'done'
 ```
 
+#### 模块
 
+##### 使用模块
+
+1. 使用模块
+
+   ```python
+   #!/usr/bin/env python3
+   # -*- coding: utf-8 -*-
+   
+   ' a test module '
+   
+   __author__ = 'Michael Liao'
+   
+   import sys
+   
+   def test():
+       args = sys.argv
+       if len(args)==1:
+           print('Hello, world!')
+       elif len(args)==2:
+           print('Hello, %s!' % args[1])
+       else:
+           print('Too many arguments!')
+   
+   if __name__=='__main__':
+       test()
+   ```
+
+2. 作用域
+
+   外部不需要引用的函数全部定义成private，只有外部需要引用的函数才定义为public。
+
+   类似`_xxx`和`__xxx`这样的函数或变量就是非公开的（private），不应该被直接引用，比如`_abc`，`__abc`等；
+
+##### 安装第三方模块
 
 
 
