@@ -398,7 +398,56 @@ root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
 2. 常见的监听事件
 
    1. 监听节点数据的变化
-   2. 监听节点增减的变化（上线/下线）
+
+      ```shell
+      get path [watch]
+      ```
+
+      1. 在hadoop105上注册监听/chengxuyan节点数据的变化
+
+         ```shell
+         [zk: hadoop105:2181(CONNECTED) 3] get -w /chengxuyuan
+         hangye
+         ```
+
+      2. 在hadoop104上修改/chengxuyan节点的数据
+
+         ```shell
+         [zk: hadoop104:2181(CONNECTED) 2] set /chengxuyuan "hangye1"
+         ```
+
+      3. 观察 hadoop105 主机收到数据变化的监听
+
+         ```shell
+         [zk: localhost:2181(CONNECTED) 4]
+         WATCHER::
+         
+         WatchedEvent state:SyncConnected type:NodeDataChanged path:/chengxuyuan
+         ```
+
+         **注意：zookeeper中事件注册一次，只能监听一次。想要再次监听就得在注册一次**
+
+   2. 监听节点增减变化（创建/删除）
+
+      ```shell
+      ls path [watch]
+      ```
+
+      ```shell
+      # 监听/chengxuyuan节点增加变化
+      [zk: localhost:2181(CONNECTED) 4] ls  -w /chengxuyuan
+      [yanfa]
+      
+      # 在/chengxuyuan节点创建子节点
+      [zk: localhost:2181(CONNECTED) 14] create -s /chengxuyuan/yanfa222
+      Created /chengxuyuan/yanfa2220000000001
+      
+      # 观察到/chengxuyuan节点监听到的变化
+      [zk: localhost:2181(CONNECTED) 5]
+      WATCHER::
+      
+      WatchedEvent state:SyncConnected type:NodeChildrenChanged path:/chengxuyuan
+      ```
 
 ##### 节点删除与查看
 
