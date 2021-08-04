@@ -245,6 +245,13 @@ esac
 
 #### 3.2 客户端命令行操作
 
+##### 启动客户端
+
+```shell
+# 客户端指定服务端地址启动
+root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
+```
+
 ##### 命令行语法
 
 | 基本命令  | 功能描述                                                     |
@@ -257,7 +264,43 @@ esac
 | delete    | 删除节点                                                     |
 | deleteall | 递归删除所有节点                                             |
 
-##### znode节点数据类型
+##### znode节点数据信息
+
+1. 查看当前znode所包含的内容
+
+   ```shell
+   [zk: hadoop103(CONNECTED) 3] ls /
+   [zookeeper]
+   ```
+
+2. 查看当前节点的详细数据
+
+   ```shell
+   [zk: hadoop103(CONNECTED) 4] ls -s /
+   [zookeeper]cZxid = 0x0
+   ctime = Thu Jan 01 00:00:00 UTC 1970
+   mZxid = 0x0
+   mtime = Thu Jan 01 00:00:00 UTC 1970
+   pZxid = 0x0
+   cversion = -1
+   dataVersion = 0
+   aclVersion = 0
+   ephemeralOwner = 0x0
+   dataLength = 0
+   numChildren = 1
+   ```
+
+   1. cZxid：创建节点的事物id
+   2. ctime：创建节点时的时间戳
+   3. mZxid：znode最后更新的事务id
+   4. mtime：znode最后更新数据的时间戳
+   5. pZxid：znode最后更新的子节点的id
+   6. cversion：znode子节点版本号
+   7. dataVersion：znode数据版本号
+   8. aclVersion：znode访问控制版本号
+   9. ephemeralOwner：znode临时节点节点id
+   10. dataLength：znode的数据长度
+   11. numChildren：znode的子节点数量
 
 ##### 节点类型（持久/短暂/有序号/无序号）
 
