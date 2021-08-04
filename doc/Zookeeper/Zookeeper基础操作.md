@@ -304,6 +304,86 @@ root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
 
 ##### 节点类型（持久/短暂/有序号/无序号）
 
+> 注意：在分布式操作系统中，顺序号可以被用为所有的事件进行全局排序，这样客户端可以通过顺序号为事件排序
+
+1. 持久类型节点（persistent）
+
+   客户端与服务端断开连接之后，创建的节点还存在
+
+   1. 有序号型持久节点
+
+      ```shell
+      [zk: hadoop103(CONNECTED) 25] create -s /chengxuyuan/yanfa/golang
+      Created /chengxuyuan/yanfa/golang0000000000
+      [zk: hadoop103(CONNECTED) 26] create -s /chengxuyuan/yanfa/golang
+      Created /chengxuyuan/yanfa/golang0000000001
+      [zk: hadoop103(CONNECTED) 27] ls /chengxuyuan/yanfa
+      [golang0000000000, golang0000000001]
+      ```
+
+   2. 无序号型持久节点
+
+      ```shell
+      [zk: hadoop103(CONNECTED) 10] create /chengxuyuan "java"
+      Created /chengxuyua
+      
+      [zk: hadoop103(CONNECTED) 16] ls /
+      [chengxuyuan, sanguo, zookeeper]
+      
+      [zk: hadoop103(CONNECTED) 18] get -s /chengxuyuan
+      java
+      cZxid = 0x100000005
+      ctime = Wed Aug 04 12:14:40 UTC 2021
+      mZxid = 0x100000005
+      mtime = Wed Aug 04 12:14:40 UTC 2021
+      pZxid = 0x100000005
+      cversion = 0
+      dataVersion = 0
+      aclVersion = 0
+      ephemeralOwner = 0x0
+      dataLength = 4
+      numChildren = 0
+      ```
+
+2. 短暂类型节点（Ephemeral）
+
+   客户端与服务端断开连接之后，创建的节点自己删除
+
+   1. 有序号型短暂节点
+
+      ```shell
+      [zk: hadoop103(CONNECTED) 5] create -e -s /ephemeral
+      Created /ephemeral0000000002
+      ```
+
+   2. 无序号型短暂节点
+
+      ```shell
+      [zk: hadoop103(CONNECTED) 5] create -e  /ephemeral
+      Created /ephemeral
+      ```
+
+   3. 修改节点的值
+
+      ```shell
+      [zk: hadoop103(CONNECTED) 4] set /chengxuyuan "hangye"
+      [zk: hadoop103(CONNECTED) 5] get -s /chengxuyuan
+      hangye
+      cZxid = 0x100000005
+      ctime = Wed Aug 04 12:14:40 UTC 2021
+      mZxid = 0x100000011
+      mtime = Wed Aug 04 12:32:03 UTC 2021
+      pZxid = 0x100000006
+      cversion = 1
+      dataVersion = 1
+      aclVersion = 0
+      ephemeralOwner = 0x0
+      dataLength = 6
+      numChildren = 1
+      ```
+
+      
+
 ##### 监听器原理
 
 ##### 节点删除与查看
