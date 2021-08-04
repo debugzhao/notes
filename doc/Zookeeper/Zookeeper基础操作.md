@@ -382,9 +382,23 @@ root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
       numChildren = 1
       ```
 
-      
-
 ##### 监听器原理
+
+1. 监听原理详解
+
+   1. 首先创建一个main线程
+   2. 在main线程中创建一个zookeeper客户端。其中客户端会创建两个线程，一个是负责网络连接通信的connect线程，一个是负责监听的listener线程
+   3. 通过connect线程将注册的监听事件发送给zookeeper
+   4. 在zookeeper的监听器列表中将注册的监听器事件添加至列表
+   5. zookeeper监听到有数据或者路径变化时，就会将这个消息发送给listener线程
+   6. listener线程内部会调用process方法，会对事件做进一步处理
+
+   ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3ctyim5te3c0.png)
+
+2. 常见的监听事件
+
+   1. 监听节点数据的变化
+   2. 监听节点增减的变化（上线/下线）
 
 ##### 节点删除与查看
 
