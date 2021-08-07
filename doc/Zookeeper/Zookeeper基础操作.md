@@ -636,11 +636,132 @@ public void judgeNodeExist() throws KeeperException, InterruptedException {
 
 #### 4.3 具体实现
 
+DistributeServer
+
+```java
+public class DistributeServer {
+
+    private final String connectString = "172.20.18.163:2181,172.20.18.164:2181,172.20.18.165:2181";
+
+    private final int sessionTimeout = 20000;
+
+    private ZooKeeper zooKeeperClient;
+
+    public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
+        DistributeServer distributeServer = new DistributeServer();
+        // 获取ZK集群
+        distributeServer.getConnect();
+        // 注册服务器信息到ZK集群
+        distributeServer.register(args[0]);
+        // 开始执行服务器业务逻辑(睡觉)
+        distributeServer.business();
+    }
+
+    /**
+     * 业务逻辑
+     */
+    private void business() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+    }
+
+    /**
+     * 注册服务器信息到ZK集群
+     */
+    private void register(String hostname) throws KeeperException, InterruptedException {
+        // 创建临时有序号性节点
+        zooKeeperClient.create("/servers/" + hostname, hostname.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+        System.out.println(hostname + "is online");
+    }
+
+    /**
+     * 获取ZK集群
+     */
+    private void getConnect() throws IOException {
+        zooKeeperClient = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
+            @Override
+            public void process(WatchedEvent watchedEvent) {
+
+            }
+        });
+    }
+}
+```
+
+DistributeClient
+
+```java
+public class DistributeClient {
+
+    private final String connectString = "172.20.18.163:2181,172.20.18.164:2181,172.20.18.165:2181";
+
+    private final int sessionTimeout = 4000;
+
+    private ZooKeeper zooKeeperClient;
+
+    private final String rootNodeName = "/servers";
+
+    public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
+        DistributeClient client = new DistributeClient();
+        // 获取ZK集群
+        client.getConnect();
+        // 获取ZK集群中的服务器列表信息
+        client.getServerList();
+        // 开始执行服务器业务逻辑(睡觉)
+        client.business();
+    }
+
+    private void getServerList() throws KeeperException, InterruptedException {
+        // /servers下面的子节点名称
+        List<String> children = zooKeeperClient.getChildren(rootNodeName, true);
+        List<String> serverDateList = new ArrayList<>();
+        for (String child : children) {
+            byte[] data = zooKeeperClient.getData(rootNodeName + "/" + child, false, null);
+            serverDateList.add(new String(data));
+        }
+        System.out.println(serverDateList);
+    }
+
+    /**
+     * 业务逻辑
+     */
+    private void business() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+    }
+
+
+    /**
+     * 获取ZK集群
+     */
+    private void getConnect() throws IOException {
+        zooKeeperClient = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
+            @Override
+            public void process(WatchedEvent watchedEvent) {
+                try {
+                    getServerList();
+                } catch (KeeperException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+}
+```
+
 #### 4.4 测试
 
 ### 5 zookeeper分布锁案例
 
+分布式锁区别的Java中普通的锁，分布式锁锁的对象是进程，普通锁锁的对象是线程。
+
+在分布式系统中，比如进程1在访问共享资源，会首先获取锁，进程1获取锁之后会对该资源保持独占，这样可以保证其他的进程无法访问该资源。进程1用完该资源以后将分布式释放掉，让其他的进程进程竞争抢占。通过这个分布式锁机制我们可以保证在分布式系统中多个进程可以有序访问临界资源。因此我们把这个在分布式环境下的锁叫做分布式锁  
+
 #### 5.1 原生zookeeper实现分布锁案例
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.5hzx9704c0o0.png" alt="image" style="zoom: 33%;" />
+
+1. zookeeper集群在接收到客户端请求之后在 /locks节点下面创建一个临时顺序节点（zookeeper集群默认会选择序列号最小的节点持有分布式锁）
+2. 后面的节点会判断自己是不是最小序列号的节点，如果是则获取到锁，如果不是则对前一个节点进行监听
+3. 获取到锁，处理完自己的业务之后会delete节点释放锁，然后下面的节点将会收到通知，获取分布式锁
 
 #### 5.2 Curator框架实现分布式锁案例
 
