@@ -612,15 +612,27 @@ public void judgeNodeExist() throws KeeperException, InterruptedException {
 
 1. 写数据之写入请求直接发送给leader节点
 
-   
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6n5t1witexc0.png" alt="image" style="zoom:50%;" />
 
 2. 写数据之写入请求直接发送给follower节点
+
+   <img src="C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20210807105435613.png" alt="image-20210807105435613" style="zoom:50%;" />
 
 ### 4 服务器动态上下线监听案例
 
 #### 4.1 需求
 
+在分布式系统中，主节点可以有很多台，可以动态上下线，任何一台客户端都可以实时监听到主节点的上下线的变化
+
 #### 4.2 需求分析
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1cwqz5yfdpfk.png" alt="image" style="zoom:50%;" />
+
+1. 服务端启动时向zookeeper集群注册信息（这里创建的都是临时节点）
+2. 客户端获取到当前在线的服务器列表，并且进行注册监听
+3. 客户端1节点下线
+4. zookeeper集群向客户端发送服务端下线的通知
+5. 客户端的process方法中业务逻辑：重新获取服务器列表，并进行注册监听
 
 #### 4.3 具体实现
 
