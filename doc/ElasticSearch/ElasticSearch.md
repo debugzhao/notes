@@ -139,3 +139,18 @@ discovery.seed_hosts: ["192.168.10.131"]
 
 `Linux配置Kibana：`
 
+
+
+### 第1章 Elasticsearch 概述
+
+#### 1.1 Elasticsearch 是什么
+
+The Elastic Stack, 包括 Elasticsearch、Kibana、Beats 和 Logstash（也称为 ELK Stack）。 能够安全可靠地获取任何来源、任何格式的数据，然后实时地对数据进行搜索、分析和可视化。
+
+Elasticsearch是一个开源的高扩展的分布式全文搜索引擎，它可以近乎实时的存储、搜索海量数据，可以扩展到上百台服务器，处理PB级别数据。
+
+#### 1.2 Elasticsearch特点
+
+1. 搜索之外还可以统计分析数据
+2. Elasticsearch具有良好得伸缩性，对分布式环境比较友好
+
