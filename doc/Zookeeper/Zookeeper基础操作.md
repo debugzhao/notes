@@ -557,13 +557,64 @@ root@hadoop103:/usr/local/zookeeper-3.5.7/bin# ./zkCli.sh -server hadoop103
 
 ##### 创建zookeeper客户端
 
+```java
+@Before
+public void init() throws IOException {
+    zookeeperClient = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
+        @Override
+        public void process(WatchedEvent watchedEvent) {
+
+        }
+    });
+}
+```
+
 ##### 创建子节点
+
+```java
+@Test
+public void createNode () throws KeeperException, InterruptedException {
+    String createNodeName = zookeeperClient.create("/geek", "lucas.zhao".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+    System.out.println(createNodeName);
+}
+```
 
 ##### 获取子节点并监听节点变化
 
+```java
+    /**
+     * 获取子节点并且监听子节点变化
+     * @throws KeeperException
+     * @throws InterruptedException
+     */
+    @Test
+    public void getChildrenAndWatch () throws KeeperException, InterruptedException {
+        List<String> children = zookeeperClient.getChildren("/", true);
+        // children.forEach(System.out::println);
+        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+    }
+```
+
 ##### 判断znode是否存在
 
+```java
+/**
+ * 判断节点是否存在
+ */
+@Test
+public void judgeNodeExist() throws KeeperException, InterruptedException {
+    Stat exists = zookeeperClient.exists("/java", false);
+    System.out.println(exists == null ? "not exist" : "exist");
+}
+```
+
 #### 3.4 客户端向服务端写数据流程
+
+1. 写数据之写入请求直接发送给leader节点
+
+   
+
+2. 写数据之写入请求直接发送给follower节点
 
 ### 4 服务器动态上下线监听案例
 
