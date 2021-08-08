@@ -165,7 +165,7 @@ Elasticsearch是一个开源的高扩展的分布式全文搜索引擎，它可�
 
 <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1nf59w8yjsrk.png" alt="image" style="zoom:67%;" />
 
-##### 2.2.2 索引
+##### 2.1.2 索引
 
 1. 倒排索引
 
@@ -190,7 +190,7 @@ Elasticsearch是一个开源的高扩展的分布式全文搜索引擎，它可�
    102   my name is li si
    ```
 
-##### 2.2.2 索引操作
+##### 2.1.3 索引操作
 
 Elasticsearch 中的Index可以理解为MySQL中的database
 
@@ -215,7 +215,50 @@ Elasticsearch 中的Index可以理解为MySQL中的database
    }
    ```
 
-   
+
+##### 2.1.4 Java API操作
+
+Maven依赖
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>7.8.0</version>
+    </dependency>
+    <!-- elasticsearch 的客户端 -->
+    <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-high-level-client</artifactId>
+        <version>7.8.0</version>
+    </dependency>
+    <!-- elasticsearch 依赖 2.x 的 log4j -->
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>2.8.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.8.2</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.9.9</version>
+    </dependency>
+    <!-- junit 单元测试 -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+    </dependency>
+</dependencies>
+```
+
+索引操作
 
 
 
