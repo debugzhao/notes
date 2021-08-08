@@ -258,7 +258,247 @@ Maven依赖
 </dependencies>
 ```
 
+ESClientUtil
+
+```java
+public class ESClientUtil {
+
+    private static final String hostname = "localhost";
+
+    private static final int port = 9200;
+
+    public static final RestHighLevelClient esClient = new RestHighLevelClient(RestClient.builder(new HttpHost(hostname, port)));
+
+    public static void esClientClose() throws IOException {
+        ESClientUtil.esClient.close();
+    }
+}
+```
+
 索引操作
+
+```java
+public class ESClientIndexTest {
+
+    public static void main(String[] args) throws IOException {
+        // createIndex();
+        // queryIndex();
+        deleteIndex();
+        ESClientUtil.esClientClose();
+    }
+
+    /**
+     * 删除索引
+     * @throws IOException
+     */
+    private static void deleteIndex() throws IOException {
+        DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest("man");
+        AcknowledgedResponse response = ESClientUtil.esClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+        boolean acknowledged = response.isAcknowledged();
+        System.out.println("删除状态：" + acknowledged);
+    }
+
+    /**
+     * 删除索引
+     * @throws IOException
+     */
+    private static void queryIndex() throws IOException {
+        GetIndexRequest indexRequest = new GetIndexRequest("man");
+        GetIndexResponse response = ESClientUtil.esClient.indices().get(indexRequest, RequestOptions.DEFAULT);
+        System.out.println("索引别名：" + response.getAliases());
+        System.out.println("映射关系：" + response.getMappings());
+        System.out.println("配置信息：" + response.getSettings());
+    }
+
+
+    /**
+     * 创建索引
+     * @throws IOException
+     */
+    public static void createIndex() throws IOException {
+        CreateIndexRequest indexRequest = new CreateIndexRequest("finance");
+        CreateIndexResponse indexResponse = ESClientUtil.esClient.indices().create(indexRequest, RequestOptions.DEFAULT);
+        boolean acknowledged = indexResponse.isAcknowledged();
+        System.out.println("创建索引结果：" + acknowledged);
+    }
+}
+```
+
+文档操作
+
+```java
+public class ESClientDocTest {
+    public static void main(String[] args) throws IOException {
+        // insertDoc();
+        // updateDoc();
+        // insertBatch();
+        // deleteBatch();
+        queryAll();
+        ESClientUtil.esClientClose();
+    }
+
+
+    /**
+     * 全量查询
+     * @throws IOException
+     */
+    private static void queryAll() throws IOException {
+        SearchRequest request = new SearchRequest();
+        request.indices("user");
+        // 1.全量查询
+        /*request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()));
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 2.条件查询
+        /*request.source(new SearchSourceBuilder().query(QueryBuilders.termQuery("age", 30)));
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 3.分页查询
+        /*SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
+        request.source(builder.from(0).size(3));
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 4.结果排序
+        /*SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
+        request.source(builder.sort("age", SortOrder.DESC));
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 5.过滤指定字段
+        /*SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
+        String[] includeField = {"age", "name"};
+        String[] excludeField = {};
+        builder.fetchSource(includeField, excludeField);
+        request.source(builder);
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 6.过滤指定字段
+        /*SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
+        String[] includeField = {"age", "name"};
+        String[] excludeField = {};
+        builder.fetchSource(includeField, excludeField);
+        request.source(builder);
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);*/
+
+        // 7.条件查询
+        /*SearchSourceBuilder builder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        // boolQueryBuilder.must(QueryBuilders.matchQuery("name", "lucas"));
+        // boolQueryBuilder.must(QueryBuilders.matchQuery("sex", "female"));
+        boolQueryBuilder.should(QueryBuilders.matchQuery("sex", "male"));
+        boolQueryBuilder.should(QueryBuilders.matchQuery("age", 30));
+        builder.query(boolQueryBuilder);
+        request.source(builder);*/
+
+        // 8.范围查询
+        /*SearchSourceBuilder builder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(QueryBuilders.matchQuery("sex", "male"));
+        RangeQueryBuilder ageRangeQuery = QueryBuilders.rangeQuery("age");
+        ageRangeQuery.gte(30);
+        ageRangeQuery.lte(50);
+        boolQueryBuilder.must(ageRangeQuery);
+        builder.query(boolQueryBuilder);
+        request.source(builder);*/
+
+        // 9.模糊查询
+        /*SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.fuzzyQuery("name", "luc").fuzziness(Fuzziness.TWO));
+        request.source(builder); */
+
+        // 10.高亮查询
+        /*SearchSourceBuilder builder = new SearchSourceBuilder();
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.preTags("<font color='red'>");
+        highlightBuilder.postTags("</font>");
+        highlightBuilder.field("name");
+
+        builder.highlighter(highlightBuilder);
+        builder.query(QueryBuilders.termQuery("name", "lucas"));
+        request.source(builder);*/
+
+        // 11.聚合查询
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        MaxAggregationBuilder maxAggregationBuilder = AggregationBuilders.max("maxAge").field("age");
+        builder.aggregation(maxAggregationBuilder);
+        request.source(builder);
+
+        SearchResponse response = ESClientUtil.esClient.search(request, RequestOptions.DEFAULT);
+        System.out.println(response);
+        /*SearchHits hits = response.getHits();
+        System.out.println("查询消耗时间：" + response.getTook());
+        System.out.println("查询命中条数：" + hits.getTotalHits());
+        for (SearchHit hit : hits.getHits()) {
+            System.out.println(hit.getSourceAsString());
+        }*/
+    }
+
+    /**
+     * 批量删除
+     * @throws IOException
+     */
+    private static void deleteBatch() throws IOException {
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.add(new DeleteRequest().index("user").id("201"));
+        bulkRequest.add(new DeleteRequest().index("user").id("202"));
+        bulkRequest.add(new DeleteRequest().index("user").id("203"));
+        BulkResponse bulkResponse = ESClientUtil.esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        System.out.println(bulkResponse.getTook());
+        System.out.println(Arrays.toString(bulkResponse.getItems()));
+    }
+
+    /**
+     * 批量添加文档
+     * @throws IOException
+     */
+    private static void insertBatch() throws IOException {
+        BulkRequest bulkRequest = new BulkRequest();
+        String jsonString1 = JSONObject.toJSONString(new User("natasha", 24, "female"));
+        bulkRequest.add(new IndexRequest().index("user").id("201").source(jsonString1, XContentType.JSON));
+        String jsonString2 = JSONObject.toJSONString(new User("andre", 24, "male"));
+        bulkRequest.add(new IndexRequest().index("user").id("202").source(jsonString2, XContentType.JSON));
+        String jsonString3 = JSONObject.toJSONString(new User("王冰冰", 30, "female"));
+        bulkRequest.add(new IndexRequest().index("user").id("203").source(jsonString3, XContentType.JSON));
+        String jsonString4 = JSONObject.toJSONString(new User("王健林", 46, "male"));
+        bulkRequest.add(new IndexRequest().index("user").id("204").source(jsonString4, XContentType.JSON));
+        String jsonString5 = JSONObject.toJSONString(new User("jack", 41, "male"));
+        bulkRequest.add(new IndexRequest().index("user").id("205").source(jsonString5, XContentType.JSON));
+        String jsonString6 = JSONObject.toJSONString(new User("mask", 45, "female"));
+        bulkRequest.add(new IndexRequest().index("user").id("206").source(jsonString6, XContentType.JSON));
+
+        BulkResponse bulkResponse = ESClientUtil.esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        System.out.println(bulkResponse.getTook());
+        System.out.println(Arrays.toString(bulkResponse.getItems()));
+    }
+
+    /**
+     * 更新文档
+     * @throws IOException
+     */
+    private static void updateDoc() throws IOException {
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.index("user").id("101");
+        updateRequest.doc(XContentType.JSON, "sex", "female");
+        UpdateResponse updateResponse = ESClientUtil.esClient.update(updateRequest, RequestOptions.DEFAULT);
+        System.out.println(updateResponse.getResult());
+    }
+
+    /**
+     * 插入文档
+     * @throws IOException
+     */
+    private static void insertDoc() throws IOException {
+        IndexRequest indexRequest = new IndexRequest();
+        indexRequest.index("user").id("101");
+        User user = new User("lucas", 24, "male");
+        String jsonString = JSONObject.toJSONString(user);
+        indexRequest.source(jsonString, XContentType.JSON);
+        IndexResponse response = ESClientUtil.esClient.index(indexRequest, RequestOptions.DEFAULT);
+        DocWriteResponse.Result result = response.getResult();
+        System.out.println(result);
+    }
+}
+```
 
 
 
