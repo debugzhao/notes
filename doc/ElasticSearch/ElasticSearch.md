@@ -648,3 +648,15 @@ shard_index = hash(routing) % number_of_primary_shards
 | consistency | 写请求的一致性参数<br/>one：只要主分片写数据完毕，就认为写操作成功<br/>all：主分片和所有的副本写数据完毕，才认为写操作成功<br/>quorum：默认参数，大多数副本写数据完毕，才认为写操作成功 |
 | timeout     | 如果没有足够的副本分片数量，ES会处于等待状态，希望更多的副本分片数量出现。<br/>ES默认等待时间为1分钟，我们也可以手动设置timeout等待时间 |
 
+##### 4.3.6 读操作
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3xysg2jory00.png" alt="image" style="zoom:67%;" />
+
+1. 客户端发送查询请求至协调节点
+2. 协调节点通过文档id，计算主分片所在的节点以及全部副本分片的位置
+3. 为了能够实现负载均衡，减小主分片所在节点的开销，可以轮询所有节点
+4. 将请求转发至某一个副本分片所在的节点
+5. 节点返回查询结果，将查询结果反馈给客户端
+
+
+
