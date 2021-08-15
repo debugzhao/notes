@@ -578,9 +578,34 @@ mapping 是处理数据的方式和规则方面做一些限制，如：某个字
 
 ##### 4.3.1单节点集群
 
+整个集群中只有一个节点
+
+创建一个分片数为3，副本数为1的peaple索引
+
+<img src="C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20210815130743939.png" alt="image-20210815130743939" style="zoom: 80%;" />
+
+```json
+# 127.0.0.1:9201/peaple
+
+{
+    "settings": {
+        "number_of_shards": 3,
+        "number_of_replicas": 1
+    }
+}
+```
+
 ##### 4.3.2 故障转移
 
+当集群中只有一个节点在运行时，意味着会有一个单点故障问题——没有冗余
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.jrm5k0mylvk.png)
+
 ##### 4.3.3 水平扩容
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.5zcz1cqc0sk0.png" alt="image" style="zoom:80%;" />
+
+Node 1 和 Node 2 上各有一个分片被迁移到了新的 Node 3 节点，现在每个节点上都拥有 2 个分片， 而不是之前的 3 个。 这表示每个节点的硬件资源（CPU, RAM, I/O）将被更少的分片所共享，每个分片 的性能将会得到提升。
 
 ##### 4.3.4 应对故障
 
