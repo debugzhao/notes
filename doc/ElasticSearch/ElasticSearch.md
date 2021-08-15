@@ -658,5 +658,19 @@ shard_index = hash(routing) % number_of_primary_shards
 4. 将请求转发至某一个副本分片所在的节点
 5. 节点返回查询结果，将查询结果反馈给客户端
 
+##### 4.3.7 更新流程
+
+1. 部分更新流程
+
+   更新一个文档结合了之前的写操作流程和读操作流程
+
+   <img src="C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20210815184205902.png" alt="image-20210815184205902" style="zoom: 67%;" />
+
+2. 多文档批量操作流程
+
+   
+
+
+
 
 
