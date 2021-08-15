@@ -609,5 +609,23 @@ Node 1 和 Node 2 上各有一个分片被迁移到了新的 Node 3 节点，现
 
 ##### 4.3.4 应对故障
 
+##### 4.3.5 路由计算
+
+ElasticSearch是如何知道一个文档应该存放在哪个分片位置上呢？实际上计算分片位置遵循路由计算公式：
+
+```shell
+# shard_index 分片位置
+# hash 哈希算法
+# routing是一个可变值，默认是文档id
+# number_of_primary_shards 主分片的数量
+shard_index = hash(routing) % number_of_primary_shards
+```
+
+这也就解释了为什么创建索引的时候要确定主分片的数量，并且以后永远也不会再改变这个数量。因为一旦索引的主分片的数量发生改变，之前文档的索引值将会失效，文档也就再也索引不到了。
+
+所有的文档API（get、index、delete、bulk、update以及mget）都接收一个叫routing的参数，通过这个参数我们可以自定义文档到分片的映射位置。通过自定义为路由参数我们可以确保相关文档都可以存储到一个文档中。
+
+
+
 
 
