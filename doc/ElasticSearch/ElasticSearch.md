@@ -684,7 +684,128 @@ ElasticSearch使用的是倒排索引的数据结构，他适用于快速的全�
 2. 提高查询性能。一旦索引被读入到内存以后，大部分请求是会直接走内存，因为其不变的特性数据都是安全的，请求不会直接打到磁盘上，进而提高了查询的性能
 3. 单个倒排索引被建立以后数据是可以被压缩的，进而减少了和磁盘的IO
 
+### 第5章 Elasticsearch 集成
 
+#### 5.1 Spring Data 框架集成
 
+1. maven依赖
 
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+   </dependency>
+   ```
 
+2. 配置文件
+
+   ```properties
+   # es 服务地址
+   elasticsearch.host=127.0.0.1
+   # es 服务端口
+   elasticsearch.port=9200
+   # 配置日志级别,开启 debug 日志
+   logging.level.com.atguigu.es=debug
+   ```
+
+3. config配置文件
+
+   ```java
+   @Data
+   @Configuration
+   @ConfigurationProperties(prefix = "elasticsearch")
+   public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
+   
+       private String host ;
+       private Integer port ;
+   
+       @Override
+       public RestHighLevelClient elasticsearchClient() {
+           RestClientBuilder builder = RestClient.builder(new HttpHost(host, port));
+           return new RestHighLevelClient(builder);
+       }
+   }
+   ```
+
+4. dao
+
+   ```java
+   @Repository
+   public interface ProductDao extends ElasticsearchRepository<Product, Long> {
+   }
+   ```
+
+5. entity
+
+   ```java
+   @Data
+   @AllArgsConstructor
+   @NoArgsConstructor
+   @Document(indexName = "product", shards = 3, replicas = 1)
+   public class Product {
+       /**
+        * 商品唯一标识
+        */
+       @Id
+       private Long id;
+   
+       /**
+        * 商品名称
+        */
+       @Field(type = FieldType.Text)
+       private String title;
+   
+       /**
+        * 分类名称
+        */
+       @Field(type = FieldType.Keyword)
+       private String category;
+   
+       /**
+        * 商品价格
+        */
+       @Field(type = FieldType.Double)
+       private Double price;
+   
+       /**
+        * 图片地址
+        */
+       @Field(type = FieldType.Keyword, index = false)
+       private String images;
+   }
+   ```
+
+6. 测试类
+
+   ```java
+   @Slf4j
+   @RunWith(SpringRunner.class)
+   @SpringBootTest
+   public class SpringDataESIndexTest {
+   
+       /**
+        * 注入 ElasticsearchRestTemplate
+        */
+       @Autowired
+       private ElasticsearchRestTemplate elasticsearchRestTemplate;
+   
+       /**
+        * 创建索引并增加映射配置
+        */
+       @Test
+       public void createIndex(){
+           //创建索引，系统初始化会自动创建索引
+           log.info("创建索引....");
+       }
+   
+       /**
+        * 删除索引
+        */
+       @Test
+       public void deleteIndex(){
+           //创建索引，系统初始化会自动创建索引
+           boolean flag = elasticsearchRestTemplate.deleteIndex(Product.class);
+           log.info("删除索引, 删除状态：{}", flag);
+       }
+   }
+   ```
