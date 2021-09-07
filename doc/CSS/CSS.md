@@ -32,6 +32,42 @@
 
 #### 属性选择器
 
+1. 存在属性选择器
+
+   ```html
+   <style>
+       div[name] {
+           border: 1px solid;
+       }
+   </style>
+   
+   <div id="wrap">
+       <div name="student stu1">学生</div>
+       <div name="student_zhangsan">张三</div>
+       <div name="student_lisi">李四</div>
+   </div>
+   ```
+
+2. 值属性选择器
+
+   ```html
+   <style>
+       div[name~="student"] {
+           border: 1px solid;
+       }
+   </style>
+   ```
+
+3. 子串值属性选择器
+
+   [attr|=val] : 选择attr属性的值是val（包括val）或以val-开头的元素。
+
+   [attr^=val] : 选择attr属性的值以val开头（包括val）的元素。
+
+   [attr$=val] : 选择attr属性的值以val结尾（包括val）的元素
+
+   [attr*=val] : 选择attr属性的值中包含字符串val的元素。
+
 #### 伪类与伪元素选择器
 
 #### 生命的优先级
