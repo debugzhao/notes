@@ -161,6 +161,39 @@
 
 ##### 表单相关伪类
 
+1. enabled 匹配可编辑的表单
+
+   ```css
+   input:enabled{
+   	background: hotpink;
+   }
+   ```
+
+2. disabled 匹配被禁用的表单
+
+   ```css
+   input:disabled{
+   	background: gray;
+   }
+   ```
+
+3. checked 匹配被选中的表单
+
+   ```css
+   input:checked{
+       width: 200px;
+       height: 200px;
+   }
+   ```
+
+4. focus 匹配获得焦点的表单
+
+   ```css
+   input:focus{
+       background: pink;
+   }
+   ```
+
 ##### 结构性伪类
 
 #### 生命的优先级
