@@ -100,6 +100,47 @@
 
    超链接标签使用时需要遵循 `l(link)v(visited)h(hover)a(actived)原则`，即link和visited的使用必须用在hover和actived的前面，因为link和visited伪类选择器已经包含了a标签的所有的样式，如果这两个伪类选择器放在了hover和actived之后会覆盖掉他们的样式
 
+4. target的使用
+
+   target可以代表一个id选择器组件
+
+   ```html
+   <style type="text/css">
+       *{
+           margin: 0;
+           padding: 0;
+       }
+       a{
+           text-decoration: none;
+       }
+       div{
+           width: 200px;
+           height: 200px;
+           background: pink;
+           display: none;
+           text-align: center; /* 水平居中 */
+           font: 50px/200px "微软雅黑";
+       }
+       :target{
+           display: block;
+       }
+   </style>
+   
+   <body>
+       <a href="#div1">div1</a>
+       <a href="#div2">div2</a>
+       <a href="#div3">div3</a>
+   
+       <div id="div1">div1</div>
+       <div id="div2">div2</div>
+       <div id="div3">div3</div>
+   </body>
+   ```
+
+   
+
+   
+
 ##### 动态伪类
 
 ##### 表单相关伪类
