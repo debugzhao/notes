@@ -72,6 +72,34 @@
 
 ##### 链接伪类
 
+1. 链接伪类使用说明
+
+   link： 表示作为超链接，并指向一个**未访问**的所有地址的锚
+
+   visited: 表示作为超链接，并指向一个**已访问**的所有地址的锚
+
+2. 使用方式
+
+   ```html
+   <style type="text/css">
+       a{
+           text-decoration: none;
+       }
+       a:link{
+           color: deeppink;
+       }
+       a:visited{
+           color: pink;
+       }
+   </style>
+   
+   <a href="#">点我点我点我</a>
+   ```
+
+3. 注意事项
+
+   超链接标签使用时需要遵循 `l(link)v(visited)h(hover)a(actived)原则`，即link和visited的使用必须用在hover和actived的前面，因为link和visited伪类选择器已经包含了a标签的所有的样式，如果这两个伪类选择器放在了hover和actived之后会覆盖掉他们的样式
+
 ##### 动态伪类
 
 ##### 表单相关伪类
