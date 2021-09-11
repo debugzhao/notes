@@ -240,6 +240,139 @@
 
    index的值从1开始计数
 
+4. not（不选中某一个标签）
+
+   1. 案例
+
+      使每一个a标签右侧有一个border，但是最后一个a标签除外 
+
+   2. 效果图
+
+      ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1z1pta1axf8g.png)
+
+   3. 代码
+
+      ```html
+      <head>
+          <meta charset="utf-8">
+          <title></title>
+          <!-- 使每一个a标签右侧有一个border，但是最后一个a标签除外 -->
+          <style type="text/css">
+              *{
+                  margin: 0;
+                  padding: 0;
+                  border: none;
+              }
+              a{
+                  font: 20px "微软雅黑";
+                  text-decoration: none;
+                  color: pink;
+                  display: block;
+                  float: left;
+                  width: 100px;
+                  height: 30px;
+              }
+              a:not(:last-of-type) {
+                  border-right: 1px solid #000000;
+              }
+          </style>
+      </head>
+      <body>
+          <div>
+              <a href="#div1">div1</a>
+              <a href="#div2">div2</a>
+              <a href="#div3">div3</a>
+              <a href="#div4">div4</a>
+              <a href="#div5">div5</a>
+          </div>
+      </body>
+      ```
+
+5. empty
+
+   1. 应用场景
+
+      选中某一个空内容元素。empty选中的标签内容必须是空的，有空格不会选中该标签，但是有空格并且有属性这种情况可以选中
+
+   2. 代码
+
+      ```html
+      <head>
+          <meta charset="utf-8">
+          <title></title>
+          <style type="text/css">
+              div{
+                  height: 200px;
+                  background: #90EE90;
+              }
+              div:empty{
+                  background: #ff007f;
+              }
+          </style>
+      </head>
+      <body>
+          <div>
+              <div></div>
+              <div>Second</div>
+              <div></div>
+              <div>Third</div>
+          </div>
+      </body>
+      ```
+
+##### 伪元素
+
+DOM树是解析HTML标签生成的，伪元素是解析CSS生成的，因此通过伪元素生成的标签不在DOM树里面，即DOM树不能直接操作伪元素生成的标签
+
+一个标签最多只能有两个伪元素，一个是before，一个是after
+
+1. after伪元素
+
+   1. 应用场景
+
+      一般after伪元素是用来清除浮动的
+
+   2. 截图示例
+
+      ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.21c89ww2msow.png)
+
+   3. 代码
+
+      ```html
+      <head>
+          <meta charset="utf-8">
+          <title>::after伪元素</title>
+          <style type="text/css">
+              #wrap::after{
+                  height: 200px;
+                  width: 200px;
+                  background: pink;
+                  display: block;
+                  content: "";
+              }
+          </style>
+      </head>
+      <body>
+          <div id="wrap">div</div>
+      </body>
+      ```
+
+2. before伪元素
+
+3. first-letter
+
+   选中第一个汉字或者第一个字母
+
+4. first-line
+
+   选中第一行
+
+5. selection
+
+   选中被鼠标左击选中的内容
+
+
+
 #### 生命的优先级
 
 ### 自定义字体
