@@ -196,6 +196,50 @@
 
 ##### 结构性伪类
 
+1. nth-child
+
+   :nth-child(index)
+
+   ```css
+   /* 后代选择器(选中wrap选择器下面的所有层级的li标签) */
+   /* 结构伪类选择器：选中wrap下面的第一个标签，并且这个标签是li标签 */
+   #wrap li:nth-child(1){
+       color: pink;
+   }
+   ```
+
+   :first-child
+
+   :last-child
+
+   :nth-last-child(index)
+
+   :only-child
+
+2. nth-of-type
+
+   :nth-of-type(index)
+
+   ```css
+   /* 后代选择器(选中wrap选择器下面的所有层级的li标签) */
+   /* 结构伪类选择器：选中wrap下面的第一个li标签*/
+   #wrap li:nth-of-type(1){
+       color: pink;
+   }
+   ```
+
+   :first-of-type
+
+   :last-of-type
+
+   :nth-last-type(index)
+
+   only-of-type
+
+3. 结构性伪类使用注意事项
+
+   index的值从1开始计数
+
 #### 生命的优先级
 
 ### 自定义字体
