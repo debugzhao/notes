@@ -559,6 +559,39 @@ import ('./11.异步组件的使用/utils/math').then(({ sum }) => {
 
 ### 5.定义异步组件和代码分包
 
+#### 异步组件使用场景
+
+如果我们的项目很大， 对于**某些组件**，我们希望通过**异步的方式进行加载**（目的是可以对其进行分包处理），Vue3中提供了一个`defineAsyncComponent`函数可以实现该需求
+
+defineAsyncComponent函数接收两种类型的参数
+
+1. 工厂函数
+
+   该工厂函数需要返回一个Promise对象
+
+2. 对象
+
+   接收一个对象类型，对异步函数进行配置
+
+#### 异步组件实现
+
+```javascript
+<script>
+    // 导入defineAsyncComponent函数
+    import { defineAsyncComponent } from 'vue'
+	// 同步导入
+    import About from "./components/About"
+	// 异步导入
+    const AsyncCategory = defineAsyncComponent(() => import('./components/AsyncCategory.vue'))
+
+    export default {
+        components: {
+            About, AsyncCategory
+        }
+    }
+</script>
+```
+
 ### 6.异步组件和suspense结合使用
 
 ### 7.获取元素和组件refs
