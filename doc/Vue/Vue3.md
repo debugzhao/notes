@@ -594,6 +594,27 @@ defineAsyncComponent函数接收两种类型的参数
 
 ### 6.异步组件和suspense结合使用
 
+suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的配置，其提供了两个插槽
+
+1. default
+
+   如果default插槽的内容可以显示，那么直接显示
+
+2. fallback
+
+   如果default插槽的内容不可以显示，那么显示fallback插槽内容
+
+```html
+<suspense>
+	<template #default>
+		<async-category/>        
+	</template>
+	<template #fallback>
+		<loading/>
+	</template>                        
+</suspense>
+```
+
 ### 7.获取元素和组件refs
 
 ### 8.组件和组件实例的关系
