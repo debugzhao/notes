@@ -32,7 +32,9 @@
 
 #### 属性选择器
 
-1. 存在属性选择器
+1. 
+
+2. 存在属性选择器
 
    ```html
    <style>
@@ -48,7 +50,7 @@
    </div>
    ```
 
-2. 值属性选择器
+3. 值属性选择器
 
    ```html
    <style>
@@ -58,7 +60,7 @@
    </style>
    ```
 
-3. 子串值属性选择器
+4. 子串值属性选择器
 
    [attr|=val] : 选择attr属性的值是val（包括val）或以val-开头的元素。
 
@@ -371,13 +373,22 @@ DOM树是解析HTML标签生成的，伪元素是解析CSS生成的，因此通�
 
    选中被鼠标左击选中的内容
 
-
-
 #### 生命的优先级
 
 ### 自定义字体
 
 ### 新的UI方案
+
+#### 渐变
+
+```css
+/* 线性渐变，改变渐变方向 */
+background-image: linear-gradient(to right, red, yellow, green);
+/* 改变渐变角度 */
+background-image: linear-gradient(90deg, red, yellow, green);
+```
+
+
 
 ### 过渡
 
