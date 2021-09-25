@@ -549,6 +549,14 @@ props: {
 
 ### 4.webpack的import函数分包
 
+通过import函数导入的模块，后续webpack会进行**分包打包**
+
+```javascript
+import ('./11.异步组件的使用/utils/math').then(({ sum }) => {
+    console.log(sum(3, 4))
+})
+```
+
 ### 5.定义异步组件和代码分包
 
 ### 6.异步组件和suspense结合使用
