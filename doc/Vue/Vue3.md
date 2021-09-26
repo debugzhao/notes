@@ -617,6 +617,45 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 
 ### 7.获取元素和组件refs
 
+#### $refs使用场景
+
+在某些场景下，我们想要直接获取元素对象或者组件示例，我们可以通过`ref属性`实现。在Vue中不推荐我们直接操作DOM，这个时候我们可以给元素或者组件绑定一个ref属性
+
+#### $refs代码实现
+
+```html
+<template>
+    <div>
+        <!-- 绑定到元素上 -->
+        <h2 ref="title">H2标题</h2>
+        <!-- 绑定到组件上 -->
+        <my-component ref="component"/>
+        <button @click="btnClick">$refs</button>
+    </div>
+</template>
+
+<script>
+    import { defineAsyncComponent } from 'vue'
+    const MyComponent = defineAsyncComponent(() => import('./MyComponent.vue'))
+
+    export default {
+        components: {
+            MyComponent
+        },
+        methods: {
+            btnClick() {
+                // 获取元素内容
+                console.log(this.$refs.title.innerText);
+                // 获取组件定义的内部属性
+                console.log(this.$refs.component.message);
+                // 调用组件定义的方法
+                this.$refs.component.sayHello();
+            }
+        }
+    }
+</script>
+```
+
 ### 8.组件和组件实例的关系
 
 ### 9.理解什么事组件的生命周期
