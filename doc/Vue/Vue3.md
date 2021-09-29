@@ -656,9 +656,15 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 </script>
 ```
 
+#### $parent $root
+
+我们可以$parent和$root获取父组件和根组件
+
+注意：在Vue3中$children已经
+
 ### 8.组件和组件实例的关系
 
-### 9.理解什么事组件的生命周期
+### 9.理解什么是组件的生命周期
 
 ### 10.生命周期函数的演练
 
@@ -670,19 +676,13 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 
 ### 14.自定义组件的多个v-model
 
+## 16.动态|异步|keepalived|生命周期 组件v-model
 
+## 17.Vue3实现动画-animate-gsap
 
+## 18.Vue3实现动画-animate-gsap（2）
 
-
-
-
-
-
-
-
-
-
-
+## 19.vue3的Mixin和CompositionAPI
 
 
 
