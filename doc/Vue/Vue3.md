@@ -676,7 +676,54 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 
 声明周期函数本质是一些钩子函数，会在某个时间段在Vue源码内部被调用；通过对声明周期函数的回调，我们可以知道目前组件正在经历什么样的阶段；
 
+#### 生命周期函数应用场景
+
+1. created
+
+   请求后端接口可以在created钩子函数进行
+
+2. beforeUpdate
+
+   通过该生命周期函数可以获取数据更新之前的值
+
+3. updated
+
+   通过该生命周期函数可以获取数据更新之后的值
+
+4. unmount
+
+   取消事件的注册可以在unmount生命周期下进行
+
 ### 10.生命周期函数的演练
+
+```javascript
+    beforeCreate() {
+      console.log("home beforeCreate");
+    },
+    created() {
+      console.log("home created");
+    },
+    beforeMount() {
+      console.log("home beforeMount");
+    },
+    mounted() {
+      console.log("home mounted");
+    },
+    beforeUpdate() {
+      console.log("改变之前的数据：", this.$refs.data.innerText);
+      console.log("home beforeUpdate");
+    },
+    updated() {
+      console.log("改变之后的数据：", this.$refs.data.innerText);
+      console.log("home update");
+    },
+    beforeUnmount() {
+      console.log("home beforeUnmount");
+    },
+    unmounted() {
+      console.log("unmounted");
+    },
+```
 
 
 
