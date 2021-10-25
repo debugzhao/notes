@@ -725,9 +725,20 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
     },
 ```
 
-
-
 ### 11.缓存组件的生命周期
+
+对于缓存组件来说，进入或者离开一个组件时，不会执行created/unmounted生命周期函数。但是有时候我们确实有希望监听到进入组件/离开组件的需求，这个时候可以使用actived/deactived这两个生命周期函数满足该需求
+
+```javascript
+    activated() {
+      console.log("home activated")
+    },
+    deactivated() {
+      console.log("home deactivated")
+    }
+```
+
+
 
 ### 12.组件的v-model的基本使用
 
