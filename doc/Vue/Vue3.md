@@ -817,6 +817,76 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 
    如果我们添加了name属性，例如<transition name="why"> ，那么所有的class会以 why- 作为前缀
 
+### 3.animation帧动画实现
+
+```vue
+<template>
+  <div style="width: 400px; margin: 0 auto">
+    <div>
+      <button @click="isShow = !isShow" ref="buttonText">隐藏</button>
+    </div>
+    <!-- vue内置组件 -->
+    <transition name="animation">
+      <h2 v-if="isShow" style="display: inline-block">Hello Animation</h2>
+    </transition>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "App",
+    data() {
+      return {
+        isShow: true
+      }
+    },
+  }
+</script>
+
+<style scoped>
+  .animation-enter-active {
+    /* 进入的时候执行bounce帧动画 */
+    animation: bounce 1s ease;
+  }
+
+  .animation-leave-active {
+    /* 离开的时候执行bounce的反转帧动画 */
+    animation: bounce 1s ease reverse;
+  }
+
+  @keyframes bounce {
+    /* 第一帧缩放0 倍 */
+    0% {
+      transform: scale(0);
+    }
+
+    /* 第二帧缩放1.2倍 */
+    50% {
+      transform: scale(1.2);
+    }
+
+    /* 第三帧缩放1倍 */
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+```
+
+### 4.过渡动画和帧动画的结合使用
+
+Vue为了知道过渡的完成，内部是在监听transitionend和animationed事件，到底使用哪个取决于元素应用的CSS规则（如果我们只使用其中的一个，那么vue可以自动识别类型，并设置监听）
+
+但是如果我们同时使用了过渡和动画呢，并且在这种情况下可能某一个动画执行结束时，另外的动画还没有结束。在这种情况下，我们可以设置transition组件的type属性为animation或者transition，来明确告知vue监听的类型
+
+```html
+<transition name="animation" type="transition">
+    <h2 v-if="isShow" style="display: inline-block">Hello Animation</h2>
+</transition>
+```
+
+
+
 ## 18.Vue3实现动画-animate-gsap（2）
 
 ## 19.vue3的Mixin和CompositionAPI
