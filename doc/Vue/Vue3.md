@@ -750,6 +750,55 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 
 ## 17.Vue3实现动画-animate-gsap
 
+### 1.Vue3动画的基本使用
+
+```vue
+<template>
+  <div>
+    <button @click="animationShow" ref="buttonText">隐藏</button>
+    <!-- vue内置组件 -->
+    <transition name="animation">
+      <h2 v-if="isShow" >Hello Animation</h2>
+    </transition>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "App",
+    data() {
+      return {
+        isShow: true
+      }
+    },
+    methods: {
+      animationShow() {
+        this.isShow = !this.isShow;
+        if(this.isShow) {
+          this.$refs.buttonText.innerHTML = "隐藏"
+        }else {
+          this.$refs.buttonText.innerHTML = "显示"
+        }
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .animation-enter-from, .animation-leave-to {
+    opacity: 0;
+  }
+  .animation-enter-to, .animation-leave-from {
+    opacity: 1;
+  }
+  .animation-enter-active, .animation-leave-active {
+    transition: opacity 1s ease;
+  }
+</style>
+```
+
+
+
 ## 18.Vue3实现动画-animate-gsap（2）
 
 ## 19.vue3的Mixin和CompositionAPI
