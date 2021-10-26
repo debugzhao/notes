@@ -885,7 +885,248 @@ Vue为了知道过渡的完成，内部是在监听transitionend和animationed�
 </transition>
 ```
 
+### 5.过渡模式（mode属性）
 
+mode属性一般应用在两个元素相互切换时使用
+
+1. mode="in-out"
+
+   先等元素进来之后，另外的元素再出来
+
+2. mode="out-in"
+
+   先等元素出去之后，另外的元素再进来
+
+##### 元素切换使用示例
+
+```vue
+<transition name="animation" mode="out-in">
+    <h2 v-if="isShow">Hello Animation</h2>
+    <h2 v-else>你好啊 李银河</h2>
+</transition>
+```
+
+##### 动态组件切换使用示例
+
+```vue
+<transition name="animation" mode="out-in">
+    <component :is="isShow ? 'home' : 'page'"/>
+</transition>
+
+<script>
+  import Home from "@/15_animation_01/pages/Home";
+  import Page from "@/15_animation_01/pages/Page";
+
+  export default {
+    name: "App",
+    components: {
+      Home, Page
+    },
+    data() {
+      return {
+        isShow: true
+      }
+    },
+  }
+</script>
+```
+
+##### 初次渲染显示动画（appear属性）
+
+```html
+<transition name="animation" mode="out-in" appear>
+    <component :is="isShow ? 'home' : 'page'"/>
+</transition>
+```
+
+### 6.认识animate.css动画库
+
+animate.css是一个已经实现好的，跨平台的动画库，通常应用在强调、滑动、注意力引导等场景
+
+#### animate.css的使用
+
+1. 安装animate.css动画库
+
+   ```shell
+   npm install animate.css
+   ```
+
+2. 在main.js文件中导入动画库
+
+   ```javascript
+   import 'animate.css'
+   ```
+
+3. 使用
+
+   我们可以在transition组件指定不同的属性来自定义不同时期的class类名，其中常用的属性有
+
+   1. enter-from-class
+   2. enter-active-class
+   3. enter-to-class
+   4. leave-from-class
+   5. leave-active-class
+   6. leave-to-class
+
+   代码实现
+
+   ```vue
+   <transition
+     appear
+     enter-active-class="animate__animated animate__fadeInDown"
+     leave-active-class="animate__animated animate__fadeInUp">
+     <h2 v-if="isShow">animation第三方库使用</h2>
+   </transition>
+   ```
+
+### 7.gsap库的使用
+
+gsap是the greensock animation platform的缩写，它是一个JavaScript动画库，可以通过它来实现给CSS、SVG、Canvas等设置动画，并且它是浏览器兼容的
+
+#### 使用方式
+
+1. 安装gsap库
+
+   ```shell
+   npm install gsap
+   ```
+
+2. 导入gsap库
+
+   ```javascript
+   // 在需要使用gsap的vue文件中直接引入即可
+   import gsap from 'gsap'
+   ```
+
+3. transition组件默认生命周期钩子函数
+
+   ```vue
+   <template>
+     <div style="width: 400px; margin: 0 auto">
+       <div>
+         <button @click="show" ref="buttonText">隐藏</button>
+       </div>
+   
+       <transition
+         @before-enter="beforeEnter"
+         @enter="enter"
+         @after-enter="afterEnter"
+         @before-leave="beforeLeave"
+         @leave="leave"
+         @after-leave="afterLeave">
+         <h2 v-if="isShow">gsap第三方库使用</h2>
+       </transition>
+     </div>
+   </template>
+   
+   <script>
+     export default {
+       name: "App",
+       data() {
+         return {
+           isShow: true
+         }
+       },
+       methods: {
+         show() {
+           this.isShow = !this.isShow
+           if(this.isShow) {
+             this.$refs.buttonText.innerHTML = "隐藏"
+           }else {
+             this.$refs.buttonText.innerHTML = "展示"
+           }
+         },
+         beforeEnter() {
+           console.log("beforeEnter")
+         },
+         enter() {
+           console.log("enter")
+         },
+         afterEnter() {
+           console.log("afterEnter")
+         },
+         beforeLeave() {
+           console.log("beforeLeave")
+         },
+         leave() {
+           console.log("leave")
+         },
+         afterLeave() {
+           console.log("afterLeave")
+         }
+       }
+     }
+   </script>
+   
+   <style scoped>
+   
+   </style>
+   ```
+
+4. 使用gsap库实现简单的动画效果
+
+   当我们使用JavaScript来执行过渡动画时，需要进行done函数回调，否则他们将会同步执行，过渡动画将会立即完成
+
+   添加`:css="false"`，会使vue跳过CSS检测，除了性能略高之外，还可以避免过渡过程中其他CSS规则对过渡动画的影响
+
+   ```vue
+   <template>
+     <div style="width: 400px; margin: 0 auto">
+       <div>
+         <button @click="show" ref="buttonText">进入</button>
+       </div>
+   
+       <transition @enter="enter" @leave="leave" :css="false">
+         <h2 v-if="isShow">gsap第三方库使用</h2>
+       </transition>
+     </div>
+   </template>
+   
+   <script>
+     import gsap from 'gsap'
+   
+     export default {
+       name: "App",
+       data() {
+         return {
+           isShow: true
+         }
+       },
+       methods: {
+         show() {
+           this.isShow = !this.isShow
+           if(this.isShow) {
+             this.$refs.buttonText.innerHTML = "离开"
+           }else {
+             this.$refs.buttonText.innerHTML = "进入"
+           }
+         },
+         enter(el, done) {
+           console.log("enter")
+           gsap.from(el, {
+             scale: 0,
+             x: 200,
+             onComplete: done
+           })
+         },
+         leave(el, done) {
+           console.log("leave")
+           gsap.to(el, {
+             scale: 0,
+             x: 200,
+             onComplete: done
+           })
+         },
+       }
+     }
+   </script>
+   
+   <style scoped>
+   
+   </style>
+   ```
+
+   
 
 ## 18.Vue3实现动画-animate-gsap（2）
 
