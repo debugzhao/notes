@@ -797,7 +797,25 @@ suspense是Vue3的内置组件，可以简化使用defineAsyncComponent函数的
 </style>
 ```
 
+### 2.transition的执行原理
 
+1. transition的执行原理
+
+   当插入或者删除在transition组件中的元素时，Vue会做如下处理
+
+   1. 自动嗅探目标元素是否应用了CSS过渡或者动画，如果有的话那么在恰当的实际添加/删除CSS类名
+   2. 如果transition组件提供了钩子函数，那么这些钩子函数会在恰当的时机被调用
+   3. 如果没有嗅探到CSS过渡动画，并且也没有找到JavaScript钩子函数。那么DOM的插入，删除操作会立即执行
+
+2. 过渡动画常用类名
+
+   ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.433ibaexy3y0.png)
+
+3. transition组件的name属性命令规则
+
+   如果transition组件没有name属性时，那么所有的class会以 v- 作为默认前缀
+
+   如果我们添加了name属性，例如<transition name="why"> ，那么所有的class会以 why- 作为前缀
 
 ## 18.Vue3实现动画-animate-gsap（2）
 
