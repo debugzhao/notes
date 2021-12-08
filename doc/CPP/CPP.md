@@ -171,6 +171,62 @@ if (!pr) {}
 
 #### 指针的算数运算
 
+指针是一个用16进制数值表示的地址，因此我们可以对指针进行算数运算（++ -- + -）
+
+##### 指针递增运算
+
+```cpp
+int int_array[MAX] = {10, 100, 1000};
+int *ptr = NULL;
+
+// 数组地址赋值给指针
+ptr = int_array;
+for (int i = 0; i < MAX; ++i) {
+    cout << "指针地址：" << ptr << endl;
+    cout << "指针对应的数值：" << *ptr << endl;
+    ptr ++;
+}
+```
+
+##### 指针递减运算
+
+```cpp
+int int_array[MAX] = {10, 100, 1000};
+int *ptr = NULL;
+
+// 数组地址赋值给指针
+ptr = &int_array[MAX - 1];
+for (int i = MAX; i > 0; --i) {
+    cout << "指针地址：" << ptr << endl;
+    cout << "指针对应的数值：" << *ptr << endl;
+    ptr --;
+}
+```
+
+##### 指针的比较
+
+指针可以用关系用算符进行比较，如果p1和p2指向的是两个相关的变量，例如是同一个数组中不同的数值，可以对p1和p2进行大小比较（实际上比较的是16进制内存地址）
+
+```cpp
+int  var[MAX] = {10, 100, 200};
+int  *ptr;
+
+// 指针中第一个元素的地址
+ptr = var;
+int i = 0;
+while ( ptr <= &var[MAX - 1] ){
+    cout << "Address of var[" << i << "] = ";
+    cout << ptr << endl;
+
+    cout << "Value of var[" << i << "] = ";
+    cout << *ptr << endl;
+
+    // 指向上一个位置
+    ptr++;
+    i++;
+}
+```
+
 #### 指针VS数组
 
 #### 指针数组
