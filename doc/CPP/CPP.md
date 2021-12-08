@@ -61,7 +61,106 @@ void write_extern(void)
 }
 ```
 
+### 函数
+
+#### 函数参数
+
+1. 传值调用
+
+   把参数的**实际值**赋值给函数的形式参数
+
+   ```cpp
+   void swap1(int x, int y) {
+       int temp;
+       temp = x;
+       x = y;
+       y = temp;
+   
+       std::cout << "交换过程中x的值：" << x << std::endl;
+       std::cout << "交换过程中y的值：" << y << std::endl;
+   }
+   
+   // swap1(x, y);
+   ```
+
+2. 指针调用
+
+   把参数的**地址**赋值给函数的形式参数
+
+   ```cpp
+   void swap2(int *x, int *y) {
+       int temp;
+       temp = *x; // 保存地址 x的值
+       *x = *y;
+       *y = temp;
+   
+       std::cout << "交换过程中x的值：" << *x << std::endl;
+       std::cout << "交换过程中y的值：" << *y << std::endl;
+   }
+   
+   // swap2(&x, &y);
+   ```
+
+3. 引用调用
+
+   把参数的**引用**赋值给函数的形式参数
+
+   ```cpp
+   void swap3(int &x, int &y) {
+       int temp;
+       temp = x;
+       x = y;
+       y = temp;
+   
+       std::cout << "交换过程中x的值：" << x << std::endl;
+       std::cout << "交换过程中y的值：" << y << std::endl;
+   }
+   
+   // swap3(x, y);
+   ```
+
+#### [Lambda函数与表达式](https://www.runoob.com/cplusplus/cpp-functions.html)
+
+### 数组
+
+#### 指向数组的指针
 
 
 
+#### 传递数组给函数
+
+#### 从函数返回数组
+
+### 指针
+
+#### 概念
+
+指针是一个变量，其值为另一个变量的内存地址。
+
+#### 基本用法
+
+1. 指针的声明
+
+   ```cpp
+   int *ip;     // 整形指针
+   double *dp;  
+   float *fp;
+   char *cp;
+   ```
+
+2. 
+
+#### Null指针
+
+#### 指针的算数运算
+
+#### 指针VS数组
+
+#### 指针数组
+
+#### 指向指针的指针
+
+#### 传递指针给函数
+
+#### 从函数返回指针
 
