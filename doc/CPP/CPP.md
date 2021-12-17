@@ -233,7 +233,28 @@ while ( ptr <= &var[MAX - 1] ){
 
 #### 指针数组
 
+```cpp
+// 在这里把ptr声明成一个数组，由MAX个整形指针组成。因此ptr中的每个元素都是指向int类型的指针。
+int *ptr[MAX];
+```
 
+```cpp
+void pointArray() {
+    int array[MAX] = {1, 2, 3};
+    // 声明一个指针数组
+    int *ptr_array[MAX];
+    
+    // 给指针数组赋值
+    for (int i = 0; i < MAX; ++i) {
+        ptr_array[i] = &array[i];
+    }
+
+    for (int i = 0; i < MAX; ++i) {
+        cout << "address：" << ptr_array[i] << " ";
+        cout << "value：" << *ptr_array[i] << endl;
+    }
+}
+```
 
 #### 指向指针的指针
 
