@@ -258,6 +258,42 @@ void pointArray() {
 
 #### 指向指针的指针
 
+**概念：**
+
+指向指针的指针是一种多级间接寻址的形势，或者说是一个指针链。
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.7gmj89nzbjk.png)
+
+**声明**
+
+```cpp
+int **cpp
+```
+
+**代码实现**
+
+```cpp
+/**
+ * 指向指针的指针(也称为指针链)
+ */
+void point_chain() {
+    int value = 1;
+    int *ptr = NULL;
+    int **pptr = NULL;
+
+    // 获取value的地址
+    ptr = &value;
+    // 或者指针ptr的地址
+    pptr = &ptr;
+
+    cout << "value的值：" << value << endl;
+    cout << "*ptr address:" << ptr << "  *ptr value: " << *ptr << endl;
+    cout << "**pptr address:" << pptr << "  **pptr value: " << **pptr << endl;
+}
+```
+
+
+
 #### 传递指针给函数
 
 #### 从函数返回指针
