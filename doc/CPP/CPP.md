@@ -292,9 +292,57 @@ void point_chain() {
 }
 ```
 
-
-
 #### 传递指针给函数
 
+```cpp
+int main() {
+    int array[MAX] = {1, 2, 3};
+    double average = 0;
+    pass_point_to_function(array, MAX, &average);
+    cout << "the array average value is: " << average;
+}
+
+/**
+ * 求数组平均值(传递指针给函数)
+ * @param array 数组
+ * @param size 数组容量
+ * @param average 平均数
+ */
+void pass_point_to_function(const int *array, int size, double *average) {
+    double sum = 0;
+    for (int i = 0; i < MAX; ++i) {
+        sum += array[i];
+    }
+    *average = sum / size;
+}
+```
+
 #### 从函数返回指针
+
+C++不允许在函数外返回局部变量的地址，除非定义变量为static变量
+
+```cpp
+int main() {
+    int *ptr = get_random_array();
+    for (int i = 0; i < 10; ++i) {
+        cout << *(ptr + i) << endl;
+    }
+}
+
+/**
+ * 获取随机数(从函数返回指针)
+ * @return
+ */
+int * get_random_array() {
+    const int length = 10;
+    static int array[length];
+    srand((unsigned) time(NULL));
+    for (int i = 0; i < length; ++i) {
+        array[i] = rand();
+    }
+    return array;
+}
+```
+
+
 
