@@ -344,5 +344,80 @@ int * get_random_array() {
 }
 ```
 
+### 结构体
 
+结构体应用场景：存储不同数据类型的数据项
+
+我们可以使用成员访问符 . 访问结构体成员变量
+
+```cpp
+struct Book {
+    char title[50];
+    char author[50];
+    int book_id;
+};
+
+int main() {
+    // 定义结构体Book 类型变量book1
+    Book book1;
+    strcpy(book1.author, "赵四");
+    strcpy(book1.title, "成为亚洲舞王的诀窍");
+    book1.book_id = 1;
+
+    // 输出结构体book1变量
+    cout << book1.book_id << endl;
+    cout << book1.title << endl;
+    cout << book1.author << endl;
+}
+```
+
+#### 结构体做为函数参数
+
+```cpp
+/**
+ * 打印书籍(结构体作为函数参数)
+ * @param book
+ */
+void print_book(struct Book book) {
+    // 输出结构体book1变量
+    cout << book.book_id << endl;
+    cout << book.title << endl;
+    cout << book.author << endl;
+}
+```
+
+#### 指向结构体的指针
+
+```cpp
+// 定义指向结构体的指针
+struct Book *struct_book_pointer;
+
+// 结构体指针赋值
+struct_book_pointer = &book1;
+```
+
+```cpp
+/**
+ * 打印书籍信息(结构体指针的使用)
+ * 为了使用结构体指针访问成员变量，必须使用—> 访问成员变量
+ * @param book
+ */
+void print_book(struct Book *book) {
+    cout << book->book_id << endl;
+    cout << book->author << endl;
+    cout << book->title << endl;
+}
+```
+
+#### typedef关键字
+
+可以使用typedef关键字为结构体类型起别名，定义更加简洁的数据类型
+
+```cpp
+typedef struct Book {
+    char title[50];
+    char author[50];
+    int book_id;
+} Book;
+```
 
