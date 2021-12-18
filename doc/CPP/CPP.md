@@ -421,3 +421,58 @@ typedef struct Book {
 } Book;
 ```
 
+### 类&对象
+
+```cpp
+class Box {
+public:
+    // 成员变量声明
+    double length;
+    double breadth;
+    double height;
+
+    // 成员函数声明
+    double get();
+    void set(double length, double breadth, double height);
+};
+
+double Box::get() {
+    return length * breadth * height;
+}
+
+void Box::set(double length, double breadth, double height) {
+    this->breadth = breadth;
+    this->length = length;
+    this->height = height;
+}
+```
+
+#### 类成员函数
+
+#### 类访问修饰符
+
+#### 构造函数&析构函数
+
+#### 拷贝构造函数
+
+#### 友元函数
+
+#### 内联函数
+
+#### this指针
+
+#### 指向类的指针
+
+#### 静态成员
+
+### 继承
+
+### 重载运算符&重载函数
+
+### 多态
+
+### 数据抽象
+
+### 数据封装
+
+### 接口&抽象类
