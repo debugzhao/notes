@@ -489,11 +489,64 @@ void Box::set(double length, double breadth, double height) {
    }
    ```
 
-   
 
 #### 拷贝构造函数
 
+**概念**
+
+拷贝构造函数是一种特殊的构造函数，它在创建对象时，使用的是同一类中之前创建的对象来初始化新创建的对象（和原型模式很类似）。
+
+**应用场景**
+
+1. 通过使用同类型的对象来初始化新创建的对象
+2. 复制对象把它作为参数传递给函数
+3. 复制对象，并从函数返回这个对象
+
+**代码实现**
+
 #### 友元函数
+
+**概念**
+
+类的友元函数是定义在类的外部， 但是有权访问类的私有（**private**）成员和受保护（**protected**）成员。尽管友元函数的原型在类中声明过，但是**友元函数不是成员函数**。
+
+友元可以是一个函数，该函数称为友元函数；友元可以是一个类，该类称为友元类，在这种情况下，整个类的所有成员都是友元。
+
+**友元关键字**
+
+```cpp
+friend void printWidth();
+```
+
+**代码实现**
+
+```cpp
+class Student {
+private:
+    int age;
+public:
+    void setAge(int age) {
+        this->age = age;
+    }
+    // 友元函数的定义
+    friend void printAge(Student student);
+};
+
+/**
+ * 注意，友元函数不是任何类的函数
+ * @param student
+ */
+void printAge(Student student) {
+    // 注意：友元函数可以直接访问该类的任何成员
+    cout << "the student age is :" << student.age << endl;
+}
+
+int main() {
+    Student student{};
+    student.setAge(18);
+    printAge(student);
+}
+```
 
 #### 内联函数
 
