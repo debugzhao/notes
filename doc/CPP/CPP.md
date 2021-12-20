@@ -562,7 +562,39 @@ int compare(Box box){
 
 #### 指向类的指针
 
+一个指向类的指针和指向结构的指针类似，访问指向类的指针需要使用成员访问符号 -> 
+
+```cpp
+int main(void)
+{
+   Box Box1(3.3, 1.2, 1.5);    // Declare box1
+   Box *ptrBox;                // Declare pointer to a class.
+   // 保存第一个对象的地址
+   ptrBox = &Box1;
+   // 现在尝试使用成员访问运算符来访问成员
+   cout << "Volume of Box1: " << ptrBox->Volume() << endl;
+}
+```
+
 #### 静态成员
+
+可以使用static关键字来定义静态成员变量，无论创建了多少类对象，静态成员都只有一个副本
+
+```cpp
+class Box {
+public:
+    // 静态成员变量声明
+     static int objectCount;
+}
+
+// 初始化Box的静态成员变量
+int Box::objectCount = 0;
+
+int main(void) {
+   // 调用静态成员变量
+   cout << "Total objects: " << Box::objectCount << endl;
+}
+```
 
 ### 继承
 
