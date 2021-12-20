@@ -451,7 +451,45 @@ void Box::set(double length, double breadth, double height) {
 
 #### 类访问修饰符
 
+1. private
+2. public
+3. protected
+
 #### 构造函数&析构函数
+
+1. 构造函数
+
+2. 析构函数
+
+   类的析构函数是一种特殊的成员函数，它会在每次删除创建的对象时执行。**析构函数有助于在退出程序之前释放资源（关闭文件、释放内存）**
+
+   ```cpp
+   class Line {
+   private:
+       double length;
+   public:
+       void setLength(double length) {
+           this->length = length;
+       }
+       double getLength() {
+           return this->length;
+       }
+       Line(double length) {
+           this->length = length;
+           cout << "Line object is created" << endl;
+       }
+       ~Line() {
+           cout << "Line object is destroyed" << endl;
+       }
+   };
+   
+   int main() {
+       Line line(100.0);
+       cout << "the line'length is " << line.getLength() << endl;
+   }
+   ```
+
+   
 
 #### 拷贝构造函数
 
