@@ -552,6 +552,14 @@ int main() {
 
 #### this指针
 
+在C++中， 每个成员都能够通过this指针来访问自己的地址
+
+```cpp
+int compare(Box box){
+    return this->Volume() > box.Volume();
+}
+```
+
 #### 指向类的指针
 
 #### 静态成员
