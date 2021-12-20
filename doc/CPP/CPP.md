@@ -598,9 +598,108 @@ int main(void) {
 
 ### 继承
 
+```cpp
+class Shape {
+    
+}
+
+class Rectangle: public Shape {
+   
+}
+```
+
 ### 重载运算符&重载函数
 
 ### 多态
+
+**虚函数**
+
+如果基类中area函数没有被virtual关键字修饰，编译器绑定的的是基类的函函数，调用派生类的area函数时，编译器将会调用基类的area函数，这会导致程序出错。这种现象被称之为**静态多态**，或者**早绑定**。
+
+但是用**virtual**关键字修饰基类中的方法时，就是动态绑定， 也称为晚绑定。
+
+```cpp
+/**
+ * 基类
+ */
+class Shape {
+    protected:
+        double height, width;
+    public:
+        Shape(double height, double width) {
+            this->height = height;
+            this->width = width;
+        }
+
+        virtual double area() {
+            cout << "bass class area function is called.";
+            return 0.0;
+        }
+};
+
+/**
+ * 矩形派生类
+ */
+class Rectangle: public Shape {
+    public:
+        Rectangle(double height, double width): Shape(height, width) { }
+        double area() override {
+            cout << "Rectangle class area function is called." << endl;
+            return height * width;
+        }
+
+};
+
+/**
+ * 三角形派生类
+ */
+class Triangle: public Shape {
+    public:
+        Triangle(double height, double width): Shape(height, width) { }
+        double area() override{
+            cout << "Triangle class area function is called." << endl;
+            return height * width / 2;
+        }
+};
+
+int main() {
+    Shape *shape;
+    Rectangle rectangle(2, 2);
+    Triangle triangle(2, 2);
+
+    // 矩形类地址
+    shape = &rectangle;
+    // 调用矩形类的area函数
+    const double rectangle_area = shape->area();
+    cout << "矩形面积：" << rectangle_area << endl;
+
+    // 三角形类地址
+    shape = &triangle;
+    // 调用三角形类的area函数
+    const double triangle_area = shape->area();
+    cout << "三角形面积：" << triangle_area << endl;
+}
+```
+
+**纯虚函数**
+
+纯虚函数也可以理解为是一个抽象的虚函数。
+
+```cpp
+class Shape {
+   protected:
+      int width, height;
+   public:
+      Shape( int a=0, int b=0){
+         width = a;
+         height = b;
+      }
+      // pure virtual function
+      virtual int area() = 0;
+};
+```
+
+
 
 ### 数据抽象
 
