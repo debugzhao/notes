@@ -125,8 +125,6 @@ void write_extern(void)
 
 #### 指向数组的指针
 
-
-
 #### 传递数组给函数
 
 #### 从函数返回数组
@@ -343,6 +341,37 @@ int * get_random_array() {
     return array;
 }
 ```
+
+### 引用
+
+引用可以理解为变量的另一个别名，即它是某个已经存在的变量的另一个名。
+
+```cpp
+int num = 1;
+// 声明引用变量
+int& num_ref = num;
+int num_copy = num;
+cout << "num: " << num << endl;
+cout << "num_ref: " << num_ref << endl;
+cout << "num_copy: " << num_copy << endl;
+
+
+cout << "address num: " << &num << endl;
+cout << "address num_ref: " << &num_ref << endl;
+cout << "address num_copy: " << &num_copy << endl;
+```
+
+#### 引用VS指针
+
+1. 引用不能为空指针可以为空指针，引用必须链接到一块合法的内存地址
+2. 引用可以理解为静态常量， 不能修改，一旦引用被初始化为一个对象， 就不能修改为另一个对象
+3. 引用必须在创建的时候初始化，指针可以在任何时间初始化。
+
+#### 把引用作为参数
+
+
+
+#### 把引用作为返回值
 
 ### 结构体
 
@@ -709,7 +738,61 @@ class Shape {
 
 ### 异常处理
 
+```cpp
+double division(int a, int b);
+
+int main() {
+    int a = 1;
+    int b = 0;
+    double result = 0.0;
+    try {
+        result = division(1, 0);
+        cout << "result: " << result << endl;
+    } catch (const char *error) {
+        cerr <<  "异常信息：" << error << endl;
+    }
+    return 0;
+}
+
+double division(int a, int b) {
+    if (b == 0) {
+        throw "Division by zero condition!";
+    }
+    return a / b;
+}
+```
+
+#### 自定义异常
+
+```cpp
+class MyException: public exception {
+public:
+    const char* what() const throw() override {
+        return "c++ exception";
+    }
+};
+
+int main() {
+    try {
+        throw MyException();
+    } catch (MyException& e) { // MyException& 声明一个异常类的引用
+        cout << "MyException caught" << endl;
+        cout << e.what() << endl;
+    }
+}
+```
+
 ### 动态内存
+
+#### C++内存类型
+
+1. 
+
+#### 操作内存的运算符
+
+#### 数组的动态内存分配
+
+#### 对象的动态内存分配
 
 ### 命名空间
 
