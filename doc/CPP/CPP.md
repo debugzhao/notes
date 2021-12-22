@@ -786,13 +786,106 @@ int main() {
 
 #### C++内存类型
 
-1. 
+1. 栈内存
+
+   在函数内部声明的所有局部变量都将占用栈内存
+
+2. 堆内存
+
+   堆内存是程序未使用的内存，用于在程序运行期间动态分配内存
 
 #### 操作内存的运算符
 
+```cpp
+// 初始化一个空指针
+double *ptr = NULL;
+// 为ptr指针分配内存
+ptr = new double;
+
+// 分配内存检查
+doube *ptr = NULL;
+if (!(ptr = new double)) {
+    cerr << "Error: out of memory" << endl;
+    exit(1);
+}
+
+// 释放ptr指针所占用的内存
+delete ptr;
+```
+
 #### 数组的动态内存分配
 
+```cpp
+// 数组动态分配内存
+char *ptr_arrary = new char[20]; 
+// 删除ptr_arrary指针所占用的内存
+delete [] ptr_arrary;
+```
+
+**二维数组动态分配内存**
+
+```cpp
+int main() {
+   int **p;
+   int i,j;
+   // 开始分配4行8列二维数组内存
+   p = new int *[4];
+    for (i = 0; i < 4; ++i) {
+        p[i] = new int[8];
+    }
+
+    for (i = 0; i <4; ++i) {
+        for (j = 0; j < 8; ++j) {
+            p[i][j] = i * j;
+        }
+    }
+
+    // 打印数据
+    for (i = 0; i <4; ++i) {
+        for (j = 0; j < 8; ++j) {
+            if (j == 0) {
+                cout << endl;
+            }
+            cout << p[i][j] << "\t";
+        }
+    }
+
+    // 开始释放申请的堆内存
+    for (i = 0; i < 4; ++i) {
+        delete [] p[i];
+    }
+    delete [] p;
+    return 0;
+}
+```
+
 #### 对象的动态内存分配
+
+```cpp
+class Student {
+public:
+    Student() {
+        cout << "Construction method 被调用" << endl;
+    }
+    ~Student() {
+        cout << "Deconstruction method被调用" << endl;
+    }
+
+};
+int main() {
+    Student* students = new Student[4];
+    delete [] students;
+}
+
+Construction method 被调用
+Construction method 被调用
+Construction method 被调用
+Construction method 被调用
+Deconstruction method被调用
+Deconstruction method被调用
+Deconstruction method被调用
+Deconstruction method被调用
+```
 
 ### 命名空间
 
