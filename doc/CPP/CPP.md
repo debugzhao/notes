@@ -889,6 +889,26 @@ Deconstruction method被调用
 
 ### 命名空间
 
+命名空间用来区分不同库中的相同的类、函数、变量（和Java中的package类似）
+
+```cpp
+namespace first_space {
+    void fun() {
+        cout << "first_space: fun is called" << endl;
+    }
+}
+
+namespace second_space {
+    void fun() {
+        cout << "second_space: fun is called" << endl;
+    }
+}
+
+int main() {
+    second_space::fun();
+}
+```
+
 ### 模板
 
 ### 预处理器
