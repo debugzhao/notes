@@ -344,7 +344,13 @@ int * get_random_array() {
 
 ### 引用
 
+#### 概念
+
 引用可以理解为变量的另一个别名，即它是某个已经存在的变量的另一个名。
+
+#### 应用场景
+
+把引用作为函数参数可以减少数值传递过程中的时间
 
 ```cpp
 int num = 1;
@@ -368,8 +374,6 @@ cout << "address num_copy: " << &num_copy << endl;
 3. 引用必须在创建的时候初始化，指针可以在任何时间初始化。
 
 #### 把引用作为参数
-
-
 
 #### 把引用作为返回值
 
@@ -910,6 +914,35 @@ int main() {
 ```
 
 ### 模板
+
+#### 函数模板
+
+```cpp
+/**
+ * inline：表示这个函数是内联函数(提高程序的运行效率，内联函数在程序编译时就会在被调用的地方进行替换，以空间换时间，目的是为了提高程序的运行效率)
+ * const：常量参数(常量参数保证在使用时不能被改变)
+ * const&: 引用常量参数(引用参数的目的是为了减少数值传递过程中消耗的时间，如果不用引用参数，编译器会重新申请一块内存空间)
+ */
+template <typename T> inline T max_value(T const& a, T const& b) {
+    return  a > b ? a : b;
+}
+
+int main() {
+    int i = 30;
+    int j = 20;
+    cout << "max num is: " << max_value(i, j) << endl;
+
+    double f1 = 13.5;
+    double f2 = 20.7;
+    cout << "Max(f1, f2): " << max_value(f1, f2) << endl;
+
+    string s1 = "Hello";
+    string s2 = "World";
+    cout << "Max(s1, s2): " << max_value(s1, s2) << endl;
+}
+```
+
+#### 类模板
 
 ### 预处理器
 
