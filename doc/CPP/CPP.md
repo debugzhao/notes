@@ -944,6 +944,83 @@ int main() {
 
 #### 类模板
 
+```cpp
+template <class T>
+class MyStack {
+private:
+    vector<T> list;
+
+public:
+    /**
+     * 出栈
+     */
+    void push(T const&);
+
+    /**
+     * 出栈
+     */
+    void pop();
+
+    /**
+     * 返回栈顶元素(副本)
+     * @return
+     */
+    T top() const;
+
+    int isEmpty() const {
+        return list.empty();
+    }
+};
+
+template <class T>
+void MyStack<T>::push(T const& element) {
+    list.push_back(element);
+}
+
+template <class T>
+void MyStack<T>::pop(){
+    if (list.empty()) {
+        throw out_of_range("Stack<>::pop(): empty stack");
+    }
+    list.pop_back();
+}
+
+template <class T>
+T MyStack<T>::top() const {
+    if (list.empty()) {
+        throw out_of_range("Stack<>::pop(): empty stack");
+    }
+    // 返回最后一个元素的副本
+    return list.back();
+}
+
+
+int main() {
+    try {
+        // int类型的栈
+        MyStack<int> int_stack;
+        // string类型的栈
+        MyStack<string> string_stack;
+
+        // 操作int类型的栈
+        int_stack.push(7);
+        cout << int_stack.top() << endl;
+        cout << int_stack.isEmpty() << endl;
+
+
+        // 操作string类型的栈
+        string_stack.push("hello");
+        cout << string_stack.top() << endl;
+        string_stack.pop();
+        string_stack.pop();
+        cout << "测试输出" << endl;
+
+    } catch (exception const& ex) {
+        cerr <<  "exception: " << ex.what() << endl;
+    }
+}
+```
+
 ### 预处理器
 
 ### 信号处理
