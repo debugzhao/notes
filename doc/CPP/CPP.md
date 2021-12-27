@@ -1065,5 +1065,63 @@ int main() {
 
 ### 多线程
 
-### Web编程
+#### 创建线程
 
+```c++
+#include <iostream>
+#include <pthread.h>
+
+using namespace std;
+
+#define THREAD_NUM 5
+
+typedef struct thread_data {
+    int thread_id;
+    char *message;
+} thread_data;
+
+void* say_hello(void *data_ptr) {
+    thread_data *my_data = (thread_data *) data_ptr;
+    cout << "thread_id: " << my_data->thread_id << endl;
+    cout << "message: " << my_data->message << endl;
+    pthread_exit(nullptr);
+}
+
+int main() {
+
+    int result_code = -1;
+    // 生命线程id的变量
+    pthread_t thread_ids[THREAD_NUM];
+    // 用数组来保存i的值
+    int index[THREAD_NUM] = {};
+    thread_data thread_data_array[THREAD_NUM];
+
+    for (int i = 0; i < THREAD_NUM; ++i) {
+        cout <<"main() : creating thread, " << i << endl;
+        thread_data_array[i].thread_id = i;
+        thread_data_array[i].message = (char *)(&"this is message " [ i]);
+        index[i] = i;
+        // 传入的时候必须强制转换为void* 类型，即无类型指针
+        result_code = pthread_create(&thread_ids[i], nullptr, say_hello, (void *)&(thread_data_array[i]));
+        if (result_code != 0) {
+            cout << "创建线程失败, error_code: " << result_code << endl;
+            exit(-1);
+        }
+    }
+    // 等待所有线程退出之后，进程才退出, 避免出现进程结束子线程还没有结束的情况
+    pthread_exit(nullptr);
+}
+
+```
+
+#### 终止线程
+
+#### 向线程传递参数
+
+#### 连接和分离线程
+
+### STL教程
+
+#### 容器
+
+#### 迭代器
