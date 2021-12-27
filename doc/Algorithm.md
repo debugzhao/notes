@@ -54,9 +54,74 @@ public Node<T> reverse(Node<T> currentNode) {
 
 ##### 问题描述
 
-##### 中间值问题
+快慢指针指的是定义两个移动速度不一样的指针，以此来制造出想要的差值，通过这个差值可以找到链表上相应的节点。一般情况下快指针的移动速度是慢指针的两倍。
+
+##### 中间值问题	
+
+利用快慢指针，我们把一个链表看成一个跑道，假设a的速度是b的两倍，那么当a跑完全程后，b刚好跑一半，以 此来达到找到中间节点的目的。
+
+如下图，最开始，slow与fast指针都指向链表第一个节点，然后slow每次移动一个指针，fast每次移动两个指针。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.62eqh0kfvfg.webp" alt="image" style="zoom: 67%;" />
+
+```java
+public class FastSlowTest {
+    public static void main(String[] args) {
+
+        Node<String> first = new Node<>("1", null);
+        Node<String> second = new Node<>("2", null);
+        Node<String> third = new Node<>("3", null);
+        Node<String> fourth = new Node<>("4", null);
+        Node<String> fifth = new Node<>("5", null);
+        Node<String> six = new Node<>("6", null);
+        Node<String> seven = new Node<>("7", null);
+
+        first.next = second;
+        second.next = third;
+        third.next = fourth;
+        fourth.next = fifth;
+        fifth.next = six;
+        six.next = seven;
+
+        String value = middleValue(first);
+        System.out.println("中间值：" + value);
+    }
+
+    private static <T> T middleValue(Node<T> node) {
+        // 1.定义两个指针
+        Node<T> fastNode = node;
+        Node<T> slowNode = node;
+
+        // 2.使用两个指针遍历链表，当快指针指向的节点没有下一个节点时，此时遍历结束
+        // 这时慢指针指向的节点就是中间值
+        while (fastNode.next != null) {
+            // 变化快慢指针的值
+            fastNode = fastNode.next.next;
+            if (fastNode == null) {
+                throw new NullPointerException("当前链表长度为偶数个，不能取中间值");
+            }
+            slowNode = slowNode.next;
+        }
+        return slowNode.data;
+    }
+
+
+    @Data
+    public static class Node<T> {
+        private T data;
+        private Node<T> next;
+
+        public Node(T data, Node<T> next) {
+            this.data = data;
+            this.next = next;
+        }
+    }
+}
+```
 
 ##### 单项链表是否有环问题
+
+
 
 ##### 有环链表入口问题
 
