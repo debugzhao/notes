@@ -180,11 +180,95 @@ private static <T> Node<T> getEntranceNode(Node<T> firstNode) {
 }
 ```
 
-
-
-
-
 #### 1.2.6 循环链表
 
 #### 1.2.7 约瑟夫问题
 
+### 1.3 栈
+
+#### 1.3.1 栈概述
+
+栈是一种基于先进后出(FILO)的数据结构，是一种只能在一端进行插入和删除操作的特殊线性表。它按照先进后出 的原则存储数据，先进入的数据被压入栈底，最后的数据在栈顶，需要读数据的时候从栈顶开始弹出数据（最后一 个数据被第一个读出来）。
+
+我们称数据进入到栈的动作为**压栈**，数据从栈中出去的动作为**弹栈**。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3kr0fucqbrq0.webp" alt="image" style="zoom: 67%;" />
+
+#### 1.3.2 栈的实现
+
+```java
+public void push(T data) {
+    Node<T> oldFirstNode = head.next;
+    head.next = new Node<>(data, oldFirstNode);
+    this.length ++;
+}
+
+public T pop() {
+    if (isEmpty()) {
+        return null;
+    }
+    Node<T> oldFirstNode = this.head.next;
+    this.head.next = oldFirstNode.next;
+    this.length --;
+    return oldFirstNode.data;
+}
+```
+
+#### 1.3.3 案例
+
+##### 括号匹配问题
+
+1. 问题描述
+
+   给定一个字符串，里边可能包含"()"小括号和其他字符，请编写程序检查该字符串的中的小括号是否成对出现。
+
+   ```java
+   // 例如：
+   "(上海)(长安)"：正确匹配
+   "上海((长安))"：正确匹配
+   "上海(长安(北京)(深圳)南京)":正确匹配
+   "上海(长安))"：错误匹配
+   "((上海)长安"：错误匹配
+   ```
+
+2. 分析
+
+   ```java
+   1.创建一个栈用来存储左括号
+   2.从左往右遍历字符串，拿到每一个字符
+   3.判断该字符是不是左括号，如果是，放入栈中存储
+   4.判断该字符是不是右括号，如果不是，继续下一次循环
+   5.如果该字符是右括号，则从栈中弹出一个元素t；
+   6.判断元素t是否为null，如果不是，则证明有对应的左括号，如果不是，则证明没有对应的左括号
+   7.循环结束后，判断栈中还有没有剩余的左括号，如果有，则不匹配，如果没有，则匹配
+   ```
+
+3. 示例代码
+
+   ```java
+   public static boolean isMatch(String string) {
+       // 1.创建栈对象，用来存储左括号
+       Stack<String> myStack = new Stack<>();
+       if (string.length() == 0) {
+           return false;
+       }
+       // 2.从左往右遍历字符串
+       for (int i = 0; i < string.length(); i++) {
+           String currentChar = string.charAt(i) + "";
+           // 3.判断当前字符串是否为左括号， 如果是则入栈
+           if (currentChar.equals(LEFT_BRACKETS)) {
+               myStack.push(currentChar);
+           } else if (currentChar.equals(RIGHT_BRACKETS)){
+               // 4.判断当前字符串是否为右括号，如果是则从当前栈中弹出一个左括号，并判断是否为null，如果为null则说明括号不匹配，返回false
+               String data = myStack.pop();
+               if (data == null) {
+                   return false;
+               }
+           }
+       }
+       // 5.循环结束后，判断栈中是否还有剩余的左括号，如果有则说明括号不匹配，返回false
+       return myStack.isEmpty();
+   }
+   ```
+
+##### 逆波兰表达式求值问题
