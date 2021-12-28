@@ -119,11 +119,41 @@ public class FastSlowTest {
 }
 ```
 
-##### 单项链表是否有环问题
+##### 单向链表是否有环问题
+
+> == 和 equals区别？
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.71c59bhzhb80.webp" alt="image" style="zoom:67%;" />
+
+**问题具体化：**
+
+使用快慢指针的思想，把链表当做跑道。如果链表有环则该链表是环形跑道。在一个环形跑道上如果两个人有速度差，则他们迟早会相遇，就说明链表上有环。
+
+```java
+private static <T> boolean isCircle(Node<T> node) { 
+    // 定义快慢指针
+    Node<T> fastNode = node;
+    Node<T> slowNode = node;
+
+    // 判断链表是否有环
+    while (fastNode != null && fastNode.next != null) {
+        fastNode = fastNode.next.next;
+        slowNode = slowNode.next;
+        if (fastNode.data.equals(slowNode.data)) {
+            return true;
+        }
+    }
+    return false;
+}
+```
 
 
 
 ##### 有环链表入口问题
+
+```java
+
+```
 
 #### 1.2.6 循环链表
 
