@@ -147,13 +147,42 @@ private static <T> boolean isCircle(Node<T> node) {
 }
 ```
 
-
-
 ##### 有环链表入口问题
 
-```java
+当快慢指针相遇时，我们可以判断到链表中有环，这时重新设定一个新指针指向链表的起点，且步长与慢指针一样 为1，则慢指针与“新”指针相遇的地方就是环的入口。证明这一结论牵涉到数论的知识，这里略，只讲实现。
 
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.34jwp9x4e2k0.webp" alt="image" style="zoom: 67%;" />
+
+```java
+private static <T> Node<T> getEntranceNode(Node<T> firstNode) {
+    // 定义快慢指针
+    Node<T> fastNode = firstNode;
+    Node<T> slowNode = firstNode;
+    Node<T> tempNode = null;
+
+    // 判断链表是否有环
+    while (fastNode != null && fastNode.next != null) {
+        fastNode = fastNode.next.next;
+        slowNode = slowNode.next;
+
+        if (fastNode.equals(slowNode)) {
+            tempNode = firstNode;
+            continue;
+        }
+        if (tempNode != null) {
+            tempNode = tempNode.next;
+            if (tempNode.equals(slowNode)) {
+                return tempNode;
+            }
+        }
+    }
+    return tempNode;
+}
 ```
+
+
+
+
 
 #### 1.2.6 循环链表
 
