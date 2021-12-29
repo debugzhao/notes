@@ -361,5 +361,107 @@ private static Double calculate(String[] notations) {
 }
 ```
 
+### 1.4 队列
 
+队列是一种基于先进先出(FIFO)的数据结构，是一种只能在一端进行插入,在另一端进行删除操作的特殊线性表，它 按照先进先出的原则存储数据，先进入的数据，在读取数据时先读被读出来。
 
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.5kf2bml8qmg0.webp" alt="image" style="zoom:67%;" />
+
+#### 1.4.1 队列API设计
+
+#### 1.4.2 队列的实现
+
+```java
+public void enqueue(T data) {
+    Node<T> newNode = new Node<>(data, null);
+    if (this.last == null) {
+        this.last = newNode;
+        this.head.next = this.last;
+    } else {
+        Node<T> oldLast = this.last;
+        this.last = newNode;
+        oldLast.next = this.last;
+    }
+    this.length ++;
+}
+
+public T dequeue() {
+    T data;
+    if (isEmpty()) {
+        data = null;
+    } else if (this.length == 1) {
+        Node<T> oldFirst = this.head.next;
+        this.head.next = null;
+        this.last = null;
+        data = oldFirst.data;
+    } else {
+        Node<T> oldFirst = this.head.next;
+        this.head.next = oldFirst.next;
+        oldFirst.next = null;
+        data = oldFirst.data;
+    }
+    this.length --;
+    return data;
+}
+```
+
+## 二、符号表
+
+符号表最主要的目的就是将一个键和一个值联系起来，符号表能够将存储的数据元素是一个键和一个值共同组成的 键值对数据，我们可以根据键来查找对应的值。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1tf2tcvpmedc.webp" alt="image" style="zoom:67%;" />
+
+### 2.1符号表API设计
+
+### 2.2符号表实现
+
+```java
+public void put(K key, V value) {
+    if (key == null) {
+        throw new IllegalArgumentException("The key value cannot be null.");
+    }
+    // 1.如果符号表中已经存在了键为K的键值对，则找到并替换
+    Node<K, V> node = this.head;
+    while (node.next != null) {
+        node = node.next;
+        if (node.key.equals(key)) {
+            node.value = value;
+            return;
+        }
+    }
+    // 2.不存在则创建新的节点，头插法，链表长度加一
+    Node<K, V> newNode = new Node<>(key, value, null);
+    Node<K, V> oldFirstNode = head.next;
+    this.head.next = newNode;
+    newNode.next = oldFirstNode;
+    this.length ++;
+}
+
+public V get(K key) {
+    Node<K, V> tempNode = this.head;
+    while (tempNode.next != null) {
+        tempNode = tempNode.next;
+        if (tempNode.key.equals(key)) {
+            return tempNode.value;
+        }
+    }
+    return null;
+}
+
+public void delete(K key) {
+    if (this.isEmpty()) {
+        throw new IllegalArgumentException("The current symbol table is empty, cannot be deleted");
+    }
+    Node<K, V> node = this.head;
+    while (node.next != null) {
+        if (node.next.key.equals(key)) {
+            node.next = node.next.next;
+            this.length --;
+            return;
+        }
+        node = node.next;
+    }
+}
+```
+
+### 2.3有序符号表实现
