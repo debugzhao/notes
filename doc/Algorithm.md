@@ -272,3 +272,94 @@ public T pop() {
    ```
 
 ##### 逆波兰表达式求值问题
+
+逆波兰表达式求值问题是我们计算机中经常遇到的一类问题，要研究明白这个问题，首先我们得搞清楚什么是逆波 兰表达式？要搞清楚逆波兰表达式，我们得从中缀表达式说起。
+
+**中缀表达式：**
+
+中缀表达式就是我们平常生活中使用的表达式，例如：1+3*2,2-(1+3)等等，中缀表达式的特点是：二元运算符总 是置于两个操作数中间。
+
+**逆波兰表达式(后缀表达式)：**
+
+逆波兰表达式是波兰逻辑学家J・卢卡西维兹(J・ Lukasewicz)于1929年首先提出的一种表达式的表示方法，后缀表 达式的特点：运算符总是放在跟它相关的操作数之后。
+
+| 中缀表达式 | 后缀表达式 |
+| :--------: | :--------: |
+|    a+b     |    ab+     |
+|  a+(b-c)   |   abc-+    |
+| a*(b-c)+d  |  abc-*d+   |
+
+**需求：**
+
+给定一个只包含加减乘除四种运算的逆波兰表达式的数组表示方式，求出该逆波兰表达式的结果。
+
+**分析：**
+
+```java
+1.创建一个栈对象oprands存储操作数
+2.从左往右遍历逆波兰表达式，得到每一个字符串
+3.判断该字符串是不是运算符，如果不是，把该该操作数压入oprands栈中
+4.如果是运算符，则从oprands栈中弹出两个操作数o1,o2
+5.使用该运算符计算o1和o2，得到结果result
+6.把该结果压入oprands栈中
+7.遍历结束后，拿出栈中最终的结果返回
+```
+
+**代码实现：**
+
+```java
+private static Double calculate(String[] notations) {
+    // 1.定义一个操作数，用来存储操作数
+    Stack<Double> myStack = new Stack<>();
+    double tempResult = 0.0;
+    double num1 = 0.0;
+    double num2 = 0.0;
+
+    // 2.从左至右遍历逆波兰表达式，得到每一个元素
+    for (int i = 0; i < notations.length; i++) {
+        String notation = notations[i];
+        // 3.判断当前元素时操作数还是操作符
+        switch (notation) {
+            case "+" : // 4.如果是操作符号，则从栈中弹出两个元素计算结果后，再压栈
+                num1 = myStack.pop();
+                num2 = myStack.pop();
+                tempResult = num2 + num1;
+                myStack.push(tempResult);
+                break;
+            case "-" :
+                num1 = myStack.pop();
+                num2 = myStack.pop();
+                tempResult = num2 - num1;
+                myStack.push(tempResult);
+                break;
+            case "*" :
+                num1 = myStack.pop();
+                num2 = myStack.pop();
+                tempResult = num2 * num1;
+                myStack.push(tempResult);
+                break;
+            case "/" :
+                num1 = myStack.pop();
+                num2 = myStack.pop();
+                tempResult = num2 / num1;
+                myStack.push(tempResult);
+                break;
+            default: // 5.如果是操作数，则直接压栈
+                Double value = new Double(notation);
+                myStack.push(value);
+                break;
+        }
+    }
+    // 6.循环完毕后，栈中最后一个元素就是计算结果
+    long length = myStack.length();
+    System.out.println("此时栈中元素个数为：" + length);
+    if (length == 1) {
+        return myStack.pop();
+    } else {
+        return null;
+    }
+}
+```
+
+
+
