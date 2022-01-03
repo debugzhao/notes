@@ -490,9 +490,23 @@ public void delete(K key) {
 10. 父节点
 11. 兄弟节点
 
-
-
 ### 3.3 二叉树的基本定义
+
+二叉树就是度不超过2的树（每个节点最多有两个子节点）
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.rkc3yt225tc.webp" alt="image" style="zoom:67%;" />
+
+##### 满二叉树
+
+一个二叉树，如果每一个层的结点树都达到最大值，则这个二叉树就是满二叉树。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.24r7m474p3cw.webp" alt="image" style="zoom:80%;" />
+
+##### 完全二叉树
+
+叶子节点只能出现在最下层和次下层，并且最下层的节点只能出现在该层的最左边的树称为完全二叉树
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.2v43xf0p7s00.webp" alt="image" style="zoom:80%;" />
 
 ### 3.4 二叉查找树的创建
 
