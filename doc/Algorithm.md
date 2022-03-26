@@ -725,5 +725,63 @@ public Queue<K> layerErgodic() {
 
 #### 二叉树的最大深度问题
 
+**需求：**
+
+给定一棵树，请计算树的最大深度（树的根节点到最远叶子结点的最长路径上的结点数）
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1dvswck09zr4.webp" alt="image" style="zoom:50%;" />
+
+上面这课树的最大深度是4
+
+**实现：**
+
+1. 如果根节点为空，则最大深度为0
+2. 计算左子树的最大深度
+3. 计算右子树的最大深度
+4. 当前树的最大深度是 = max(左子树的最大深度，右子树的最大深度)  + 1
+
+```java
+/**
+ * 获取整个树的最大深度
+ * @return
+ */
+public int maxDepth() {
+    if (root == null) {
+        return 0;
+    }
+    return maxDepth(root);
+}
+
+/**
+ * 获取指定树node的最大深度
+ * @param node
+ * @return
+ */
+public int maxDepth(Node node) {
+    if (node == null) {
+        return 0;
+    }
+
+    // node节点的最大深度
+    int nodeMaxDepth = 0;
+    // node节点的左子树的最大深度
+    int leftTreeMaxDepth = 0;
+    // node节点的右子树的最大深度
+    int rightTreeMaxDepth = 0;
+
+    // 计算左子树的最大深度
+    if (node.left != null) {
+        leftTreeMaxDepth = maxDepth(node.left);
+    }
+    // 计算右子树的最大深度
+    if (node.right != null) {
+        rightTreeMaxDepth = maxDepth(node.right);
+    }
+    // 计算整个树的最大深度
+    nodeMaxDepth = leftTreeMaxDepth >= rightTreeMaxDepth ? leftTreeMaxDepth + 1 : rightTreeMaxDepth + 1;
+    return nodeMaxDepth;
+}
+```
+
 #### 折纸问题
 
