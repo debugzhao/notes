@@ -785,3 +785,54 @@ public int maxDepth(Node node) {
 
 #### 折纸问题
 
+## 四、堆
+
+### 4.1 堆的定义
+
+堆是计算机科学中一类特殊的数据结构的统称，堆通常可以被看做是一棵<font color="red">完全二叉树的数组对象</font>。
+
+#### 堆的特性：
+
+1. 堆实际上是一个<font color="red">完全二叉树</font>
+
+   它是完全二叉树，除了树的最后一层结点不需要是满的，其它的每一层从左到右都是满的，如果最后一层结点不 是满的，那么要求左满右不满
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.47045luzpm00.webp" alt="image" style="zoom: 50%;" />
+
+2. 堆通常用<font color="red">数组实现</font>
+
+   具体方法就是将二叉树的结点按照层级顺序放入数组中，根结点在位置1，它的子结点在位置2和3，而子结点的子 结点则分别在位置4,5,6和7，以此类推
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6kdyqa0j3eg0.webp" alt="image" style="zoom: 50%;" />
+
+   如果一个结点的位置为k，则它的父结点的位置为[k/2],而它的两个子结点的位置则分别为2k和2k+1。这样，在不 使用指针的情况下，我们也可以通过计算数组的索引在树中上下移动：从a[k]向上一层，就令k等于k/2,向下一层就 令k等于2k或2k+1。
+
+3. 堆中的<font color="red">每个节点都大于等于它的两个子节点</font>
+
+   > 此特性区别于二分查找树，二分查找树要求父节点 > 左子节点，父节点 < 右子节点
+
+   每个结点都大于等于它的两个子结点。这里要注意堆中仅仅规定了<font color="red">每个结点大于等于它的两个子结点</font>，但这两个 子结点的顺序并没有做规定，跟我们之前学习的二叉查找树是有区别的
+
+### 4.2堆的API设计
+
+| 类名     | Heap                                                         |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | Heap(int capacity)：创建容量为capacity的Heap对象             |
+| 成员方法 | 1.private boolean less(int i,int j)：判断堆中索引i处的元素是否小于索引j处的元素 <br/>2.private void exch(int i,int j):交换堆中i索引和j索引处的值<br/> 3.public T delMax():删除堆中最大的元素,并返回这个最大元素 <br/>4.public void insert(T t)：往堆中插入一个元素<br/> 5.private void swim(int k):使用上浮算法，使索引k处的元素能在堆中处于一个正确的位置<br/> 6.private void sink(int k):使用下沉算法，使索引k处的元素能在堆中处于一个正确的位置 |
+| 成员变量 | 1.private T[] imtes : 用来存储元素的数组 <br/>2.private int N：记录堆中元素的个数 |
+
+### 4.3 堆的实现
+
+### 4.4 堆排序
+
+
+
+
+
+
+
+
+
+
+
+<font color="red"></font>
