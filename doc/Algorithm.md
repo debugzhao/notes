@@ -548,6 +548,127 @@ public void delete(K key) {
 
 #### 前序遍历
 
+实现步骤
+
+1. 把当前结点的key放入到队列中;
+2. 找到当前结点的左子树，如果不为空，递归遍历左子树
+3. 找到当前结点的右子树，如果不为空，递归遍历右子树
+
+```java
+/**
+ * 前序遍历
+ * @return 获取整个树中所有的键
+ */
+public Queue<K> preErgodic() {
+    Queue<K> queue = new Queue<>();
+    preErgodic(root, queue);
+    return queue;
+}
+
+/**
+ * 前序遍历
+ * 获取指定树x中所有的键，并把所有的键放到keys队列中
+ * @param x
+ * @param keys
+ */
+public void preErgodic(Node x, Queue<K> keys) {
+    // 递归方法出口
+    if (x == null) {
+        return;
+    }
+    // 把x节点的key放入队列keys中
+    keys.enqueue(x.key);
+
+    // 递归遍历x节点的左子树
+    if(x.left != null) {
+        preErgodic(x.left, keys);
+    }
+
+    // 递归遍历x节点的右子树
+    if (x.right != null) {
+        preErgodic(x.right, keys);
+    }
+}
+```
+
 #### 中序遍历
 
+实现步骤：
+
+1. 找到当前结点的左子树，如果不为空，递归遍历左子树
+2. 把当前结点的key放入到队列中;
+3. 找到当前结点的右子树，如果不为空，递归遍历右子树
+
+```java
+/**
+ * 二叉树中序遍历
+ * @return
+ */
+public Queue<K> middleErgodic() {
+    Queue<K> queue = new Queue<>();
+    middleErgodic(root, queue);
+    return queue;
+}
+
+/**
+ * 二叉树中序遍历
+ * @param x
+ * @param keys
+ */
+public void middleErgodic(Node x, Queue<K> keys) {
+    if (x == null) {
+        return;
+    }
+    // 递归遍历x节点的左子树
+    if(x.left != null) {
+        middleErgodic(x.left, keys);
+    }
+    // 把x节点的key放入队列keys中
+    keys.enqueue(x.key);
+    // 递归遍历x节点的右子树
+    if (x.right != null) {
+        middleErgodic(x.right, keys);
+    }
+}
+```
+
 #### 后续遍历
+
+实现步骤：
+
+1. 找到当前结点的左子树，如果不为空，递归遍历左子树 
+2. 找到当前结点的右子树，如果不为空，递归遍历右子树
+3. 把当前结点的key放入到队列中
+
+```java
+/**
+ * 二叉树后序遍历
+ * @return
+ */
+public Queue<K> afterErgodic() {
+    Queue<K> queue = new Queue<>();
+    afterErgodic(root, queue);
+    return queue;
+}
+
+/**
+ * 二叉树后序遍历
+ * @param x
+ * @param keys
+ */
+public void afterErgodic(Node x, Queue<K> keys) {
+    if (x == null) {
+        return;
+    }
+    // 递归遍历x节点的左子树
+    if(x.left != null) {
+        afterErgodic(x.left, keys);
+    }
+    // 递归遍历x节点的右子树
+    if (x.right != null) {
+        afterErgodic(x.right, keys);
+    }
+    // 把x节点的key放入队列keys中
+    keys.enqueue(x.key);
+}
+```
