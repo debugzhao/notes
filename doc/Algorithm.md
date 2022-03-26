@@ -672,3 +672,58 @@ public void afterErgodic(Node x, Queue<K> keys) {
     keys.enqueue(x.key);
 }
 ```
+
+#### 二叉树层序遍历
+
+所谓的层序遍历，就是从根节点（第一层）开始，依次向下，获取每一层所有结点的值，有二叉树如下：
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.he5cvx5zqv4.webp" alt="image" style="zoom:50%;" />
+
+那么层序遍历的结果是：EBGADFHC
+
+**实现步骤：**
+
+1. 创建队列，存储每一层的结点
+2. 使用循环从队列中弹出一个结点
+   1. 获取当前结点的key
+   2. 如果当前结点的左子结点不为空，则把左子结点放入到队列中
+   3. 如果当前结点的右子结点不为空，则把右子结点放入到队列中
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.4ieihdio3xu0.webp" alt="image" style="zoom:50%;" />
+
+```java
+/**
+ * 使用层序遍历，获取整个树中所有的键
+ * @return
+ */
+public Queue<K> layerErgodic() {
+    // 定义两个队列，分别存储树中的键和树中的节点
+    // 键队列
+    Queue<K> keys = new Queue<>();
+    // 节点队列
+    Queue<Node> nodes = new Queue<>();
+
+    // 刚开始往节点队列中放入根节点
+    nodes.enqueue(root);
+
+    while (!nodes.isEmpty()) {
+        // 从节点队列中弹出一个节点，并且把该节点的key放入键队列中
+        Node node = nodes.dequeue();
+        keys.enqueue(node.key);
+        // 判断该节点是否有左子节点，如果有则放入节点队列中
+        if (node.left != null) {
+            nodes.enqueue(node.left);
+        }
+        // 判断该节点是否有右子节点，如果有则放入节点队列中
+        if (node.right!= null) {
+            nodes.enqueue(node.right);
+        }
+    }
+    return keys;
+}
+```
+
+#### 二叉树的最大深度问题
+
+#### 折纸问题
+
