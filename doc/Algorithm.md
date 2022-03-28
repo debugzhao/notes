@@ -944,8 +944,6 @@ public class Heap<T extends Comparable<T>> {
 2. 此时堆是无需状态的，这时需要对堆定元素下沉调整堆，把第二大的元素上浮到堆顶（此时原来堆中的最大的元素不参与调整，因为最大的元素已经到了数组最右边）
 3. 重复第一步、第二部操作，直到堆中只剩下一个元素
 
- 
-
 ```java
 public class HeapSort {
     
@@ -1038,7 +1036,37 @@ public class HeapSort {
 }
 ```
 
+## 五、优先队列
 
+普通的队列是一种先进先出的数据结构，元素在队列尾追加，而从队列头删除。在某些情况下，我们可能需要找出 队列中的最大值或者最小值，例如使用一个队列保存计算机的任务，一般情况下计算机的任务都是有优先级的，我 们需要在这些计算机的任务中找出优先级最高的任务先执行，执行完毕后就需要把这个任务从队列中移除。普通的 队列要完成这样的功能，需要每次遍历队列中的所有元素，比较并找出最大值，效率不是很高，这个时候，我们就 可以使用一种特殊的队列来完成这种需求，优先队列。
+
+<img src="C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20220327193327340.png" alt="image-20220327193327340" style="zoom:50%;" />
+
+优先队列按照其作用不同，可以分为以下两种：
+
+1. 最大优先队列
+
+   可以获取并删除队列中最大的值
+
+2. 最大优先队列
+
+   可以获取并删除队列中最小的值
+
+### 5.1 最大优先队列
+
+我们之前学习过堆，而堆这种结构是可以方便的删除最大的值，所以，接下来我们可以基于堆区实现最大优先队 列。
+
+#### API设计
+
+| 类名     | MaxPriorityQueue<T>                                          |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | MaxPriorityQueue(int capacity)：创建容量为capacity的MaxPriorityQueue对象 |
+| 成员方法 | 1.private boolean less(int i,int j)：判断堆中索引i处的元素是否小于索引j处的元素 <br/>2.private void exch(int i,int j):交换堆中i索引和j索引处的值 <br/>3.public T delMax():删除队列中最大的元素,并返回这个最大元素 <br/>4.public void insert(T t)：往队列中插入一个元素<br/> 5.private void swim(int k):使用上浮算法，使索引k处的元素能在堆中处于一个正确的位置 <br/>6.private void sink(int k):使用下沉算法，使索引k处的元素能在堆中处于一个正确的位置<br/>7.public int size():获取队列中元素的个数 8.public boolean isEmpty():判断队列是否为空 |
+| 成员变量 | 1.private T[] imtes : 用来存储元素的数组<br/>2.private int N：记录堆中元素的个数 |
+
+### 5.2 最小优先队列
+
+### 5.3 索引优先队列
 
 
 
