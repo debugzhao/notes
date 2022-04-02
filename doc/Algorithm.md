@@ -1064,6 +1064,51 @@ public class HeapSort {
 | 成员方法 | 1.private boolean less(int i,int j)：判断堆中索引i处的元素是否小于索引j处的元素 <br/>2.private void exch(int i,int j):交换堆中i索引和j索引处的值 <br/>3.public T delMax():删除队列中最大的元素,并返回这个最大元素 <br/>4.public void insert(T t)：往队列中插入一个元素<br/> 5.private void swim(int k):使用上浮算法，使索引k处的元素能在堆中处于一个正确的位置 <br/>6.private void sink(int k):使用下沉算法，使索引k处的元素能在堆中处于一个正确的位置<br/>7.public int size():获取队列中元素的个数 8.public boolean isEmpty():判断队列是否为空 |
 | 成员变量 | 1.private T[] imtes : 用来存储元素的数组<br/>2.private int N：记录堆中元素的个数 |
 
+#### 代码实现
+
+最大优先队列实际上就是堆，利用了`deleteMax `API实现了每次从堆中获取最大的元素
+
+```java
+/**
+ * 上浮算法思想：使索引k处的元素能在堆中处于一个正确的位置
+ * 上浮算法基本实现；通过循环比较当前元素和父元素的大小，如果当前元素比父元素大，则该数据往上走
+ * @param k
+ */
+private void swim(int k) {
+    while (k > 1) { // k = 1临界值问题考虑：如果K = 1时即为根节点，不需要再进行上浮，k = 1时不需要再进行循环
+        if (less(k/2, k)) {
+            exchange(k/2, k);
+        }
+        k = k / 2;
+    }
+}
+
+/**
+ * 下沉算法思想：使索引k处的元素能在堆中处于一个正确的位置
+ * 下沉算法基本实现：当前节点和其两个子节点中较大的一个节点比较，如果较大的子节点 > 当前节点，则互换两节节点位置
+ * @param k
+ */
+private void sink(int k) {
+    while (2*k <= N) {
+        int tempMaxIndex;
+        if (2*k + 1 <= N) { // 证明有右子节点，接下来在左子节点、右子节点中寻找最大的那个索引
+            tempMaxIndex = less(2*k, 2*k + 1) ? 2*k + 1 : 2*k;
+        } else { // 没有右子节点
+            tempMaxIndex = 2*k; // 将左子节点索引赋值给tempMaxIndex
+        }
+
+        // 当前k索引处的元素已经大于他的子节点元素，则直接退出循环
+        if(!less(k, tempMaxIndex)) {
+            break;
+        }
+
+        // 否则继续下沉
+        exchange(k, tempMaxIndex);
+        k = tempMaxIndex;
+    }
+}
+```
+
 ### 5.2 最小优先队列
 
 ### 5.3 索引优先队列
