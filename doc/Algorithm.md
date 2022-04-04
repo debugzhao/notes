@@ -14,7 +14,7 @@
 
 ##### 递归算法
 
-链表反转内部是用[递归算法](https://cloud.tencent.com/developer/article/1356049)解决的。递归算法主要分为两个阶段，第一阶段：递归分解任务；第二阶段：回归分治任务
+h链表反转内部是用[递归算法](https://cloud.tencent.com/developer/article/1356049)解决的。递归算法主要分为两个阶段，第一阶段：递归分解任务；第二阶段：回归分治任务
 
 <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.53od6spif3g0.webp" alt="image" style="zoom: 50%;" />
 
@@ -1249,12 +1249,57 @@ public class RedBlackTree<K, V> {
 
 在对红黑树进行一些增删改查的操作后，很有可能会出现红色的右链接或者两条连续红色的链接，而这些都不满足 红黑树的定义，所以我们需要对这些情况通过旋转进行修复，让红黑树保持平衡。
 
+**提示：**当前节点为h，它的右子节点为x
+
 1. 左旋
 
-   
+   当某个节点的左子节点为黑色， 右子节点为红色，此时需要左旋
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.57lnubktt6w0.webp" alt="image" style="zoom: 67%;" />
+
+   **左旋过程：**
+
+   1. 让x的左子节点成为h的右子节点 
+
+      ```java
+      h.right = x.left;
+      ```
+
+   2. 让h节点成为x的左子节点
+
+      ```java
+      x.left = h;
+      ```
+
+   3. 让h的color属性成为x的color属性值
+
+      ```java
+      x.color = h.color;
+      ```
+
+   4. 让h的color属性变成red
+
+      ```java
+      h.color = true;
+      ```
 
 2. 右旋
 
+   当某个节点的左子节点是红色，左子节点的左子节点也是红色，此时需要右旋
+   
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.545lijhkm400.webp" alt="image" style="zoom:67%;" />
+   
+   **右旋过程：**
+   
+   1. 让x节点的右子节点成为h节点的左子节点
+   2. 让h节点成为x节点的右子节点
+   3. 让x的color变成h的color属性
+   4. 让h的color属性为RED
+   
+   <font color="red">此时右旋结束后还是不能满足“红黑树中任意一个节点只能有一条红色链接与之相连”的要求，后面可以通过颜色的反转解决该问题。</font>
+   
+   
+   
    
 
 ##### 向单个2-节点中插入新键
