@@ -1179,6 +1179,100 @@ private void sink(int k) {
 
 #### 红黑树
 
+我们前面介绍了2-3树，可以看到2-3树能保证在插入元素之后，树依然保持平衡状态，它的最坏情况下所有子结点 都是2-结点，树的高度为lgN,相比于我们普通的二叉查找树，最坏情况下树的高度为N，确实保证了最坏情况下的 时间复杂度，但是2-3树实现起来过于复杂，所以我们介绍一种2-3树思想的简单实现：红黑树。
+
+红黑树主要是对2-3树进行编码，红黑树背后的基本思想是<font color="red">用标准的二叉查找树</font>(完全由2-结点构成)和一些<font color="red">额外的信息</font>(替换3-结点)来表示2-3树。我们将树中的链接分为两种类型：
+
+1. <font color="red">红链接</font>
+
+   将两个2-结点连接起来构成一个3-结点
+
+2. <font color="red">黑链接</font>
+
+   则是2-3树中的普通链接。
+
+确切的说，我们将3-结点表示为由由一条左斜的红色链接(两个2-结点其中之一是另一个的左子结点)相连的两个2- 结点。这种表示法的一个优点是，我们无需修改就可以直接使用标准的二叉查找树的get方法。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.u4eet1muceo.webp" alt="image" style="zoom: 67%;" />
+
+##### 红黑树定义
+
+红黑树是含有红黑链接并满足下列条件的二叉查找树：
+
+1. 红链接均为做链接
+2. 没有任何一个节点同时和两条红链接相连
+3. 该树时完美黑色平衡的
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.asnj5669ef4.webp" alt="image" style="zoom:67%;" />
+
+##### 红黑树节点API
+
+因为每个结点都只会有一条指向自己的链接（从它的父结点指向它），我们可以在之前的Node结点中添加一个布 尔类型的变量color来表示链接的颜色。如果指向它的链接是红色的，那么该变量的值为true，如果链接是黑色 的，那么该变量的值为false。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.75yncu14eag0.webp" alt="image" style="zoom:67%;" />
+
+```java
+public class RedBlackTree<K, V> {
+    /**
+     * 键
+     */
+    public K key;
+    /**
+     * 值
+     */
+    private V value;
+    /**
+     * 左子节点
+     */
+    private Node left;
+    /**
+     * 右子节点
+     */
+    private Node right;
+    /**
+     * 其父节点指向该节点的颜色
+     */
+    private boolean color;
+
+
+    public RedBlackTree(K key, V value, Node left, Node right, boolean color) {
+        this.key = key;
+        this.value = value;
+        this.left = left;
+        this.right = right;
+        this.color = color;
+    }
+}
+```
+
+##### 平衡化
+
+在对红黑树进行一些增删改查的操作后，很有可能会出现红色的右链接或者两条连续红色的链接，而这些都不满足 红黑树的定义，所以我们需要对这些情况通过旋转进行修复，让红黑树保持平衡。
+
+1. 左旋
+
+   
+
+2. 右旋
+
+   
+
+##### 向单个2-节点中插入新键
+
+##### 向底部2-节点中插入新键
+
+##### 颜色反转
+
+##### 向一个3-节点中插入新键
+
+##### 根节点的颜色总是黑色
+
+##### 向树底部的3-节点插入新键
+
+##### 红黑树API实现
+
+##### 红黑树实现
+
 ### 6.2 B-树
 
 #### B树的特性
