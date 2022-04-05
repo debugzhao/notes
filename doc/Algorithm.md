@@ -1297,30 +1297,269 @@ public class RedBlackTree<K, V> {
    4. 让h的color属性为RED
    
    <font color="red">此时右旋结束后还是不能满足“红黑树中任意一个节点只能有一条红色链接与之相连”的要求，后面可以通过颜色的反转解决该问题。</font>
-   
-   
-   
-   
 
 ##### 向单个2-节点中插入新键
 
+一棵只含有一个键的红黑树只含有一个2-结点。插入另一个键后，我们马上就需要将他们旋转。
+
+1. 如果新键小于当前结点的键，我们只需要新增一个红色结点即可，新的红黑树和单个3-结点完全等价。
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6tm30mfwzmg0.webp" alt="image" style="zoom: 67%;" />
+
+2. 如果新键大于当前结点的键，那么新增的红色结点将会产生一条红色的右链接，此时我们需要通过左旋，把 红色右链接变成左链接，插入操作才算完成。形成的新的红黑树依然和3-结点等价，其中含有两个键，一条红 色链接
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.4brqkpnvaw00.webp" alt="image" style="zoom:67%;" />
+
 ##### 向底部2-节点中插入新键
+
+用和二叉查找树相同的方式向一棵红黑树中插入一个新键，会在树的底部新增一个结点（可以保证有序性），唯一 区别的地方是我们会用红链接将新结点和它的父结点相连。如果它的父结点是一个2-结点，那么刚才讨论的两种方 式仍然适用。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6ugpf4pvf7k0.webp" alt="image" style="zoom:67%;" />
 
 ##### 颜色反转
 
+当一个节点的左子节点和右子节点的color均为RED时，此时该节点可以看为临时的`4-节点`，只需要将当前的节点的color变成RED，当前节点的左子节点、右子节点color变成BLACK即可。此过程可以看成4-节点的拆解过程，树的层级可能 +1。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.75ntft2s4z00.webp" alt="image" style="zoom:67%;" />
+
 ##### 向一个3-节点中插入新键
+
+<font color="red">在红黑树中，从直观上看所有的节点都是2-节点，因此每插入一个节点都希望当前节点和其父节点组成一个3-节点，所以当前节点都是红色链接</font>
+
+可以分为三种情况
+
+1. 新键大于原树的两个键
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.10umdt42lm4w.webp" alt="image" style="zoom:67%;" />
+
+2. 新键小于原树的两个键
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.2qlqpp7rwoq0.webp" alt="image" style="zoom:67%;" />
+
+3. 新键介于原树两个键之间
+
+   <img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3m3r2kt3i1s0.webp" alt="image" style="zoom:67%;" />
 
 ##### 根节点的颜色总是黑色
 
+之前我们介绍结点API的时候，在结点Node对象中color属性表示的是父结点指向当前结点的连接的颜色，由于根 结点不存在父结点，所以每次插入操作后，我们都需要把根结点的颜色设置为黑色。
+
 ##### 向树底部的3-节点插入新键
+
+假设在树的底部的一个3-结点下加入一个新的结点。前面我们所讲的3种情况都会出现。指向新结点的链接可能是 3-结点的右链接（此时我们只需要转换颜色即可），或是左链接(此时我们需要进行右旋转然后再转换)，或是中链 接(此时需要先左旋转然后再右旋转，最后转换颜色)。颜色转换会使中间结点的颜色变红，相当于将它送入了父结 点。这意味着父结点中继续插入一个新键，我们只需要使用相同的方法解决即可，直到遇到一个2-结点或者根结点 为止。
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3olgap16g7c0.webp" alt="image" style="zoom:67%;" />
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.m4aluozth4g.webp" alt="image" style="zoom:67%;" />
+
+<img src="https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.5c8k463g4io0.webp" alt="image" style="zoom:80%;" />
 
 ##### 红黑树API实现
 
 ##### 红黑树实现
 
+```java
+public class RedBlackTree<K extends Comparable<K>, V> {
+    //根节点
+    private Node root;
+    //记录树中元素的个数
+    private int N;
+    //红色链接
+    private static final boolean RED = true;
+    //黑色链接
+    private static final boolean BLACK = false;
+
+    //结点类
+    private class Node {
+        //存储键
+        public K key;
+        //存储值
+        private V value;
+        //记录左子结点
+        public Node left;
+        //记录右子结点
+        public Node right;
+        //由其父结点指向它的链接的颜色
+        public boolean color;
+
+        public Node(K key, V value, Node left, Node right, boolean color) {
+            this.key = key;
+            this.value = value;
+            this.left = left;
+            this.right = right;
+            this.color = color;
+        }
+    }
+
+    //获取树中元素的个数
+    public int size() {
+        return N;
+    }
+
+    /**
+     * 判断当前节点的父指向链接是否为红色
+     *
+     * @param x
+     * @return
+     */
+    private boolean isRed(Node x) {
+        if (x==null){
+            return false;
+        }
+        return x.color==RED;
+    }
+
+    /**
+     * 左旋
+     * @param h
+     * @return
+     */
+    private Node rotateLeft(Node h) {
+        // 获取h节点的右子节点，表示为x节点
+        Node x = h.right;
+        // 让x节点的左子节点成为h节点的右子节点（左旋）
+        h.right = x.left;
+        // 让h节点成为x节点的左子节点
+        x.left = h;
+        // 让x节点的color属性等于h节点的color属性
+        h.color = x.color;
+        // 让h节点的color属性变成红色
+        h.color = RED;
+        return x;
+    }
+
+    /**
+     * 右旋
+     * @param h
+     * @return
+     */
+    private Node rotateRight(Node h) {
+        // 获取h节点的左子节点，命名为x节点
+        Node x = h.left;
+        // 让x节点的右子节点成为h节点的左子节点
+        h.left = x.right;
+        // 让h节点成为x节点的右子节点
+        x.right = h;
+        // 把h节点的color赋值给 x节点的color
+        x.color = h.color;
+        // 让h节点的color变成红色
+        h.color = RED;
+        return x;
+    }
+
+    /**
+     * 颜色反转,相当于完成拆分4-节点
+     * @param h
+     */
+    private void flipColors(Node h) {
+        // 当前节点的颜色变成红色
+        h.color = RED;
+        // TODO: 不需要判断当前节点左子节点是否为空？右子节点是否为空？
+        // 当前节点的左子节点、右子节点变成黑色
+        h.left.color = BLACK;
+        h.right.color = BLACK;
+    }
+
+    /**
+     * 在整个树中完成插入操作
+     * @param keyf
+     * @param value
+     */
+    public void put(K key, V value) {
+        root = put(root, key, value);
+        // 由于颜色反转可能会将根节点的颜色反转成红色
+        // 此时和根节点的颜色始终为黑色相违背
+        // 因此需要重新将根节点的颜色赋值成黑色
+        root.color = BLACK;
+    }
+
+    /**
+     * 在指定树中完成插入操作
+     * @param node
+     * @param key
+     * @param value
+     * @return
+     */
+    private Node put(Node node, K key, V value) {
+        // 1.判断node节点是否为空，如果为空则直接返回一个红色节点
+        if (node == null) {
+            N ++;
+            return new Node(key, value, null, null, RED);
+        }
+        // 2.判断k的值和node节点的键的大小
+        int compareResult = key.compareTo(node.key);
+        if (compareResult < 0) { // 2.1 如果k < node.key，则继续向左走
+            node.left = put(node.left, key, value);
+        }
+        else if (compareResult > 0) { // 2.2 如果k > node.key，则继续向右走
+            node.right = put(node.right, key, value);
+        } else { // 2.3 如果k = node.key，则直接替换value即可
+            node.value = value;
+        }
+        // 3.在插入过程中会破坏树的平衡性，需要通过左旋、右旋、颜色反转的方式保证树的平衡性
+        // 3.1 左旋(node节点的右子节点的颜色为RED)
+        if (isRed(node.right) && !isRed(node.left)) {
+            node = rotateLeft(node);
+        }
+        // 3.2 右旋(node节点的左子节点颜色为红色 && node节点的左子节点的左子节点的颜色为红色)
+        if (isRed(node.left) && isRed(node.left.left)) {
+            node = rotateRight(node);
+        }
+        // 3.3 颜色反转(node节点左子节点颜色为RED && node节点的右子节点颜色为RED)
+        if (isRed(node.left) && isRed(node.right)) {
+            flipColors(node);
+        }
+        return node;
+    }
+
+    /**
+     * 在整个树中查询
+     * @param key
+     * @return
+     */
+    public V get(K key) {
+        return get(root, key);
+    }
+
+    /**
+     * 在指定树中查询
+     * @param node
+     * @param key
+     * @return
+     */
+    private V get(Node node, K key) {
+        // 判空
+        if (node == null) {
+            return null;
+        }
+        // 比较key和node的键的大小
+        int compareResult = key.compareTo(node.key);
+        if (compareResult > 0) { // 递归向右寻找
+            return get(node.right, key);
+        } else if (compareResult < 0) { // 递归向左寻找
+            return get(node.left, key);
+        } else { // 匹配到键值对
+            return node.value;
+        }
+    }
+}
+```
+
+
+
 ### 6.2 B-树
 
+前面我们已经学习过了二叉查找树、2-3树以及他的实现红黑树，在2-3树中，一个节点可以有多个key，它的实现红黑树中使用了对链接染色的方式表达多个key。本章节将要介绍另外一种树型结构B树，这种数据结构中，一个节点允许多于两个key的存在。
+
 #### B树的特性
+
+B树中允许一个结点中包含多个key，现在我们选 择一个参数M，来构造一个B树，我们可以把它称作是<font color="red">M阶的B树</font>，那么该树会具有如下特点：
+
+1. 每个节点最多有M - 1个key，并且以升序排序
+2. 每个节点最多能有M个子节点
+3. 根节点至少有两个子节点
+
+在实际的应用场景中，B树的阶数一般比较大（通常大于100），即便保存了大量的数据，B树的高度还是很小，还是可以保证非常高的查询效率。
 
 #### B树存储数据
 
