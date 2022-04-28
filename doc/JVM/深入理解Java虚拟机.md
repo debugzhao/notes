@@ -174,17 +174,48 @@ Java堆内存可以处于物理上不连续的内存空间，逻辑是它被视�
    
       使用直接指针访问的话，reference中存储的直接就是对象地址。
    
+      ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.2f5dhrryarwg.webp)
+   
    2. 优点
    
       使用直接指针来访问最大的好处就是**速度更快**，它节省了一次指针定位的时间开销
-   
-   
 
 ### 2.4 实战：OutOfMemoryError异常
 
 #### 2.4.1 Java堆溢出
 
+Java堆用于储存对象实例，我们只要不断地创建对象，并且保证GC Roots到对象之间有可达路径 来避免垃圾回收机制清除这些对象，那么随着对象数量的增加，总容量触及最大堆的容量限制后就会 产生内存溢出异常。
 
+将堆的最小值-Xms参数与最大值-Xmx参数 设置为一样即可避免堆自动扩展
+
+通过参数-XX：+HeapDumpOnOutOf-MemoryError可以让虚拟机 在出现内存溢出异常的时候Dump出当前的内存堆转储快照以便进行事后分析
+
+```java
+/**
+ * @author: lucas.zhao@kuhantech.com
+ * @date: 2022/4/28 21:29
+ * @description: VM args: -Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError
+ */
+public class HeapOOM {
+    static class OOMObject {
+    }
+
+    public static void main(String[] args) {
+        ArrayList<OOMObject> list = new ArrayList<OOMObject>();
+        while(true) {
+            list.add(new OOMObject());
+        }
+    }
+}
+```
+
+```shell
+# 运行日志
+Connected to the target VM, address: '127.0.0.1:6695', transport: 'socket'
+java.lang.OutOfMemoryError: Java heap space
+Dumping heap to java_pid12708.hprof ...
+Heap dump file created [28323297 bytes in 0.052 secs]
+```
 
 #### 2.4.2 虚拟机栈和本地方法栈溢出
 
