@@ -224,7 +224,8 @@ Heap dump file created [28323297 bytes in 0.052 secs]
 关于虚拟 机栈和本地方法栈，在《Java虚拟机规范》中描述了两种异常：
 
 1. 如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。
-2. 如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出 OutOfMemoryError异常。
+   1. 如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出 OutOfMemoryError异常。
+
 
 ```java
 /**
@@ -289,6 +290,35 @@ public class JavaVMStackOOM {
 #### 2.4.3 方法区和运行时常量池溢出
 
 #### 2.4.4 本机内存直接溢出
+
+直接内存（Direct Memory）的容量大小可通过<font color="red">-XX：MaxDirectMemorySize</font>参数来指定，如果不去指定，则默认与Java堆最大值（由-Xmx指定）一致，代码清单2-10越过了DirectByteBuffer类直接通 过反射获取Unsafe实例进行内存分配
+
+```java
+/**
+ * @author: lucas.zhao@kuhantech.com
+ * @date: 2022/5/2 17:18
+ * @description: -Xmx20M -XX:MaxDirectMemorySize=10M
+ */
+public class DirectMemoryOOM {
+    private static final int _1MB = 1024 * 1024;
+
+    public static void main(String[] args) throws IllegalAccessException {
+        Field unsafeField = Unsafe.class.getDeclaredFields()[0];
+        unsafeField.setAccessible(true);
+        Unsafe unsafe = (Unsafe) unsafeField.get(null);
+        while (true) {
+            unsafe.allocateMemory(_1MB);
+        }
+    }
+}
+```
+
+```shell
+Exception in thread "main" java.lang.OutOfMemoryError
+	at sun.misc.Unsafe.allocateMemory(Native Method)
+	at com.geek.jvm.DirectMemoryOOM.main(DirectMemoryOOM.java:20)
+Disconnected from the target VM, address: '127.0.0.1:14932', transport: 'socket'
+```
 
 ### 2.5 本章小节
 
