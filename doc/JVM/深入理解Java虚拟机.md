@@ -219,6 +219,73 @@ Heap dump file created [28323297 bytes in 0.052 secs]
 
 #### 2.4.2 虚拟机栈和本地方法栈溢出
 
+**栈容量只能由-Xss参数来设定**
+
+关于虚拟 机栈和本地方法栈，在《Java虚拟机规范》中描述了两种异常：
+
+1. 如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。
+2. 如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出 OutOfMemoryError异常。
+
+```java
+/**
+ * @date: 2022/5/2 16:40
+ * @description: -Xss128k
+ * 栈溢出
+ */
+public class JavaVMStackSOF {
+    private static int num = 1;
+    private static void test() {
+        num ++;
+        test();
+    }
+    public static void main(String[] args) {
+        try {
+            test();
+        } catch (Throwable exception) {
+            System.out.println("num:" + num);
+            throw exception;
+        }
+    }
+}
+```
+
+```log
+num:1087
+Exception in thread "main" java.lang.StackOverflowError
+	at com.geek.jvm.JavaVMStackSOF.test(JavaVMStackSOF.java:11)
+```
+
+
+
+```java
+/**
+ * @author: lucas.zhao@kuhantech.com
+ * @date: 2022/5/2 16:58
+ * @description: 创建线程导致栈内存溢出
+ */
+public class JavaVMStackOOM {
+    private void dontStop() {
+        while (true) {
+
+        }
+    }
+    private void stackLeakByThread() {
+        while (true) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dontStop();
+                }
+            }).start();
+        }
+    }
+    public static void main(String[] args) {
+        JavaVMStackOOM stackOOM = new JavaVMStackOOM();
+        stackOOM.stackLeakByThread();
+    }
+}
+```
+
 #### 2.4.3 方法区和运行时常量池溢出
 
 #### 2.4.4 本机内存直接溢出
