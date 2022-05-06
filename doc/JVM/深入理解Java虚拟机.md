@@ -340,6 +340,43 @@ Disconnected from the target VM, address: '127.0.0.1:14932', transport: 'socket'
 
 ### 3.3 垃圾收集算法
 
+#### 3.2.1 引用计数算法（<font color="red">不被Java虚拟机使用</font>）
+
+在对象中添加一个引用计数器，每当有一个地方 引用它时，计数器值就加一；当引用失效时，计数器值就减一；任何时刻计数器为零的对象就是不可 能再被使用的。
+
+虽然引用计数算法占用了一些额外的空间来进行计数，但是它原理简单，并且判定效率也很高，在大多数情况下是一个不错的算法。<font color="red">但是在目前主流的Java虚拟机中都没有选用引用计数算法来管理内存</font>。主要原因是需要考虑很多例外的情况，必须要配合大量额外的处理才能正确的工作。<font color="red">譬如单纯的引用计数 就很难解决对象之间相互循环引用的问题。</font>
+
+代码实例：objA和objB这两个对象再无任何引用，实际上这两个对象已 经不可能再被访问，但是它们因为互相引用着对方，导致它们的引用计数都不为零，引用计数算法也 就无法回收它们。
+
+```java
+public class ReferenceCountingGC {
+    public Object instance = null;
+    private static final int _1MB = 1024 * 1024;
+    /**
+     * 这个成员属性的唯一意义就是占点内存，以便能在GC日志中看清楚是否有回收过
+     */
+    private byte[] bigSize = new byte[2 * _1MB];
+    public static void testGC() {
+        ReferenceCountingGC objA = new ReferenceCountingGC();
+        ReferenceCountingGC objB = new ReferenceCountingGC();
+        objA.instance = objB;
+        objB.instance = objA;
+        objA = null;
+        objB = null;
+        // 假设在这行发生GC，objA和objB是否能被回收？
+        System.gc();
+    }
+}
+```
+
+#### 3.2.2 可达性分析算法
+
+#### 3.2.1 再谈引用
+
+#### 3.2.1 生存还是死亡
+
+#### 3.2.1 回收方法区
+
 ### 3.4 HotSpot的算法实现细节
 
 ### 3.5 经典垃圾收集器
