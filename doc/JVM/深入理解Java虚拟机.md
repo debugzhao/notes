@@ -476,7 +476,9 @@ JDK1.2之后对对象的引用进行了扩充，分别是强引用、软引用�
 
 #### 3.3.4 标记-整理算法
 
+让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。
 
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.3wa1de8g0dg0.webp)
 
 ### 3.4 HotSpot的算法实现细节
 
