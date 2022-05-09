@@ -508,9 +508,33 @@ Serial收集器是一个单线程收集器，会出现stop the world的情况。
 
 ##### 应用场景
 
-Serial收集器对于运行在客户端模式下的虚拟机来说是一个很好的选择
+Serial收集器对于运行在客户端模式下的虚拟机来说是一个很好的选择。
 
 #### 3.5.2 ParNew收集器
+
+ParNew收集器实质上是Serial收集器的多线程并行版本。
+
+##### GC过程
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.251qwgfapcsg.webp)
+
+##### 特点
+
+多线程GC收集器
+
+##### 应用场景
+
+ParNew收集器除了支持多线程并行收集之外，其他与Serial收集器相比并没有太多创新之处，但它却是不少运行在服务端模式下的HotSpot虚拟机。其中有一个与功能、性能无关但其实很重要的原因是：<font color="red">除了Serial收集器外，目前只有它能与CMS 收集器配合工作。</font>
+
+##### 并发和并行在GC中的语义
+
+1. 并行
+
+   并行描述的是多线GC线程之间的关系。说明同一时刻有多条这样的GC线程在协同工作，<font color="red">通常默认此时用户线程处于pending状态</font>。
+
+2. 并发
+
+   并发描述的是GC线程和用户线程之间的关系。说明同一时间GC线程和用户线程都在运行，所以应用程序还是可以响应服务请求。<font color="red">但是由于GC线程占用了一部分服务资源，系统的吞吐量将会收到一定程度的影响。</font>
 
 #### 3.5.3 Parallel Scavenge收集器
 
