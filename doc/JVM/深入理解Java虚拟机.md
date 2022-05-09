@@ -484,6 +484,44 @@ JDK1.2之后对对象的引用进行了扩充，分别是强引用、软引用�
 
 ### 3.5 经典垃圾收集器
 
+如果说收集算法是内存回收的方法论，那垃圾收集器就是内存回收的实践者。各款经典收集器之间的关系如下：
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.6vjso2wgmnk0.webp)
+
+上图展示了七种作用于不同分代的收集器，如果两个收集器之间存在连线，就说明它们可以搭配 使用[3]，图中收集器所处的区域，则表示它是属于新生代收集器抑或是老年代收集器。接下来笔者将 逐一介绍这些收集器的目标、特性、原理和使用场景，并重点分析CMS和G1这两款相对复杂而又广泛 使用的收集器，深入了解它们的部分运作细节。
+
+#### 3.5.1 Serial收集器
+
+Serial收集器是一个单线程收集器，单线程GC也就意味着它进行垃圾收集时，必须暂停其他所有工作线程，直到它收集结束。这种GC过程就会出现<font color="red">Stop the World</font>。
+
+##### GC过程
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.qezc6gf8av4.webp)
+
+##### 特点
+
+Serial收集器是一个单线程收集器，会出现stop the world的情况。
+
+##### 优点
+
+对于内存资源受限的环境，它是所有收集器里额外内存消耗（Memory Footprint）最小的。
+
+##### 应用场景
+
+Serial收集器对于运行在客户端模式下的虚拟机来说是一个很好的选择
+
+#### 3.5.2 ParNew收集器
+
+#### 3.5.3 Parallel Scavenge收集器
+
+#### 3.5.4 Serial Old收集器
+
+#### 3.5.5 Parallel Old收集器
+
+#### 3.5.6 CMS收集器
+
+#### 3.5.7 Garbage First收集器
+
 ### 3.6 低延时垃圾收集器
 
 ### 3.7 选择合适的垃圾收集器
