@@ -538,6 +538,28 @@ ParNew收集器除了支持多线程并行收集之外，其他与Serial收集�
 
 #### 3.5.3 Parallel Scavenge收集器
 
+##### 特点
+
+Parallel Scavenge收集器也一个可以并行收集的多线程收集器。
+
+Parallel Scavenge收集器的特点是它的关注点与其他收集器不同，CMS等收集器的关注点是尽可能地缩短垃圾收集时用户线程的停顿时间；而Parallel Scavenge收集器的目标则是达到一个可控制的吞吐 量（Throughput）。
+
+> 吞吐量计算公式：用户线程运行时间 /  （用户线程运行时间 + GC线程运行时间）
+
+##### GC参数
+
+1. -XX: MaxGCPauseMillils
+
+   控制最大垃圾收集停顿时间。MaxGCPauseMillis参数允许的值是一个大于0的毫秒数，收集器将尽力保证内存回收花费的 时间不超过用户设定值。
+
+2. -XX: GCTimeRatio
+
+   直接设置吞吐量大小。GCTimeRatio参数的值则应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的比率，相当于吞吐量的倒数。
+
+3. -XX: UseAdaptivePolicy
+
+   自适应调节策略。GCTimeRatio参数的值则应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的 比率，相当于吞吐量的倒数。
+
 #### 3.5.4 Serial Old收集器
 
 #### 3.5.5 Parallel Old收集器
