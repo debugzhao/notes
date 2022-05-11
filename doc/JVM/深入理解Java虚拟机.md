@@ -558,9 +558,13 @@ Parallel Scavenge收集器的特点是它的关注点与其他收集器不同，
 
 3. -XX: UseAdaptivePolicy
 
-   自适应调节策略。GCTimeRatio参数的值则应当是一个大于0小于100的整数，也就是垃圾收集时间占总时间的 比率，相当于吞吐量的倒数。
+   自适应调节策略。虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整这些参数以提供最合适的停顿时 间或者最大的吞吐量。这种调节方式称为垃圾收集的自适应的调节策略。
 
 #### 3.5.4 Serial Old收集器
+
+Serial Old是Serial收集器的老年代版本，它同样是一个单线程收集器，使用标记-整理算法。
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.35629izt0mq0.webp)
 
 #### 3.5.5 Parallel Old收集器
 
