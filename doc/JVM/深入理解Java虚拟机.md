@@ -236,7 +236,7 @@ Heap dump file created [28323297 bytes in 0.052 secs]
 public class JavaVMStackSOF {
     private static int num = 1;
     private static void test() {
-        num ++;
+        num +
         test();
     }
     public static void main(String[] args) {
