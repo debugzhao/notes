@@ -170,17 +170,63 @@ MyISAM的索引方式都是“非聚簇”的，与InnoDB包含1个聚簇索引�
 
 #### 6.2 Hash结构
 
+![](https://s3.bmp.ovh/imgs/2022/05/17/a636ddf0b174e360.png)
+
+哈希函数h有可能将两个不同的关键字映射到相同的位置，这叫做<font color="red">哈希碰撞</font>，在数据库中一般采用链接法 来解决。在链接法中，<font color="red">将散列到同一槽位的元素放在一个链表中。</font>
+
+**Hash索引适用的存储引擎**
+
+| 索引/存储引擎 | MyISAM | InnoDB | Memory                        |
+| ------------- | ------ | ------ | ----------------------------- |
+| HASH索引      | 不支持 | 不支持 | <font color="red">支持</font> |
+
+**自适应Hash**
+
+![](https://s3.bmp.ovh/imgs/2022/05/17/1766e3b0b1b951e9.png)
+
+采用自适应 Hash 索引目的是方便根据 SQL 的查询条件加速定位到叶子节点，特别是当 B+ 树比较深的时 候，通过自适应 Hash 索引可以明显提高数据的检索效率。
+
 #### 6.3 二叉搜索树
+
+如果利用二叉树作为索引数据结构，那么磁盘的IO次数和索引树的高度是相关的。
+
+1. 二叉搜索树的特点
+
+   ![](https://i.bmp.ovh/imgs/2022/05/17/dcf60450345eb4c3.png)
+
+2. 查找规则
+
+   ![](https://i.bmp.ovh/imgs/2022/05/17/70474395173bfb79.png)
+
+   ![](https://i.bmp.ovh/imgs/2022/05/17/2d5f9c57872052a7.png)
+
+   上面这颗树也属于二分查找树，但是性能上已经退化成了链表的性能，所以查询数据的<font color="red">复杂度是O(n)</font>。为了提高查询效率，就需要<font color="red">减少磁盘IO</font>。为了减少磁盘IO就需要尽量<font color="red">降低树的高度</font>，需要把原来瘦高的树变成矮胖的树，即<font color="red">树每层的分叉越多越好</font>。
 
 #### 6.4 AVL树
 
+为了解决在特殊情况下二叉查找树退化成链表的问题，人们提出了<font color="red">平衡二叉树</font>，也称为AVL树。AVL树具有以下性质：<font color="red">它是一颗空树或者左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一个平衡二叉树。</font>
+
+常见的平衡二叉树有：平衡二叉搜索胡、红黑树、树堆、伸展树，AVL树的查询的时间复杂度为O(log2n)
+
+![image](https://raw.githubusercontent.com/Andre235/-community/master/src/image.1pkqidicy5j4.webp)
+
 #### 6.5 B-Tree
+
+B树英文称为Balance Tree，也就是多路平衡查找树。B树的高度远小于平衡二叉树的高度。B树作为多路平衡查找树，它的每一个节点最多可以包括M个子节点，<font color="red">M称为B树的阶</font>。每个磁盘块包含关键字和子节点的指针。
+
+![image](https://raw.githubusercontent.com/Andre235/-community/master/src/image.15gc4e3acdek.webp)
+
+B树区别于B+树，它的非叶子节点也是会存储数据的。
+
+**小节**
+
+1. B树在插入和删除的过程中可能会导致树的不平衡，此时需要调整节点的位置来保证树的自平衡
+2. B树的关键字分布在整个树中，即叶子节点和非叶子节点都会存储数据。搜索有可能会在非叶子节点中结束
+3. B树的搜索性能相当于在关键字全集内做了一次二分查找 
 
 #### 6.6 B+Tree
 
 #### 6.7 R树
-
-
 
 
 
