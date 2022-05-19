@@ -295,7 +295,16 @@ MySQL的索引包括普通索引、唯一性索引、全文索引、单列索引
 
 #### 1.2创建索引
 
+```mysql
+alter table table_name add index index_name(column_name);
+```
+
 #### 1.3删除索引
+
+```mysql
+alter table table_name drop index index_name;
+drop index index_name on table_name;
+```
 
 ### 2.MySQL8.0索引新特性
 
@@ -308,6 +317,26 @@ MySQL的索引包括普通索引、唯一性索引、全文索引、单列索引
 #### 3.1数据的准备
 
 #### 3.2哪些情况下适合创建索引
+
+##### 字段的数值有唯一性的限制
+
+索引本身可以起到约束的作用，比如说主键索引、唯一索引都可以起到唯一约束的作用。因此在数据库表中如果某个字段是唯一的，就可以直接创建主键索引或者唯一索引，这样可以通过索引更快的检索到某条记录。
+
+##### 频繁作为WHERE查询条件的字段
+
+##### 经常GROUP BY和ORDER BY的列
+
+索引就是让数据按照某种顺序进行存储或者检索，因此经常使用GROUP BY 或者ORDER BY的方式让数据变得有序，从而提高查询效率。如果分组或者排序的字段有多个可以创建联合索引。
+
+##### UPDATE、DELETE的WHERE条件列
+
+##### DISTINCT字段需要创建索引
+
+##### 多表JOIN连接时创建索引注意事项
+
+首先<font color="red">连接表的数量不要超过3张</font>，因为每增加一个表就相当于增加一层循环嵌套，数据量大的话是非常影响查询效率的。其次<font color="red">可以对WHERE条件列添加索引</font>；最后可以对<font color="red">多表的连接的字段添加索引。</font>
+
+
 
 #### 3.3限制索引的数目
 
