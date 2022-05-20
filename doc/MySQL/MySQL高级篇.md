@@ -436,8 +436,29 @@ SHOW [GLOBAL|SESSION] STATUS LIKE '参数'
 - Innodb_rows_deleted：执行DELETE操作删除的行数
 - Com_select：查询操作的次数
 - Com_insert：插入操作的次数
+- Com_delete：删除操作的次数
 
-### 3.统计SQL的查询成本
+### 3.统计SQL的查询成本	
+
+一个SQL查询语句在执行查询之前会需要确定查询执行计划，如果存在多个查询执行计划的话，MySQL会计算每个执行计划的成本，从中选择<font color="red">成本最小</font>的作为最终的执行计划。
+
+如果我们想要查询某条SQL的查询成本，可以在执行完这条SQL语句之后在当前回话中查看`last_query_cost`来确定查询成本。它通常也是我们<font color="red">评价一个SQL的查询效率的标准</font>。这个查询成本返回的<font color="red">结果是SQL语句所需要读取的页的数量</font>
+
+```mysql
+show status like "last_query_cost";
+```
+
+**应用场景**
+
+`show status like "last_query_cost";` 对于比较查询开销是非常有用的，SQL查询时一个动态的过程，从页的加载的角度来看，我们可以得到一下结论
+
+1. 查询数据的位置决定效率
+
+   如果数据页在缓冲区中，那么查询效率是最高的。否则每次还要从内存中或者磁盘中读取，开销会大大增加
+
+2. 查询方式决定效率
+
+   如果我们从磁盘中的对单一页进行随机读，那么效率是比较低的；顺序读的方式的则效率会高很多
 
 ### 4.定位执行慢的SQL：查询日志
 
@@ -450,10 +471,6 @@ SHOW [GLOBAL|SESSION] STATUS LIKE '参数'
 ### 8.分析优化器的执行计划：trace
 
 ### 9.MySQL监控分析视图-sysschema
-
-
-
-
 
 
 
