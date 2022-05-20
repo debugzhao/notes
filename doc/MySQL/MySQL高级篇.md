@@ -407,7 +407,49 @@ LIMIT 12;
 
 ##### 不要定义冗余或者重复的索引
 
+## 第09章 性能分析工具的使用
 
+### 1.数据库服务器的优化步骤
+
+当我们遇到数据库调优问题的时候，该如何思考呢？这里把思考的流程整理成下面这张图。整个流程划分成了 `观察（Show status）` 和 `行动（Action）` 两个部分。字母 S 的部分代表观察（会使 用相应的分析工具），字母 A 代表的部分是行动（对应分析可以采取的行动）。
+
+![](https://i.bmp.ovh/imgs/2022/05/20/c136cbfda9c8c952.png)
+
+![](https://i.bmp.ovh/imgs/2022/05/20/9ac91aed58b28536.png)
+
+### 2.查询系统性能参数
+
+在MySQL中，可以使用 SHOW STATUS 语句查询一些MySQL数据库服务器的 性能参数 、 执行频率 。
+
+```mysql
+SHOW [GLOBAL|SESSION] STATUS LIKE '参数'
+```
+
+一些常用的性能参数如下：
+
+- Connections：连接MySQL服务器的次数
+- Uptime：MySQL服务器的上 线时间
+- Slow_queries：慢查询的次数
+- Innodb_rows_read：Select查询返回的行数
+- Innodb_rows_inserted：执行INSERT操作插入的行数
+- Inodb_rows_updated：执行UPDATE操作更新的 行数
+- Innodb_rows_deleted：执行DELETE操作删除的行数
+- Com_select：查询操作的次数
+- Com_insert：插入操作的次数
+
+### 3.统计SQL的查询成本
+
+### 4.定位执行慢的SQL：查询日志
+
+### 5.查询SQL执行成本：SHOW PROFILE
+
+### 6.分析查询语句：EXPLAIN
+
+### 7.EXPLAIN的进一步使用
+
+### 8.分析优化器的执行计划：trace
+
+### 9.MySQL监控分析视图-sysschema
 
 
 
