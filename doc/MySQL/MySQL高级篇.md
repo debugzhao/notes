@@ -572,13 +572,75 @@ mysql> show status like "slow_queries";
 
 #### 慢查询日志分析工具：mysqldumpslow
 
+```shell
+# 查看如何使用mysqldumpslow工具
+[root@testttt /]# mysqldumpslow --help
+Usage: mysqldumpslow [ OPTS... ] [ LOGS... ]
+
+Parse and summarize the MySQL slow query log. Options are
+
+  --verbose    verbose
+  --debug      debug
+  --help       write this text to standard output
+
+  -v           verbose
+  -d           debug
+  -s ORDER     what to sort by (al, at, ar, c, l, r, t), 'at' is default
+                al: average lock time
+                ar: average rows sent
+                at: average query time
+                 c: count
+                 l: lock time
+                 r: rows sent
+                 t: query time
+  -r           reverse the sort order (largest last instead of first)
+  -t NUM       just show the top n queries
+  -a           don't abstract all numbers to N and strings to 'S'
+  -n NUM       abstract numbers with at least n digits within names
+  -g PATTERN   grep: only consider stmts that include this string
+  -h HOSTNAME  hostname of db server for *-slow.log filename (can be wildcard),
+               default is '*', i.e. match all
+  -i NAME      name of server instance (if using mysql.server startup script)
+  -l           don't subtract lock time from total time
+```
+
+```mysql
+# 使用mysqldumpslow工具分析慢查询日志
+# -s t表示按照query time排序
+# -a 不使用抽象的数据类型去代替具体的查询参数
+# -t 5 仅展示前几条慢查询SQL
+[root@testttt /]# mysqldumpslow -s t -a -t 5 /home/mysql/data/testttt-slow.log
+
+Reading mysql slow query log from /home/mysql/data/testttt-slow.log
+Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
+  # User@Host: skip-grants user[root] @ localhost []  Id:     4
+  # Query_time: 0.871388  Lock_time: 0.000165 Rows_sent: 46548  Rows_examined: 4000000
+  SET timestamp=1653055673;
+  select *  from student where stuno >3453451 and stuno < 3500000
+
+Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
+  # User@Host: skip-grants user[root] @ localhost []  Id:     4
+  # Query_time: 1.807568  Lock_time: 0.000117 Rows_sent: 4000000  Rows_examined: 4000000
+  SET timestamp=1653055064;
+  select * from student
+
+Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
+  # User@Host: skip-grants user[root] @ localhost []  Id:     4
+  # Query_time: 171.162157  Lock_time: 0.000060 Rows_sent: 0  Rows_examined: 0
+  use school;
+  SET timestamp=1653055001;
+  CALL insert_stu1(100001,4000000)
+```
+
+
+
 #### 关闭慢查询日志参数
 
 #### 删除慢查询日志参数
 
 ### 5.查询SQL执行成本：SHOW PROFILE
 
-### 6.分析查询语句：EXPLAIN
+### 6.分析查询语句：EXPLA	IN
 
 ### 7.EXPLAIN的进一步使用
 
