@@ -713,16 +713,51 @@ mysql> explain select *  from student where stuno >3453451 and stuno < 3500000;
 | Extra         | 一些额外的信息                                         |
 
 1. table
+
 2. id
+
+   - id如果相同，可以认为是一组，从上往下顺序执行
+   - 在所有组中，id值越大，优先级越高，越先执行
+   - 关注点：id号每个号码，表示一趟独立的查询, 一个sql的查询趟数越少越好
+
 3. select_type
+
 4. partitions
+
 5. <font color="red">type</font>
-6. possible_keys和key
-7. <font color="red">ken_len</font>
-8. ref
-9. <font color="red">rows</font>
-10. filtered
-11. <font color="red">extra</font>
+
+   执行计划的一条记录就代表着MySQL对某个表的的访问类型，其中type表示的是具体的访问类型，是一个重要的指标。比如看到type列的值是ref，表明mysql即将使用ref的方式对表进行查询。
+
+   完整的访问方法如下：`system`、`const`、`eq_ref`、`ref`、`fulltext`、`ref_or_null`、`index_merge`、`unique_subquery`、`index_subquery`、`range`、`index`、`all`。访问方法越靠前表明执行效率越高
+
+   - system
+
+   - const
+
+     当我们根据主键或者唯一二级索引与常数进行等值匹配是，对表的访问方式是`const`
+
+   - eq_ref
+
+     在进行连接查询时，如果被驱动表是通过主键或者唯一二级索引进行等值匹配时，对该驱动表的访问方式是`eq_ref`
+
+   - ref
+
+     当我们通过普通二级索引与常量进行等值匹配来查询某个表示，那么对该表的访问方式就可能是`ref`
+
+   - index_merge
+
+   结果值从最好到最坏依次是：
+
+   <font color="red">`system`、`const`、`eq_ref`、`ref`</font>、`fulltext`、`ref_or_null`、`index_merge`、`unique_subquery`、`index_subquery`、<font color="red">`range`、`index`、`all`</font>
+
+   其中最重要的提取出来（红色标注）。SQL性能优化的目标：至少要得到range级别，要求是ref级别，最好是const级别。
+
+1. possible_keys和key
+2. <font color="red">ken_len</font>
+3. ref
+4. <font color="red">rows</font>
+5. filtered
+6. <font color="red">extra</font>
 12. 小结
 
 ### 7.EXPLAIN的进一步使用
