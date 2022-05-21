@@ -462,6 +462,25 @@ show status like "last_query_cost";
 
 ### 4.定位执行慢的SQL：查询日志
 
+MySQL慢查询语句是用来记录响应时间超过阈值的SQL语句，如果SQL的运行时间超过`long_query_time`配置的阈值，则会被记录到慢查询日志中，`long_query_time`的默认阈值是10s。
+
+默认情况下MySQL<font color="red">没有开启慢查询日志</font>，需要我们手动配置这个参数。如果<font color="red">不是调优需要的话，不建议开启慢查询日志记录，</font>因为多少会对性能带来一定的影响。
+
+慢查询日志相关的参数：
+
+```mysql
+# 查看慢查询日志参数
+show variables like "%slow_query_log%";
+# 开启慢查询日志
+set global slow_query_log = "on";
+# 查看慢查询阈值
+show variables like "%long_query_time%";
+# 设置当前会话慢查询阈值
+set long_query_time = 1;
+# 查看当前慢查询sql的个数
+show status like "slow_queries";
+```
+
 #### 开启慢查询日志参数	
 
 1. 查看慢查询日志参数
@@ -632,9 +651,21 @@ Count: 1  Time=0.00s (0s)  Lock=0.00s (0s)  Rows=0.0 (0), 0users@0hosts
   CALL insert_stu1(100001,4000000)
 ```
 
-
-
 #### 关闭慢查询日志参数
+
+```mysql
+mysql>  set global slow_query_log = "off";
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show variables like "%slow_query_log%";
++---------------------+-----------------------------------+
+| Variable_name       | Value                             |
++---------------------+-----------------------------------+
+| slow_query_log      | OFF                               |
+| slow_query_log_file | /home/mysql/data/testttt-slow.log |
++---------------------+-----------------------------------+
+2 rows in set (0.00 sec)
+```
 
 #### 删除慢查询日志参数
 
