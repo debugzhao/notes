@@ -752,12 +752,24 @@ mysql> explain select *  from student where stuno >3453451 and stuno < 3500000;
 
    其中最重要的提取出来（红色标注）。SQL性能优化的目标：至少要得到range级别，要求是ref级别，最好是const级别。
 
-1. possible_keys和key
-2. <font color="red">ken_len</font>
-3. ref
-4. <font color="red">rows</font>
-5. filtered
-6. <font color="red">extra</font>
+6. possible_keys和key
+
+   possible_keys表示的是在某个查询中可能会用到的索引，key列表示的是查询中实际用到的索引，如果为null则表示没有使用到索引。
+
+   ![](https://i.bmp.ovh/imgs/2022/05/21/0cfd3dab46034079.png)
+
+7. <font color="red">key_len</font>
+
+   key_len表示的是实际使用到的索引的长度（单位：字节），可以帮我们检查是否充分使用到了索引。主要是针对联合索引有一定的参考意义，值越大越好。
+
+8. ref
+
+9. <font color="red">rows</font>
+
+10. filtered
+
+11. <font color="red">extra</font>
+
 12. 小结
 
 ### 7.EXPLAIN的进一步使用
