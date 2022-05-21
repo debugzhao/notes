@@ -85,7 +85,6 @@
    页内的记录是按照主键的大小顺序组成一个<font color="red">单项链表</font>
 
    页之间按照主键大小组成一个<font color="red">双向链表</font>
-
    <font color="red">B+树的叶子节点存储的是完整的用户数据</font>
 
 3. 优点
@@ -685,6 +684,46 @@ explain能做是什么：
 4. <font color="red">哪些索引被实际使用</font>
 5. 表之间的引用
 6. <font color="red">每张表有多少行被优化器查询</font>
+
+**explain各列的作用**
+
+```mysql
+mysql> explain select *  from student where stuno >3453451 and stuno < 3500000;
++----+-------------+---------+------------+------+---------------+------+---------+------+---------+----------+-------------+
+| id | select_type | table   | partitions | type | possible_keys | key  | key_len | ref  | rows    | filtered | Extra       |
++----+-------------+---------+------------+------+---------------+------+---------+------+---------+----------+-------------+
+|  1 | SIMPLE      | student | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 3989881 |    11.11 | Using where |
++----+-------------+---------+------------+------+---------------+------+---------+------+---------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+```
+
+| 列名          | 描述                                                   |
+| ------------- | ------------------------------------------------------ |
+| id            | 在一个大的查询语句总每个select都对应一个select id      |
+| select_type   | 查询类型                                               |
+| table         | 表明                                                   |
+| partitions    | 匹配的区分信息                                         |
+| type          | 针对单表的访问方法                                     |
+| possible_keys | 可能用到的索引                                         |
+| key           | 实际使用到的索引                                       |
+| key_len       | 实际使用到的索引的长度                                 |
+| ref           | 当使用索引列等值查询时，与索引列进行等值匹配的对象信息 |
+| rows          | 预估的需要读取的记录条数                               |
+| filtered      | 某个表经过搜索条件过滤之后剩余记录条数的百分比         |
+| Extra         | 一些额外的信息                                         |
+
+1. table
+2. id
+3. select_type
+4. partitions
+5. <font color="red">type</font>
+6. possible_keys和key
+7. <font color="red">ken_len</font>
+8. ref
+9. <font color="red">rows</font>
+10. filtered
+11. <font color="red">extra</font>
+12. 小结
 
 ### 7.EXPLAIN的进一步使用
 
