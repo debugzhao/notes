@@ -462,6 +462,120 @@ show status like "last_query_cost";
 
 ### 4.定位执行慢的SQL：查询日志
 
+#### 开启慢查询日志参数	
+
+1. 查看慢查询日志参数
+
+   ```mysql
+   mysql> show variables like "%slow_query_log";
+   --------------
+   show variables like "%slow_query_log"
+   --------------
+   
+   +----------------+-------+
+   | Variable_name  | Value |
+   +----------------+-------+
+   | slow_query_log | OFF   |
+   +----------------+-------+
+   1 row in set (0.05 sec)
+   ```
+
+2. 开启慢查询日志开关
+
+   ```mysql
+   mysql> set global slow_query_log = "on";
+   --------------
+   set global slow_query_log = "on"
+   --------------
+   
+   Query OK, 0 rows affected (0.01 sec)
+   ```
+
+   ```mysql
+   mysql> show variables like "%slow_query_log";
+   --------------
+   show variables like "%slow_query_log"
+   --------------
+   
+   +----------------+-------+
+   | Variable_name  | Value |
+   +----------------+-------+
+   | slow_query_log | ON    |
+   +----------------+-------+
+   1 row in set (0.00 sec)
+   ```
+
+3. 查看慢查询日志文件绝对路径
+
+   ```mysql
+   mysql> show variables like "%slow_query_log%";
+   --------------
+   show variables like "%slow_query_log%"
+   --------------
+   
+   +---------------------+-----------------------------------+
+   | Variable_name       | Value                             |
+   +---------------------+-----------------------------------+
+   | slow_query_log      | ON                                |
+   | slow_query_log_file | /home/mysql/data/testttt-slow.log |
+   +---------------------+-----------------------------------+
+   2 rows in set (0.00 sec)
+   ```
+
+4. 修改long_query_time阈值
+
+   ```mysql
+   # 设置全局慢查询阈值
+   set global long_query_time = 1;
+   # 设置当前会话慢查询阈值
+   set long_query_time = 1;
+   ```
+
+5. MySQL配置文件中一并设置参数
+
+   ```mysql
+   # 修改my.cnf文件，可以看做是永久配置参数方式
+   [mysqld]
+   slow_query_log=on
+   slow_query_log_file=/var/lib/mysql/node-slow.log
+   long_query_time=3
+   log_output=FILE
+   ```
+
+#### 查看慢查询数目
+
+```mysql
+# 查看慢查询数目，结果表明有三条慢查询SQL
+mysql> show status like "slow_queries";
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| Slow_queries  | 3     |
++---------------+-------+
+1 row in set (0.00 sec)
+```
+
+#### 案例演示
+
+#### 测试及分析
+
+```mysql
+# 查看慢查询数目，结果表明有三条慢查询SQL
+mysql> show status like "slow_queries";
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| Slow_queries  | 3     |
++---------------+-------+
+1 row in set (0.00 sec)
+```
+
+#### 慢查询日志分析工具：mysqldumpslow
+
+#### 关闭慢查询日志参数
+
+#### 删除慢查询日志参数
+
 ### 5.查询SQL执行成本：SHOW PROFILE
 
 ### 6.分析查询语句：EXPLAIN
