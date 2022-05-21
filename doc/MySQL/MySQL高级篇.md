@@ -671,7 +671,20 @@ mysql> show variables like "%slow_query_log%";
 
 ### 5.查询SQL执行成本：SHOW PROFILE
 
-### 6.分析查询语句：EXPLA	IN
+SHOW PROFILE当前已废弃
+
+### 6.分析查询语句：EXPLAIN
+
+<font color="red">定位到查询慢的SQL之后，我们就可以使用explain工具做针对性的分析查询语句</font>
+
+explain能做是什么：
+
+1. 表的读取顺序
+2. 数据读取操作的 操作类型
+3. 哪些索引可以使用
+4. <font color="red">哪些索引被实际使用</font>
+5. 表之间的引用
+6. <font color="red">每张表有多少行被优化器查询</font>
 
 ### 7.EXPLAIN的进一步使用
 
