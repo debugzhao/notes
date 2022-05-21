@@ -764,15 +764,37 @@ mysql> explain select *  from student where stuno >3453451 and stuno < 3500000;
 
 8. ref
 
+   当使用索引列进行等值查询时，与索引列进行等值匹配的对象的信息。
+
 9. <font color="red">rows</font>
+
+   预估的需要读取的记录条数，值越小越好（越小的话对应的记录的数据更有可能在同一个页中，此时IO的次数就会相对更少）
 
 10. filtered
 
 11. <font color="red">extra</font>
 
+    <font color="red">一些额外的信息，我们可以通过外的信息来更加准确的理解MySQL到底是如何执行给定的查询语句的。</font>
+
 12. 小结
 
 ### 7.EXPLAIN的进一步使用
+
+这里谈谈EXPLAIN的输出格式。EXPLAIN可以输出四种格式： 传统格式 ， JSON格式 ， TREE格式 以及 可 视化输出 。用户可以根据需要选择适用于自己的格式。
+
+1. 传统格式
+
+2. JSON格式
+
+   JSON格式：在EXPLAIN单词和真正的查询语句中间加上 FORMAT=JSON 。
+
+   ```mysql
+   EXPLAIN FORMAT=JSON SELECT ....
+   ```
+
+3. TREE格式
+
+4. 可视化输出格式
 
 ### 8.分析优化器的执行计划：trace
 
