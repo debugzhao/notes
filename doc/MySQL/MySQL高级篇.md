@@ -866,6 +866,24 @@ EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE name=123;
 
 #### 范围查询条件右边的列索引失效
 
+```mysql
+# 针对age、name、classid字段建立联合索引
+create index idx_age_name_classid on student(age,classid,name);
+```
+
+```mysql
+EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE student.age=30 AND student.classId>20 AND student.name = 'abc' ;
+```
+
+![](https://i.bmp.ovh/imgs/2022/05/22/e2a83422e3f1cdee.png)
+
+执行计划显示key_len为10，联合索引中实际上就使用到了age、classid索引，<font color="red">因为classid字段使用了范围查询，其后的字段索引会失效。</font>
+
+解决方式：
+
+- 在创建联合索引时，可以把等值查询的字段放在锁边，范围查询的字段放在最后，这样创建的联合索引最终都是有效的。
+- 将范围查询放在where条件的最后
+
 #### 不等于（!= 或者 <>）索引失效
 
 #### is null可以使用索引，is not null无法使用索引
