@@ -900,6 +900,12 @@ EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE student.age=30 AND student.clas
 
 #### OR前后存在非索引列，索引失效
 
+```mysql
+EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE age = 10 OR classid = 100;
+```
+
+age字段有索引（走索引）、classid字段没有索引（全表扫描），通过or的方式查询，最终还是全表扫描。
+
 #### 数据库和表的字符集统一使用uft8mb4
 
 ### 3.关联查询优化
