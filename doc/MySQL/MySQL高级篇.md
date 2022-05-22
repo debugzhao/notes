@@ -888,6 +888,10 @@ EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE student.age=30 AND student.clas
 
 #### is null可以使用索引，is not null无法使用索引
 
+最好<font color="red">在设计数据库表时将字段设置成not null约束</font>。或者给字段设置默认值：int类型默认值为0，字符串类型的默认值为空字符串。
+
+<font color="red">同理，not like也无法使用索引，最终将会导致全表扫描。</font>
+
 #### like通配符以%开头的索引失效
 
 #### OR前后存在非索引列，索引失效
