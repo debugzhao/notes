@@ -857,7 +857,12 @@ EXPLAIN SELECT SQL_NO_CACHE id, stuno, NAME FROM student WHERE stuno+1 = 900001;
 
 #### 类型转换（自动转换或者手动转换）会让索引失效
 
+```mysql
+# 索引失效（因为name为字符串类型，这里传入了整形，存在隐式类型转换问题，最终导致索引失效）
+EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE name=123;
+```
 
+![](https://i.bmp.ovh/imgs/2022/05/22/524a37756753bda5.png)
 
 #### 范围查询条件右边的列索引失效
 
