@@ -839,9 +839,25 @@ MySQL可以为多个字段创建索引，一个索引最多可以包含16个字�
 
 我们自定义的主键列id拥有AUTO_INCREMENT属性，在插入记录时存储引擎会自动为我们填入自增的主键值。这样的<font color="red">主键占用空间小，可以顺序写入，减少页分裂。</font>
 
-#### 计算、函数、类型转换（手动或者自动转换）会让索引失效
+#### 计算、函数会让索引失效
 
-#### 类型转换会让索引失效
+```mysql
+# 可以正常使用索引
+select * from student where student.name like "abc%";
+# 因为使用了left函数，底层进行了全表扫描，最终索引失效
+select * from student where left(student.name, 3) = "abc";
+```
+
+```mysql
+# 因为在索引字段使用了运算，所以索引失效
+EXPLAIN SELECT SQL_NO_CACHE id, stuno, NAME FROM student WHERE stuno+1 = 900001;
+```
+
+![image-20220522160739185](C:\Users\lucas.zhao\AppData\Roaming\Typora\typora-user-images\image-20220522160739185.png)
+
+#### 类型转换（自动转换或者手动转换）会让索引失效
+
+
 
 #### 范围查询条件右边的列索引失效
 
