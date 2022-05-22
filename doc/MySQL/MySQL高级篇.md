@@ -894,6 +894,10 @@ EXPLAIN SELECT SQL_NO_CACHE * FROM student WHERE student.age=30 AND student.clas
 
 #### like通配符以%开头的索引失效
 
+> 拓展：alibaba《Java开发手册》
+>
+> 【强制】页面搜索严禁左模糊或者全模糊，如果需要请走搜索引擎来解决。
+
 #### OR前后存在非索引列，索引失效
 
 #### 数据库和表的字符集统一使用uft8mb4
