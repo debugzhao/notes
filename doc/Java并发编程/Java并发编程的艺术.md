@@ -128,9 +128,33 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 ### 2.2 synchronized的实现原理与应用
 
+本文详细介绍Java SE 1.6中为了减少获得锁和释放锁带来的性能消耗而引入的偏向锁和轻量级 锁，以及锁的存储结构和升级过程。
+
+<font color="red">synchronized实现同步的三种方式：</font>
+
+1. 普通同步方法，锁的是当前实例对象
+2. 静态同步方法，锁的是当前类的class对象
+3. 同步代码块，锁的是synchronized括号里配置的对象
+
+<font color="red">当一个线程试图访问同步代码块时，它首先必须得到锁，退出或抛出异常时必须释放锁。</font>
+
+Synchonized在JVM里的实现原理，JVM基于进入和退出Monitor对 象来实现方法同步和代码块同步，代码块同步是使用monitorenter 和monitorexit指令实现的。
+
 ### 2.2.1 Java对象头
 
+synchronized用的锁是存在Java对象头里的。Java对象头里的Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。
+
+![](https://s3.bmp.ovh/imgs/2022/05/23/a9a03c1b598e1274.png)
+
 ### 2.2.2 锁的升级和对比
+
+Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”。Java SE 1.6中，锁一共有4种状态，级别从低到高依次是：`无锁状态` < `偏向锁状态`  <  `轻量级锁状态`  < `重量级锁状态` 。<font color="red">这几个状态会随着竞争情况逐渐升级，锁可以升级但不能降级，目的是为了提高获得锁和释放锁的效率。</font>
+
+#### 偏向锁
+
+#### 轻量级锁
+
+#### 锁的优缺点和对比
 
 ### 2.3 原子操作的实现原理
 
@@ -167,5 +191,3 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 
 <font color="red"></font>
-
-<font color="green"></font>
