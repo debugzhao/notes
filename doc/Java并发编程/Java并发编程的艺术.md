@@ -104,8 +104,6 @@ public class DeadLockDemo {
   -  数据库的连接数限制
   - socket连接数限制
 
-### 1.4 本章小节
-
 ## 第2章 Java并发编程的底层实现原理
 
 Java代码的底层执行过程：<font color="red">Java代码在编译后会变成Java字节码，字节码经过类加载器加载到JVM中，JVM执行字节码，最终转成成汇编指令在CPU上执行。Java中使用的并发机制依赖于JVM的实现和CPU的指令</font>
@@ -140,17 +138,17 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 Synchonized在JVM里的实现原理，JVM基于进入和退出Monitor对 象来实现方法同步和代码块同步，代码块同步是使用monitorenter 和monitorexit指令实现的。
 
-### 2.2.1 Java对象头
+#### 2.2.1 Java对象头
 
 synchronized用的锁是存在Java对象头里的。Java对象头里的Mark Word里默认存储对象的HashCode、分代年龄和锁标记位。
 
 ![](https://s3.bmp.ovh/imgs/2022/05/23/a9a03c1b598e1274.png)
 
-### 2.2.2 锁的升级和对比
+#### 2.2.2 锁的升级和对比
 
 Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”。Java SE 1.6中，锁一共有4种状态，级别从低到高依次是：`无锁状态` < `偏向锁状态`  <  `轻量级锁状态`  < `重量级锁状态` 。<font color="red">这几个状态会随着竞争情况逐渐升级，锁可以升级但不能降级，目的是为了提高获得锁和释放锁的效率。</font>
 
-#### 偏向锁
+##### 偏向锁
 
 <font color="red">大多数情况下，锁不仅不存在多线程竞争，而且总是由同一线程多次获得，为了让线程获得锁的代价更低而引入了偏向锁。</font>当一个线程访问同步块并获取锁时，会在对象头和栈帧中的锁记录里存储锁偏向的线程ID，以后该线程在进入和退出同步块时不需要进行CAS操作来加锁和解锁，只需简单地测试一下对象头的Mark Word里是否 存储着指向当前线程的偏向锁。
 
@@ -166,7 +164,7 @@ Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“
 
    关闭程序默认会进入轻量级锁状态
 
-#### 轻量级锁
+##### 轻量级锁
 
 1. 轻量级锁加锁过程
 
@@ -178,7 +176,7 @@ Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“
 
    轻量级解锁时，会使用原子的CAS操作将Displaced Mark Word替换回到对象头，如果成功，则表示没有竞争发生。如果失败，表示当前锁存在竞争，锁就会膨胀成重量级锁。
 
-#### 锁的优缺点对比
+##### 锁的优缺点对比
 
 | 锁类型   | 优点                                                         | 缺点                                             | 适用场景                               |
 | -------- | ------------------------------------------------------------ | ------------------------------------------------ | -------------------------------------- |
@@ -188,11 +186,111 @@ Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“
 
 > 什么是自旋？？
 
-#### 锁的优缺点和对比
-
 ### 2.3 原子操作的实现原理
 
-### 2.4 本章小节
+原子操作（atomic operation）意 为“不可被中断的一个或一系列操作”。
+
+#### 术语定义
+
+1. CAS
+   CAS操作需要输入两个值，一个旧值（期望操作之前的值）和一个新值。在操作期间先比较旧值有没有发生变化，如果有发生变化则说明该值已经被其他线程修改过，则不进行交换；如果没有发生变化，则交换新的值。
+
+#### 处理器如何实现原子操作
+
+1. 使用总线保证原子性
+2. 使用缓存锁保证原子性
+
+#### Java如何实现原子操作
+
+<font color="red">Java中可以通过锁和循环CAS的方式实现原子性。</font>
+
+##### 使用循环CAS实现原则操作
+
+<font color="red">自旋CAS实现的基本 思路就是循环进行CAS操作直到成功为止。</font>
+
+```java
+public class Counter {
+    private AtomicInteger atomicI = new AtomicInteger(0);
+    private int           i       = 0;
+
+    public static void main(String[] args) {
+        final Counter cas = new Counter();
+        List<Thread> ts = new ArrayList<Thread>(600);
+        long start = System.currentTimeMillis();
+        for (int j = 0; j < 100; j++) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 10000; i++) {
+                        cas.count();
+                        cas.safeCount();
+                    }
+                }
+            });
+            ts.add(t);
+        }
+        for (Thread t : ts) {
+            t.start();
+
+        }
+
+        // 等待所有的子线程执行完成
+        for (Thread t : ts) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        System.out.println(cas.i);
+        System.out.println(cas.atomicI.get());
+        System.out.println(System.currentTimeMillis() - start);
+    }
+
+    /**
+     * 通过CAS操作实现的线程安全的方法
+     */
+    private void safeCount() {
+        for (;;) {
+            int i = atomicI.get();
+            boolean suc = atomicI.compareAndSet(i, ++i);
+            if (suc) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * 非线程安全方法
+     */
+    private void count() {
+        i++;
+    }
+}
+```
+
+##### CAS带来的三大问题
+
+1. ABA问题
+
+   因为CAS需要在操作值的时候，检查值有没有发生变化，如果没有发生变化 则更新，但是如果一个值原来是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它 的值没有发生变化，但是实际上却变化了。
+
+   <font color="red">ABA问题的解决思路就是使用版本号。在变量前面 追加上版本号，每次变量更新的时候把版本号加1，那么A→B→A就会变成1A→2B→3A。</font>
+
+2. 循环时间长开销大
+
+   自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。
+
+3. 只能保证一个共享变量的原则操作
+
+   当对一个共享变量执行操作时，我们可以使用循 环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性
+
+##### 使用锁实现原子操作
+
+<font color="red">锁机制保证了只有获得锁的线程才能够操作锁定的内存区域。</font>JVM内部实现了很多种锁 机制，有偏向锁、轻量级锁和互斥锁，
+
+
 
 ## 第3章 Java内存模型
 
