@@ -417,7 +417,49 @@ Daemon线程是一种支持型线程，因为它主要被用作程序中后台�
 
 suspend()、resume()和stop()方法完成了线程的暂停、恢复和终 止工作，而且非常“人性化”。<font color="red">但是这些API是过期的，也就是不建议使用的。</font>
 
-不建议使用的原因主要有：以suspend()方法为例，在调用后，线程不会释放已经占有的资 源（比如锁），而是占有着资源进入睡眠状态，这样容易引发死锁问题。
+不建议使用的原因主要有：以suspend()方法为例，在调用后，线程不会释放已经占有的资 源（比如锁），而是占有着资源进入睡眠状态，这样容易引发死锁问题。 
+
+#### <font color="red">优雅地终止线程</font>
+
+的中断状态是线程的一个标识位，而中断操作是一种简便的线程间交互 方式，而这种交互方式最适合用来取消或停止任务。除了中断以外，还可以利用一个boolean变 量来控制是否需要停止任务并终止该线程。
+
+```java
+public class Shutdown {
+    public static void main(String[] args) throws Exception {
+        Runner one = new Runner();
+        Thread countThread = new Thread(one, "CountThread1");
+        countThread.start();
+        // 睡眠1秒，main线程对CountThread进行中断，使CountThread能够感知中断而结束
+        TimeUnit.SECONDS.sleep(1);
+        countThread.interrupt();
+
+        Runner two = new Runner();
+        countThread = new Thread(two, "CountThread2");
+        countThread.start();
+        // 睡眠1秒，main线程对Runner two进行取消，使CountThread能够感知on为false而结束
+        TimeUnit.SECONDS.sleep(1);
+        two.cancel();
+    }
+
+
+    private static class Runner implements Runnable {
+        private long i;
+        private volatile boolean on = true;
+        @Override
+        public void run() {
+            while (on && !Thread.currentThread().isInterrupted()){
+                i++;
+            }
+            System.out.println(Thread.currentThread().getName() + " Count i = " + i);
+        }
+        public void cancel() {
+            on = false;
+        }
+    }
+}
+```
+
+main线程通过中断操作和cancel()方法均可使CountThread得以终止。 这种通过标识位或者中断操作的方式能够使<font color="red">线程在终止时有机会去清理资源</font>，而不是武断地将线程停止，因此<font color="red">这种终止线程的做法显得更加安全和优雅</font>
 
 ### 4.3 线程间通信
 
