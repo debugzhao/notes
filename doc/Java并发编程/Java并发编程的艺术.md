@@ -463,9 +463,112 @@ main线程通过中断操作和cancel()方法均可使CountThread得以终止。
 
 ### 4.3 线程间通信
 
+#### volatile和synchronized关键字
+
+Java支持多个线程同时访问一个对象或者对象的成员变量，由于每个线程可以拥有这个变量的拷贝，所以程序在执行过程中，一个线程看到的变量并不一定是最新的。
+
+<font color="red">关键字volatile可以保证所有线程对共享变量的访问的可见性。就是告知线程对共享变量的访问需要从主存中获取，而对共享变量的改变必须同步刷新回主存。</font>
+
+<font color="red">关键字synchronized可以用来修饰同步方法或者同步代码块，它可以用来确保多个线程在同一时刻只能有一个线程执行同步方法或者同步代码块，保证了线程对同步方法/同步代码块的可见性和排他性</font>
+
+#### 等待/通知机制
+
+```java
+while (value != desire) {
+	Thread.sleep(1000);
+}
+doSomething();	
+```
+
+上述这段循环检查代码弊端：
+
+1. 难以确保及时性
+
+   在睡眠时，基本不消耗处理器资源，但是如果睡得过久，就不能及时 发现条件已经变化，也就是及时性难以保证
+
+2. 难以减低开销
+
+   如果降低睡眠的时间，比如休眠1毫秒，这样消费者能更加迅速地发现 条件变化，但是却可能消耗更多的处理器资源，造成了无端的浪费
+
+以上两个问题，看似矛盾难以调和，<font color="red">但是Java通过内置的等待/通知机制能够很好地解决 这个矛盾并实现所需的功能。</font>
+
+| 方法名称        | 描述                                                         |
+| --------------- | ------------------------------------------------------------ |
+| notify()        | 通知一个在对象上等待的线程，并使其从wait()方法返回<br />而返回的前提是线程获取了到对象的锁 |
+| notifyAll()     | 通知所有在等待该对象上的线程                                 |
+| wait()          | 调用该方法的线程会进入WAITING状态，只有被其他线程通知或者中断才能返回<br />调用wait方法后，会释放对象的锁 |
+| wait(long)      | 超时等待一段时间，如果没有通知就超时返回                     |
+| wait(long, int) | 更加细粒度的超时等待，可以达到纳秒级别                       |
+
+```java
+public class WaitNotify {
+    static boolean flag = true;
+    static Object lock = new Object();
+    public static void main(String[] args) throws Exception {
+        Thread waitThread = new Thread(new Wait(), "WaitThread");
+        waitThread.start();
+        TimeUnit.SECONDS.sleep(1);
+        Thread notifyThread = new Thread(new Notify(), "NotifyThread");
+        notifyThread.start();
+    }
+    static class Wait implements Runnable {
+        @Override
+        public void run() {
+            // 加锁，拥有lock的Monitor
+            synchronized (lock) {
+                // 当条件不满足时，继续wait，同时释放了lock的锁
+                while (flag) {
+                    try {
+                        System.out.println(Thread.currentThread() + " flag is true. wait @ " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                    }
+                }
+                // 条件满足时，完成工作
+                System.out.println(Thread.currentThread() + " flag is false. running @ " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+            }
+        }
+    }
+    static class Notify implements Runnable {
+        @SneakyThrows
+        @Override
+        public void run() {
+            // 加锁，拥有lock的Monitor
+            synchronized (lock) {
+                // 获取lock的锁，然后进行通知，通知时不会释放lock的锁，
+                // 直到当前线程释放了lock后，WaitThread才能从wait方法中返回
+                System.out.println(Thread.currentThread() + " hold lock. notify @ " +  new SimpleDateFormat("HH:mm:ss").format(new Date()));
+                lock.notifyAll();
+                flag = false;
+                TimeUnit.SECONDS.sleep(5);
+            }
+            // 再次加锁
+            synchronized (lock) {
+                System.out.println(Thread.currentThread() + " hold lock again. sleep  @ " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+                TimeUnit.SECONDS.sleep(5);
+            }
+        }
+    }
+}
+```
+
+#### 等待/通知机制的经典范式
+
+#### 管道输入/输出流
+
+#### Thread.join()的使用
+
+#### ThreadLocal的使用
+
 ### 4.4 线程应用实例
 
+#### 等待超时模式
 
+#### 一个简单的数据库连接池示例
+
+#### 线程池技术及其示例
+
+#### 一个基于线程池技术的简单web服务器
 
 
 
