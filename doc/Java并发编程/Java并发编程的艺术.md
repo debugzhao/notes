@@ -108,7 +108,7 @@ public class DeadLockDemo {
 
 Java代码的底层执行过程：<font color="red">Java代码在编译后会变成Java字节码，字节码经过类加载器加载到JVM中，JVM执行字节码，最终转成成汇编指令在CPU上执行。Java中使用的并发机制依赖于JVM的实现和CPU的指令</font>
 
-### 2.1 volatile的应用
+### 2.1 volatile的应用❗❗
 
 volatile是轻量级的 synchronized，它在多处理器开发中<font color="red">保证了共享变量的“可见性”</font>。可见性的意思是当一个线程 修改一个共享变量时，另外一个线程能读到这个修改的值。
 <font color="red">如果volatile变量修饰符使用恰当 的话，它比synchronized的使用和执行成本更低，因为它不会引起线程上下文的切换和调度。</font>
@@ -124,7 +124,7 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 #### volatile的使用优化
 
-### 2.2 synchronized的实现原理与应用
+### 2.2 synchronized的实现原理与应用❗❗
 
 本文详细介绍Java SE 1.6中为了减少获得锁和释放锁带来的性能消耗而引入的偏向锁和轻量级 锁，以及锁的存储结构和升级过程。
 
@@ -144,7 +144,7 @@ synchronized用的锁是存在Java对象头里的。Java对象头里的Mark Word
 
 ![](https://s3.bmp.ovh/imgs/2022/05/23/a9a03c1b598e1274.png)
 
-#### 2.2.2 锁的升级和对比
+#### 2.2.2 锁的升级和对比❗❗
 
 Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”。Java SE 1.6中，锁一共有4种状态，级别从低到高依次是：`无锁状态` < `偏向锁状态`  <  `轻量级锁状态`  < `重量级锁状态` 。<font color="red">这几个状态会随着竞争情况逐渐升级，锁可以升级但不能降级，目的是为了提高获得锁和释放锁的效率。</font>
 
@@ -186,7 +186,7 @@ Java SE 1.6为了减少获得锁和释放锁带来的性能消耗，引入了“
 
 > 什么是自旋？？
 
-### 2.3 原子操作的实现原理
+### 2.3 原子操作的实现原理❗❗
 
 原子操作（atomic operation）意 为“不可被中断的一个或一系列操作”。
 
@@ -292,7 +292,7 @@ public class Counter {
 
 ## 第3章 Java内存模型
 
-### 3.1 Java内存模型基础
+### 3.1 <font color="red">Java内存模型基础❗❗</font>
 
 #### 并发编程模型的两个关键问题
 
@@ -327,7 +327,7 @@ Java线程之间的通信由Java内存模型（本文简称为JMM）控制，JMM
 
 <img src="https://i.bmp.ovh/imgs/2022/05/24/2027261227b4d783.png" style="zoom:67%;" />
 
-#### 从源代码到指令序列的重排序
+#### 从源代码到指令序列的重排序❗❗
 
 在执行程序时，为了提高性能，编译器和处理器常常会对指令做重排序。
 
@@ -341,7 +341,7 @@ Java线程之间的通信由Java内存模型（本文简称为JMM）控制，JMM
 
 在JMM中，如果一 个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须要存在happens-before关 系
 
-### 3.2 重排序
+### 3.2 重排序❗❗
 
 重排序是指编译器和处理器为了优化程序性能而对指令序列进行重新排序的一种手段
 
@@ -353,7 +353,7 @@ Java线程之间的通信由Java内存模型（本文简称为JMM）控制，JMM
 
 ### 3.6 finale域的内存语义
 
-### 3.7 happens-before原则
+### 3.7 happens-before原则❗❗
 
 ### 3.8 双重检查锁与延迟初始化
 
@@ -419,7 +419,7 @@ suspend()、resume()和stop()方法完成了线程的暂停、恢复和终 止�
 
 不建议使用的原因主要有：以suspend()方法为例，在调用后，线程不会释放已经占有的资 源（比如锁），而是占有着资源进入睡眠状态，这样容易引发死锁问题。 
 
-#### <font color="red">优雅地终止线程</font>
+#### <font color="red">优雅地终止线程❗❗</font>
 
 的中断状态是线程的一个标识位，而中断操作是一种简便的线程间交互 方式，而这种交互方式最适合用来取消或停止任务。除了中断以外，还可以利用一个boolean变 量来控制是否需要停止任务并终止该线程。
 
@@ -471,7 +471,7 @@ Java支持多个线程同时访问一个对象或者对象的成员变量，由�
 
 <font color="red">关键字synchronized可以用来修饰同步方法或者同步代码块，它可以用来确保多个线程在同一时刻只能有一个线程执行同步方法或者同步代码块，保证了线程对同步方法/同步代码块的可见性和排他性</font>
 
-#### 等待/通知机制
+#### 等待/通知机制❗❗
 
 ```java
 while (value != desire) {
@@ -552,13 +552,17 @@ public class WaitNotify {
 }
 ```
 
+![](https://s3.bmp.ovh/imgs/2022/05/26/3eaac49c9b96a88d.png)
+
+在图4-3中，WaitThread首先获取了对象的锁，然后调用对象的wait()方法，从而放弃了锁 并进入了对象的等待队列WaitQueue中，进入等待状态。由于WaitThread释放了对象的锁， NotifyThread随后获取了对象的锁，并调用对象的notify()方法，将WaitThread从WaitQueue移到 SynchronizedQueue中，此时WaitThread的状态变为阻塞状态。NotifyThread释放了锁之后， WaitThread再次获取到锁并从wait()方法返回继续执行
+
 #### 等待/通知机制的经典范式
 
 #### 管道输入/输出流
 
-#### Thread.join()的使用
+#### Thread.join()的使用❗❗
 
-#### ThreadLocal的使用
+#### ThreadLocal的使用❗❗
 
 ### 4.4 线程应用实例
 
