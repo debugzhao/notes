@@ -1039,6 +1039,11 @@ EXPLAIN SELECT * FROM student ORDER BY age DESC classid DESC LIMIT 10;
 
 ### 6.GROUP BY优化
 
+- GROUP BY使用索引的原则几乎和ORDER BY一致，可以直接使用索引
+- GROUP BY先排序再分组，遵照索引建的最左匹配原则
+- <font color="red">WHERE使用效率高于HAVING，能使用WHERE就不使用HAVING</font>
+- ORDER BY、GROUP BY、DISTINCT这些语句比较消耗CPU，可以选择让代码去实现类似的功能
+
 ### 7.优化分页查询
 
 ### 8.优先考虑覆盖索引
@@ -1063,3 +1068,4 @@ EXPLAIN SELECT * FROM student ORDER BY age DESC classid DESC LIMIT 10;
 
 
 
+<font color="red"></font>
