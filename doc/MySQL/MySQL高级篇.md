@@ -1046,6 +1046,24 @@ EXPLAIN SELECT * FROM student ORDER BY age DESC classid DESC LIMIT 10;
 
 ### 7.优化分页查询
 
+一般的分页查询，通过创建覆盖索引可以很好的提高性能。但是还是不能避免一个非常常见又头疼的问题比如：`limit 2000000, 10`，此时MySQL需要对2000010条记录排序，仅仅返回第2000000 ~ 2000010条记录，其他的则丢弃掉，排序查询的代价是非常大的
+
+**优化方式：**
+
+1. 先在索引上完成排序分页操作，最后根据主键关联会原表查询原表所需要的内容
+
+   ```mysql
+   EXPLAIN SELECT * FROM student t, (SELECT id FROM student ORDER BY id LIMIT 2000000, 10) id_temp_table WHERE t.id = id_temp_table.id
+   ```
+
+   ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.38ab87ckhp80.webp)
+
+2. 该方案适合主键自增的表，可以把LIMIT查询转换成某个范围查询
+
+   ```mysql
+   EXPLAIN SELECT * FROM student WHERE id > 2000000 LIMIT 10;
+   ```
+
 ### 8.优先考虑覆盖索引
 
 ### 9.如何给字符串添加索引
