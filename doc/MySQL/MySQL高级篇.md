@@ -672,7 +672,7 @@ mysql> show variables like "%slow_query_log%";
 
 SHOW PROFILE当前已废弃
 
-### 6.分析查询语句：EXPLAIN
+### 6.[分析查询语句：EXPLAIN](https://segmentfault.com/a/1190000022696458)
 
 <font color="red">定位到查询慢的SQL之后，我们就可以使用explain工具做针对性的分析查询语句</font>
 
@@ -918,11 +918,29 @@ age字段有索引（走索引）、classid字段没有索引（全表扫描）�
 
 #### 数据准备
 
-
-
 #### 采用左外连接
 
+```mysql
+EXPLAIN SELECT SQL_NO_CACHE * FROM `type` LEFT JOIN book ON type.card = book.card;
+```
+
+![Snipaste_2022-05-28_12-07-08](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/Snipaste_2022-05-28_12-07-08.3js22ouilpg0.webp)
+
+结论：没有添加索引，type类型为All，走的是全表查询
+
+```mysql
+# 给被驱动表添加索引(可以避免全表扫描)
+ALTER TABLE book ADD INDEX Y ( card); 
+EXPLAIN SELECT SQL_NO_CACHE * FROM `type` LEFT JOIN book ON type.card = book.card;
+```
+
+可以看到第二行的 type 变为了 ref，rows 也变成了优化比较明显。这是由左连接特性决定的。<font color="red">LEFT JOIN条件用于确定如何从右表中进行搜索，左表的数据一定都有，所以右表即被驱动表使我们优化的关键，一定要添加索引。</font>
+
 #### 采用内连接
+
+1. 对于内连接查询，查询优化器可以决定谁作为驱动表，谁作为被驱动表
+2. 对于内连接查询，如果表的连接条件中只有一个字段有索引，那么有索引的字段所在的表会被作为被驱动表
+3. 对于内连接查询，如果表的连接条件都存在索引的情况下，优化器会选择小表作为驱动表。<font color="red">即小表驱动大表</font>
 
 #### join原理
 
