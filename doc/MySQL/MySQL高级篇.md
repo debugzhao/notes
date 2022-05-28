@@ -960,11 +960,82 @@ INLJ其优化的思路就是为了减少内层表数据的匹配次数，所以�
 6. LEFT JOIN时，选择小表作为驱动表，大表作为被驱动表。减少外层循环的次数
 7. INNER JOIN时，MySQL会选择将小结果集作为驱动表。
 8. 能够直接多表关联的查询尽量选择关联查询，减少子查询
-9. 不建议使用子查询，建议将子查询SQL拆开结合程序进行多次查询，或者使用连接查询代替
 
 ### 4.子查询优化
 
+子查询即一个SELECT的查询结果可以作为另外一个SELECT语句的查询条件，子查询可以一次性完成逻辑上需要多个操作才能完成的SQL操作。
+
+虽然子查询可以帮助我们完成复杂的查询，但是子查询的查询效率并不高，原因如下：
+
+1. <font color="red">子查询会建立临时表</font>
+
+   执行子查询时，MySQL会为内层的查询结果建立一个临时表，然后外层查询从零时表中查询记录。查询完毕时，再撤销这些临时表。这样会消耗过多的CPU资源和IO资源，导致大量的慢查询
+
+2. <font color="red">子查询的结果集不存在索引</font>
+
+   子查询的结果存在临时表中，无论是内存临时表还是磁盘临时表都不会存在索引，所以查询效率会受到一定影响
+
+3. <font color="red">子查询性能受结果集大小影响</font>
+
+   对于返回结果集比较大的子查询，其查询性能影响也会比较大
+
+<font color="red">不建议使用子查询，建议将子查询SQL拆开结合程序进行多次查询，或者使用连接查询代替</font>
+
+> 小提示：尽量不要使用NOT IN或者NOT EXISTS，用LEFT JOIN xxx ON xxx WHERE xx IS NULL代替
+
 ### 5.排序优化
+
+Q：在WHERE条件字段上添加索引之后，为什么还要在ORDER BY字段加索引呢？
+
+A：在MySQL中，默认支持两种排序方式，分别是`FileSore`和`Index`排序
+
+- Index排序：索引可以保证数据的有效性，不需要再进行排序，效率更高
+- FileSort排序：FileSort排序一般在内存中进行排序，占用CPU较多。如果待排序结果较大，会产生临时文件IO到磁盘中进行排序的情况，效率较低
+
+**优化建议：**
+
+1. 在进行SQL查询时，可以在WHERE和ORDER BY子句中使用索引，目的是<font color="red">在WHERE子句中避免进行全表扫描，在ORDER BY子句中避免使用FileSort排序</font>
+2. 尽量使用Index完成ORDER BY排序。如果WHERE和ORDER BY是相同的列则使用单列索引，如果不相同则可以考虑使用联合索引
+
+#### order by时不limit，索引失效
+
+```mysql
+# 创建索引
+CREATE INDEX index_age_classid_name on student(age, classid, name);
+# 没有limit限制，索引失效
+# order by时走的是(age, classid)二级索引，但是由于查询的是全部字段，
+# 还需要进行回表操作，性能还不如全表扫描，最终优化器不适用索引，进行全表扫描
+EXPLAIN SELECT SQL_NO_CACHE * FROM student ORDER BY age, classid;
+# 进行了limit限制，只需要对前10条数据进行回表即可，最终走的是联合索引
+EXPLAIN SELECT SQL_NO_CACHE * FROM student ORDER BY age, classid LIMIT 10;
+```
+
+#### order by时顺序错误（不符合最左匹配原则），索引失效
+
+```mysql
+# 创建索引
+CREATE INDEX index_age_classid_name on student(age, classid, name);
+# 索引有效
+EXPLAIN SELECT * FROM student ORDER BY classid LIMIT 10;
+# 索引失效(不符合联合索引的最左匹配原则)
+EXPLAIN SELECT * FROM student ORDER BY classid, name LIMIT 10;
+```
+
+#### order by时排序顺序不一致，索引失效
+
+```mysql
+# 创建索引
+CREATE INDEX index_age_classid_name on student(age, classid, name);
+CREATE INDEX index_age_classid_stuno on student(age, classid, stuno);
+# 一个升序、一个降序，索引失效
+EXPLAIN SELECT * FROM student ORDER BY age DESC classid ASC LIMIT 10;
+# 不符合最左匹配原则，索引失效
+EXPLAIN SELECT * FROM student ORDER BY classid DESC name DESC LIMIT 10;
+# 两个降序，索引有效
+EXPLAIN SELECT * FROM student ORDER BY age DESC classid DESC LIMIT 10;
+```
+
+#### 无过滤，不索引
 
 ### 6.GROUP BY优化
 
@@ -992,4 +1063,3 @@ INLJ其优化的思路就是为了减少内层表数据的匹配次数，所以�
 
 
 
-<font color="red"></font>
