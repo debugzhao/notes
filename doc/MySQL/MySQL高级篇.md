@@ -1138,8 +1138,6 @@ select * from user where user_id in (select id, age from B);
 
 在 MySQL 中统计数据表的行数，可以使用三种方式： SELECT COUNT(*) 、 SELECT COUNT(1) 和 SELECT COUNT(具体字段) ，使用这三者之间的查询效率是怎样的？
 
-
-
 #### 关于SELECT(*)
 
 在表查询中，建议明确查询字段，不要使用*作为查询的字段列表，原因如下：
@@ -1148,6 +1146,10 @@ select * from user where user_id in (select id, age from B);
 2. 无法使用`聚簇索引`
 
 #### LIMIT 1对优化的影响
+
+LIMIT 1对优化的影响针对的是会扫描全表的SQL语句，如果可以确定查询结果只有一条，那么加上`LIMIT 1`时，当找到结果的时候就不会继续扫描了，可以加快查询时间
+
+如果数据库表已经对字段建立了唯一索引，那么可以通过索引进行查询，不需要加上`LIMIT 1`
 
 #### 多使用COMMIT
 
