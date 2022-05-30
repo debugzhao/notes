@@ -1085,6 +1085,72 @@ EXPLAIN SELECT * FROM student ORDER BY age DESC classid DESC LIMIT 10;
 
 ### 12.其他查询优化策略
 
+#### EXISTS和IN的区分
+
+##### EXISTS介绍
+
+EXISTS对外表用loop逐条查询，每次查询都会查看exists的条件语句，当exists的条件语句能够返回记录行时（无论行数是多少，只要能返回）条件就为真，返回当前loop到的这条记录；反之exists里的条件为假即不能返回记录行，则外表loop到的这条记录就被丢弃。exists的条件就像一个bool条件，当能返回一个结果集时就为true，不能返回结果集时就为false
+
+```mysql
+select * from user where exists (select 1);
+```
+
+对user表的记录逐条取出，由于子条件中的`select 1`永远能返回记录行，那么user表的所有记录都将被加入结果集，所以与`select * from user;`是一样的。
+
+**结论：如果A表中有n条记录，那么exists查询就是将这n条记录逐条取出，然后判断n遍exists条件**
+
+##### IN介绍
+
+in查询就是相当于多个or条件查询的叠加
+
+```mysql
+select * from user where user_id in (1, 2, 3);
+# 等效于
+select * from user where user_id = 1 or user_id = 2 or user_id = 3;
+```
+
+**结论：in查询就是将子查询的条件的记录全部查询出来，假设结果集为B，共有m条记录，然后再将查询条件的结果集分解成m个，再进行m次查询。**
+
+##### 使用上的区别
+
+in查询的子条件返回结果必须只有一个字段，例如
+
+```mysql
+select * from user where user_id in (select id from B);
+```
+
+不能是多个字段，例如：
+
+```mysql
+select * from user where user_id in (select id, age from B);
+```
+
+但是exists就没有查询字段个数的限制
+
+##### 结论
+
+<font color="red">MySQL中in语句是把外表和内表做join连接；而exists是对外表做loop循环，每次循环再对exists的条件进行判断。</font>
+
+1. <font color="red">如果查询的两个表大小相当，那么用in和exists差别不大</font>
+2. <font color="red">如果两个表中一个表大一个表小，那么IN适合外表大而子表小的情况；EXISTS适合外表小而子表大的情况</font>
+
+#### COUNT(*)和COUNT(具体字段)效率
+
+在 MySQL 中统计数据表的行数，可以使用三种方式： SELECT COUNT(*) 、 SELECT COUNT(1) 和 SELECT COUNT(具体字段) ，使用这三者之间的查询效率是怎样的？
+
+
+
+#### 关于SELECT(*)
+
+在表查询中，建议明确查询字段，不要使用*作为查询的字段列表，原因如下：
+
+1. MySQL在解析过程中，会通过`查询数据字典`将 * 转换成所有列，转换过程中会大大消耗资源和时间
+2. 无法使用`聚簇索引`
+
+#### LIMIT 1对优化的影响
+
+#### 多使用COMMIT
+
 ### 13.淘宝数据库，主键如何设计
 
 
