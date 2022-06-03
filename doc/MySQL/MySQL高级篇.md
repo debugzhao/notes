@@ -1257,9 +1257,45 @@ LIMIT 1对优化的影响针对的是会扫描全表的SQL语句，如果可以�
 
 #### 读写分离
 
+主库负责写，从库负责读取数据
+
+1. 一主一从模式
+
+   ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.32qmkg73wkk0.webp)
+
+2. 双主双从模式
+
+   ![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1aub6ttdkr1c.webp)
+
 #### 垂直拆分
 
+当数据量级达到 千万级 以上时，有时候我们需要把一个数据库切成多份，放到不同的数据库服务器上， 减少对单一数据库服务器的访问压力
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.1wl74rka9qsg.webp)
+
+**垂直拆分优点：**
+
+可以使得列数据变小，在查询时减少读取的block数，减少IO次数
+
+**垂直拆分缺点：**
+
+垂直拆分会出现主键冗余的情况，需要额外管理冗余的主键。垂直拆分会让事务变得更加复杂
+
 #### 水平拆分
+
+![image](https://cdn.jsdelivr.net/gh/Andre235/-community@master/src/image.11a6g5gw28kw.webp)
+
+下面补充一下数据库分片的两种常见方案
+
+1. 客户端代理
+
+    分片逻辑在应用端，封装在jar包中，通过修改或者封装JDBC层来实现。
+
+2. 中间件代理
+
+   在应用和数据中间加了一个代理层。分片逻辑统一维护在中间件服务中
+
+1. 
 
 ### 5.其他调优策略
 
@@ -1274,3 +1310,4 @@ LIMIT 1对优化的影响针对的是会扫描全表的SQL语句，如果可以�
 
 
 <font color="red"></font>
+
