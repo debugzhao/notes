@@ -10,7 +10,7 @@
 4. 对java哪块比较熟，hashmap结构，怎么解决线程不安全的问题，自己设计一个线程安全的hashmap 。concurrenthashmap如果保证线程安全，扩容时锁住什么，锁住class还用调用实例对象方法吗
 #### 计算机网络
 
-##### OSI七层网络模型
+##### [OSI七层网络模型](https://zhuanlan.zhihu.com/p/32059190)
 
 ![Snipaste_2022-06-09_07-57-50](https://pic1.zhimg.com/80/v2-2d62ba265be486cb94ab531912aa3b9c_720w.jpg)
 
@@ -32,16 +32,41 @@
 | 数据链路层      | 由底层网络定义的协议    | 交换机       |
 | 物理层          | 由底层网络定义的协议    | 网卡         |
 
+##### [TCP三次握手](https://hit-alibaba.github.io/interview/basic/network/TCP.html)
 
+TCP如何保证可靠传输（三次握手，建立连接，滑动窗口，快重传等）
 
-1. tcp三次握手
-2. TCP如何保证可靠传输（三次握手，建立连接，滑动窗口，快重传等）
-3. 在应用层可以监听传输层的数据包么
-4. MTU最大多大，在哪一层
-5. Session和Cookie
-6. http/s区别
-7. 非对称加密
-9. 请求头？如何设置过期时间
+在应用层可以监听传输层的数据包么
+
+MTU最大多大，在哪一层
+
+##### Session和Cookie
+
+Session和Cookie本质上都是用来记录用户信息的。主要区别在于
+
+1. 认证过程的区别
+
+   Cookie认证过程：服务端会给客户端颁发一个Cookie，浏览器会把Cookie保存起来。当浏览器再起请求网站时会把请求地址和Cookie一同发给服务器。服务器检查该cookie，从而判断用户的状态。
+
+   Session认证过程：当浏览器访问服务器时，服务器会把客户端信息以某种形式记录在服务器上，这就是session。当下次浏览器再次访问服务器时，只需要从该session查找用户的状态即可。
+
+2. 存储位置不同
+
+   Cookie存储在客户端（浏览器中），Session存储在服务端。
+
+3. 存储容量不同
+
+   Cookie的存储容量很小，Session的存储容量很大
+
+4. 安全性不同
+
+   Cookie安全性较低，Session安全性很高
+
+http和https的区别
+
+非对称加密
+
+请求头？如何设置过期时间
 
 #### 操作系统
 
