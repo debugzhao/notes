@@ -34,15 +34,39 @@
 
 ##### [TCP三次握手](https://hit-alibaba.github.io/interview/basic/network/TCP.html)
 
-TCP如何保证可靠传输（三次握手，建立连接，滑动窗口，快重传等）
+##### TCP如何保证可靠传输（三次握手，建立连接，滑动窗口，快重传等）
 
-在应用层可以监听传输层的数据包么
+##### 在应用层可以监听传输层的数据包么
 
-MTU最大多大，在哪一层
+##### MTU最大多大，在哪一层
 
-##### Session和Cookie
+##### Session、Cookie、Token的区别
 
-Session和Cookie本质上都是用来记录用户信息的。主要区别在于
+<font color="red">出现cookie和session的原因：由于HTTP协议是无状态的协议，所以如果服务端需要记录用的状态就需要通过某种机制来识别具体的用户。此时cookie和session就</font>
+
+Session：我们把这种能识别哪个请求由哪个用户发起的机制称为 Session（会话机制），生成的能识别用户身份信息的字符串称为 **sessionId**，sessionId 需要借助 cookie 的传递才有意义。
+
+[**Session的痛点**](https://www.zhihu.com/question/19786827/answer/2064471064)
+
+在单点系统中session可以满足用户认证的需求，但是在分布式高可用系统中通过session机制来完成用户认证就会出现问题
+
+![](https://i.bmp.ovh/imgs/2022/06/11/92377a4006b7901f.png)
+
+如图示：客户端请求后，由[负载均衡器](https://www.zhihu.com/search?q=负载均衡器&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A2064471064})（如 Nginx）来决定到底打到哪台机器。假设登录请求打到了 A 机器，A 机器生成了 session 并在 cookie 里添加 sessionId 返回给了浏览器，那么问题来了：下次添加购物车时如果请求打到了 B 或者 C，由于 session 是在 A 机器生成的，此时的 B,C 是找不到 session 的，那么就会发生无法添加购物车的错误，就得重新登录了，此时请问该怎么办。主要有以下三种解决方案
+
+1. session复制
+
+   ![](https://pic1.zhimg.com/80/v2-75d3d54a13e5ff882f55f932db4e6249_720w.jpg?source=1940ef5c)
+
+2. session粘连
+
+   ![](https://pic2.zhimg.com/80/v2-36bbaea261ab09dc07ce0fc33fa851b6_720w.jpg?source=1940ef5c)
+
+3. session共享
+
+   ![](https://pic1.zhimg.com/80/v2-7c43c11f9679bb9267c72dfb028cada6_720w.jpg?source=1940ef5c)
+
+**Session和Cookie本质上都是用来记录用户信息的。主要区别在于**
 
 1. 认证过程的区别
 
@@ -62,11 +86,64 @@ Session和Cookie本质上都是用来记录用户信息的。主要区别在于
 
    Cookie安全性较低，Session安全性很高
 
-http和https的区别
+**Token**
 
-非对称加密
+![](https://pic1.zhimg.com/80/v2-feb6b5939996bf5c25adc5da9bc6c37f_720w.jpg?source=1940ef5c)
 
-请求头？如何设置过期时间
+可以看到 token 主要由三部分组成 1. header：指定了签名算法 2. payload：可以指定用户 id，过期时间等非敏感数据 3. Signature: 签名，server 根据 header 知道它该用哪种签名算法，再用密钥根据此签名算法对 head + payload 生成签名，这样一个 token 就生成了。
+
+##### http和https的区别
+
+<font color="red">HTTP协议：</font>HTTP是一个基于TCP/IP通信协议来传递数据的协议
+
+<font color="red">基于HTTP协议访问百度网站过程：</font>
+
+<img src="https://i.bmp.ovh/imgs/2022/06/12/e1b327f68296f0c5.png" style="zoom:67%;" />
+
+1. DNS域名解析服务器解析百度网站的IP地址
+2. 发起TCP请求，三次握手建立连接
+3. HTTP请求
+4. HTTP响应
+5. 客户端将请求到的数据和资源渲染给前端用户
+
+<font color="red">HTTP协议特点：</font>
+
+1. HTTP协议支持客户端/服务端模式，也是一种请求/响应模式的协议
+2. 无连接。每次连接只能处理一个请求
+3. 无状态。协议不知道是哪个用户发起的请求
+
+<font color="red">HTTP协议存在的问题：</font>
+
+1. 请求信息明文传输，容易被窃听截取
+2. 数据的完整性未校验，容易被篡改
+3. 没有验证对方身份，存在冒充危险
+
+<font color="red">HTTPS协议</font>
+
+一般理解HTTPS协议为：HTTP协议 + SSL/TLS协议，通过SSL证书来验证服务器的身份，并未浏览器和服务端之间的通信进行加密
+
+<font color="red">HTTPS协议通信流程</font>
+
+<img src="https://i.bmp.ovh/imgs/2022/06/12/8ff4554c50b47bf8.png" style="zoom: 50%;" />
+
+<font color="red">HTTPS协议缺点</font>
+
+1. HTTPS协议多次握手，导致页面的加载时间延长近50%；
+2. HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗；
+3. 申请SSL证书需要钱，功能越强大的证书费用越高
+4. SSL涉及到的安全算法会消耗 CPU 资源，对服务器资源消耗较大。
+
+HTTP协议和HTTPS协议的区别
+
+1. HTTPS协议需要到CA申请证书，一般证书都是收费的
+2. HTTP协议是超文本传输协议，信息是明文传输的；HTTPS协议则是具有安全性的SSL加密传输协议，比HTTP协议更加安全
+3. HTTP和HTTPS使用的是完全不同的连接方式，连接端口也不一样，HTTP协议默认端口是80；HTTPS协议默认端口是443
+
+##### 非对称加密
+
+##### 请求头？如何设置过期时间
+
+##### 浏览器输入URL后整个响应过程
 
 #### 操作系统
 
@@ -185,6 +262,16 @@ http和https的区别
 2. 未来职业规划
 3. 找工作关注公司哪些情况
 4. 你最大的优点/缺点是什么？举例说明
+
+
+
+
+
+
+
+
+
+<font color="red"></font>
 
 
 
