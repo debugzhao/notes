@@ -1319,7 +1319,38 @@ update account set money = money - 100 where name = 'A';
 update account set money = money + 100 where name = 'B';
 ```
 
-#### 事务的ACID特性
+#### 事务的ACID特性❗️❗️
+
+- 原子性（atomicity）
+
+  原子性是指事务是一个不可分割的工作单位，要么全部提交，要么全部回滚失败，不会存在中间状态
+
+- 一致性（consistency）
+
+  一致性指的是事务执行前后，数据从一个`合法性状态`转变成另外一个`合法性状态`。这里的合法性指的是语义上的合法性而不是语法上的合法性，和具体的业务有关。
+
+  <font color="red">满足预定义的约束的数据就叫做合法状态的数据。</font>
+
+- 隔离性（isolation）
+
+  <font color="red">事务的隔离性指的是一个事务的执行不能被其他事务干扰，即一个事务内部操作的数据对被其他的并发的事务是隔离的，并发执行的各个事务不能相互干扰。</font>
+
+  如果无法保证隔离性会怎么样？假设A账户有200元，B账户0元。A账户往B账户转账两次，每次金额为50 元，分别在两个事务中执行。如果无法保证隔离性，会出现下面的情形：
+
+  ```mysql
+  UPDATE accounts SET money = money - 50 WHERE NAME = 'AA';
+  UPDATE accounts SET money = money + 50 WHERE NAME = 'BB'
+  ```
+
+  <img src="https://i.bmp.ovh/imgs/2022/06/14/c9179ce09301056f.png" style="zoom: 80%;" />
+
+  <font color="red">如上图所示，无法保证事务的隔离性，事务2先执行完将B的50的值写回磁盘，这时轮到事务1执行，将磁盘中的50更改为50。这时就会出现问题。</font>
+
+- 持久性（durability）
+
+  持久性是指一个事务一旦提交，他对数据库中的数据的修改是<font color="red">永久的</font>，即便数据库出现故障也不会对其产生影响。
+
+  持久性是通过<font color="red">事务日志</font>来保证的。日志包括<font color="red">重做日志</font>和<font color="red">回滚日志</font>。当数据库崩溃或者服务器宕机时，进程重启会先扫描日志恢复数据，从而使事务具有持久性。
 
 #### 事务的状态
 
