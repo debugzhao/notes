@@ -1418,9 +1418,34 @@ update account set money = money + 100 where name = 'B';
 
    可串行化，确保事务可以从一个表中读取相同的行。在这个事务执行期间，禁止其他事务对该表进行修改、插入、删除操作。所有的并发问题都可以避免，但是性能十分低下。
 
+不同的隔离级别有不同的现象，并有不同的锁和并发机制，隔离级别越高，数据库的并发性能就越差。
+
 #### MySQL支持的四种隔离级别
 
+MySQL的默认隔离级别为`REPEATABLE READ`
+
+```mysql
+mysql>  SHOW VARIABLES LIKE 'transaction_isolation';
++-----------------------+-----------------+
+| Variable_name         | Value           |
++-----------------------+-----------------+
+| transaction_isolation | REPEATABLE-READ |
++-----------------------+-----------------+
+1 row in set (0.08 sec)
+```
+
 #### 如何设置事务的隔离级别
+
+```mysql
+SET [GLOBAL|SESSION] TRANSACTION_ISOLATION = '隔离级别'
+#其中，隔离级别格式：
+> READ-UNCOMMITTED
+> READ-COMMITTED
+> REPEATABLE-READ
+> SERIALIZABLE
+```
+
+> 小结： 数据库规定了多种事务隔离级别，不同隔离级别对应不同的干扰程度，隔离级别越高，数据一致性就越好，但并发性越弱。
 
 #### 不同隔离级别举例
 
