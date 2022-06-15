@@ -1342,7 +1342,7 @@ update account set money = money + 100 where name = 'B';
   UPDATE accounts SET money = money + 50 WHERE NAME = 'BB'
   ```
 
-  <img src="https://i.bmp.ovh/imgs/2022/06/14/c9179ce09301056f.png" style="zoom: 80%;" />
+  ​	
 
   <font color="red">如上图所示，无法保证事务的隔离性，事务2先执行完将B的50的值写回磁盘，这时轮到事务1执行，将磁盘中的50更改为50。这时就会出现问题。</font>
 
@@ -1373,6 +1373,20 @@ update account set money = money + 100 where name = 'B';
 #### 数据准备
 
 #### 数据的并发问题
+
+针对事务的隔离性和并发性，我们怎么做取舍呢？先看一下访问相同的数据的事务在<font color="red">**并行执行情况下可能出现的问题**</font>
+
+1. 脏写
+
+   对于两个事务SessionA、SessionB，如果SessionA<font color="red">修改了</font>另一个<font color="red">未提交</font>的事务SessionB<font color="red">修改过</font>的数据，那就意味着发生了<font color="red">脏写</font>
+
+   ![](https://i.bmp.ovh/imgs/2022/06/14/c9179ce09301056f.png)
+
+2. 脏读
+
+3. 不可重复读
+
+4. 幻读
 
 #### SQL中的四个隔离级别
 
