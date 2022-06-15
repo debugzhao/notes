@@ -1372,7 +1372,7 @@ update account set money = money + 100 where name = 'B';
 
 #### 数据准备
 
-#### 数据的并发问题
+#### 数据的并发问题❗️❗️
 
 针对事务的隔离性和并发性，我们怎么做取舍呢？先看一下访问相同的数据的事务在<font color="red">**并行执行情况下可能出现的问题**</font>
 
@@ -1384,9 +1384,15 @@ update account set money = money + 100 where name = 'B';
 
 2. 脏读
 
+   对于两个事务SessionA、SessionB，SessionA读取了Session B已经更新但是还没有提交的数据，之后如果Session B回滚，那么Session A读取的数据就是临时且无效的。
+
 3. 不可重复读
 
+   对于两个事务SessionA、SessionB，Session A读取了一个字段，然后Session B更新了该字段，之后Session A再次读取同一个字段，值就不同了。这就意味发生了不可重复读。
+
 4. 幻读
+
+   对于两个事务SessionA、SessionB，Session A从一个表中读取了一个字段，然后Session B在该表中插入了一些新的行。之后Session A如果再次读取同一个表，就会多出来几行数据。这就意味着发生了幻读。
 
 #### SQL中的四个隔离级别
 
