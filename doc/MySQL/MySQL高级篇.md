@@ -1451,6 +1451,16 @@ SET [GLOBAL|SESSION] TRANSACTION_ISOLATION = '隔离级别'
 
 ### 4.事务的常见分类
 
+- 扁平事务
+- 带有保存点的扁平事务
+- 分布式事务
+
+
+
+
+
+
+
 
 
 
