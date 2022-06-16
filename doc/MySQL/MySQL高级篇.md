@@ -1488,7 +1488,17 @@ MySQL每次修改数据的时候会先将数据读取到内存中（缓冲池中
 
 #### redo log的组成
 
+1. redo log buffer 保存在内存中，是易失的。
+2. redo log file 保存在硬盘中，是持久的。
+
 #### redo的整体流程
+
+![](https://i.bmp.ovh/imgs/2022/06/16/c1f560b83b640b99.png)
+
+1. 先将原始数据从磁盘读取到内存中，修改数据的内存拷贝
+2. 生成一条重做日志并写入到redo log buffer中，保存的是数据修改之后的值
+3. 当事务commit时，将redo log buffer中的内容刷新到redo log file中（redo log file写入的方式是追加写的）
+4. 定期将内存中修改的数据刷新到磁盘中
 
 #### redo log的刷盘策略
 
