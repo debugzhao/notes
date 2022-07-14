@@ -1744,7 +1744,31 @@ update student set;
 
 #### 3.1再谈隔离级别
 
+我们知道SQL标准中有四种隔离级别，可能存在三种并发问题
+
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.120ud4a6oz9.webp" alt="image" style="zoom:67%;" />
+
+在MySQL中，<font color="red">默认的隔离级别是可重复读，解决的是不可重复读和脏读的问题</font>，但是仅仅从定义出发不能解决幻读问题。如果想要解决幻读问题，就需要将隔离隔离级别提升到串行化方式（通过加锁的方式让并发事务串行执行），但是这样会大幅度降低数据库处理并发事务的能力。
+
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.653gaiz83m00.webp" alt="image" style="zoom:67%;" />
+
+<font color="red">MVCC可以不通过锁机制，可以通过乐观锁的方式来解决不可重复读和幻读的问题！它在大部分情况下可以替换行锁，降低系统开销。</font>
+
+
+
 #### 3.2隐藏字段、undo log版本链
+
+1. trx_id
+
+   事务ID
+
+2. roll_pointer
+
+   回滚指针
+
+![image](https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.39vtc4730q40.webp)
+
+每一次对数据的更新都会将旧值放在undo日志中，通过回滚指针，可以将所有的undo日志连接成一个版本链。
 
 ### 4.MVCC实现原理之ReadView
 
