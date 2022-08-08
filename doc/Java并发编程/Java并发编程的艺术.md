@@ -273,7 +273,6 @@ public class Counter {
         }
         for (Thread t : ts) {
             t.start();
-
         }
 
         // 等待所有的子线程执行完成
@@ -326,7 +325,9 @@ public class Counter {
 
 3. 只能保证一个共享变量的原则操作
 
-   当对一个共享变量执行操作时，我们可以使用循 环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性
+   当对一个共享变量执行操作时，我们可以使用循 环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性。 
+   
+   从JDK1.5开始，JDK提供了AtomicReference类来保证引用对象的原子性操作，可以将多个变量放到原子对象中来保证CAS操作。
 
 ##### 使用锁实现原子操作
 
@@ -594,7 +595,7 @@ public class WaitNotify {
 }
 ```
 
-![](https://s3.bmp.ovh/imgs/2022/05/26/3eaac49c9b96a88d.png)
+![](https://s3.bmp.ovh/imgs/2022/05/26/3eaac49c9b96a88d.png)    
 
 在图4-3中，WaitThread首先获取了对象的锁，然后调用对象的wait()方法，从而放弃了锁 并进入了对象的等待队列WaitQueue中，进入等待状态。由于WaitThread释放了对象的锁， NotifyThread随后获取了对象的锁，并调用对象的notify()方法，将WaitThread从WaitQueue移到 SynchronizedQueue中，此时WaitThread的状态变为阻塞状态。NotifyThread释放了锁之后， WaitThread再次获取到锁并从wait()方法返回继续执行
 
