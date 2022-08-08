@@ -4,7 +4,7 @@
 
 即使是单核处理器也支持多线程执行代码，CPU通过给每个线程分配CPU时间片来实现 这个机制。时间片是CPU分配给各个线程的时间，因为时间片非常短，所以CPU通过不停地切 换线程执行。
 
-CPU通过时间片分配算法来循环执行任务，当前任务执行一个时间片后会切换到下一个 任务。但是，在切换前会保存上一个任务的状态，以便下次切换回这个任务时，可以再加载这 个任务的状态。所以任务从保存到再加载的过程就是一次上下文切换。
+CPU通过时间片分配算法来循环执行任务，当前任务执行一个时间片后会切换到下一个任务。但是在切换前会保存上一个任务的状态，以便下次切换回这个任务时，可以再加载这 个任务的状态。所以任务从保存到再加载的过程就是一次上下文切换。
 
 #### 1.1.1 多线程就一定快吗
 
@@ -21,7 +21,7 @@ CS（Content Switch）表示上下文切换的次数，从上面的测试结果�
 
 #### 1.1.3 如何减少上下文切换
 
-减少上下文切换的方法有无锁并发编程、CAS算法、使用最少线程和使用协程。
+<font color="red">减少上下文切换的方法有无锁并发编程、CAS算法、使用最少线程和使用协程。</font>
 
 - 无锁并发编程
 
@@ -37,7 +37,7 @@ CS（Content Switch）表示上下文切换的次数，从上面的测试结果�
 
 - 使用协程
 
-  在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换
+  在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。
 
 #### 1.1.4 减少上下文切换实战
 
@@ -57,7 +57,8 @@ public class DeadLockDemo {
             @Override
               public void run() {
                 synchronized (A) {
-                    try { Thread.sleep(2000);
+                    try { 
+                      Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -110,8 +111,7 @@ Java代码的底层执行过程：<font color="red">Java代码在编译后会变
 
 ### 2.1 volatile的应用❗❗
 
-volatile是轻量级的 synchronized，它在多处理器开发中<font color="red">保证了共享变量的“可见性”</font>。可见性的意思是当一个线程 修改一个共享变量时，另外一个线程能读到这个修改的值。
-<font color="red">如果volatile变量修饰符使用恰当 的话，它比synchronized的使用和执行成本更低，因为它不会引起线程上下文的切换和调度。</font>
+volatile是轻量级的 synchronized，它在多处理器开发中<font color="red">保证了共享变量的“可见性”</font>。可见性的意思是当一个线程 修改一个共享变量时，另外一个线程能读到这个修改的值。<font color="red">如果volatile变量修饰符使用恰当的话，它比synchronized的使用和执行成本更低，因为它不会引起线程上下文的切换和调度。</font>
 
 #### volatile的定义与实现原理
 
@@ -119,8 +119,16 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 1. 为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存后再进行操作，但操作完不知道何时会写到内存。
 2. 如果对声明了volatile的 变量进行写操作，在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一 致性协议。
-3. 每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态。
+3. 每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态。（总线嗅探机制）
 4. 当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。
+
+####  Volatile的两条实现原则
+
+1. Lock前缀的指令会使处理器缓存的数据会写到内存中
+
+   Lock前缀的指令一般会锁缓存而不会锁总线，因为锁总线的开销比较大
+
+2. 一个处理器的缓存会写到内存会使其他的处理器缓存无效
 
 #### volatile的使用优化
 
@@ -128,15 +136,49 @@ volatile是轻量级的 synchronized，它在多处理器开发中<font color="r
 
 本文详细介绍Java SE 1.6中为了减少获得锁和释放锁带来的性能消耗而引入的偏向锁和轻量级 锁，以及锁的存储结构和升级过程。
 
-<font color="red">synchronized实现同步的三种方式：</font>
+<font color="red">synchronized实现同步的三种方式：（Java中的每一个对象都都可以作为锁）</font>
 
 1. 普通同步方法，锁的是当前实例对象
+
+   ```java
+   /**
+    * 普通同步方法，锁的是当前实例对象
+    */
+   private synchronized void synchronizedMethod() {
+   
+   }
+   ```
+
 2. 静态同步方法，锁的是当前类的class对象
+
+   ```java
+   /**
+    * 普通同步静态方法，锁的是当前类的class对象
+    */
+   private static synchronized void synchronizedStaticMethod() {
+   
+   }
+   ```
+
 3. 同步代码块，锁的是synchronized括号里配置的对象
+
+   ```java
+   /**
+    * 同步代码块，锁的是括号配置的对象
+    */
+   private void synchronizedClass () {
+       synchronized (this) {
+       }
+   }
+   ```
 
 <font color="red">当一个线程试图访问同步代码块时，它首先必须得到锁，退出或抛出异常时必须释放锁。</font>
 
 Synchonized在JVM里的实现原理，JVM基于进入和退出Monitor对 象来实现方法同步和代码块同步，代码块同步是使用monitorenter 和monitorexit指令实现的。
+
+ JVM基于进入和退出Monitor对象来实现方法同步和代码块同步，但是两者的实现方式不一样。代码块同步使用的是monitorenter指令和    monitroexit指令实现的，方法同步使用的是另一种方式实现的，但是方法同步也可以用monitorenter指令和monitroexit指令实现。
+
+monitorenter指令在编译后插入到同步代码块的起始位置，monitorexit指令插入在方法结束处何异常处，JVM保证每一个monitorenter指令都有一个monitorexit指令与之配对。任何一个对象都有一个monitor与之相关联，当一个monitor被持有以后他将处于锁定状态。线程执行到monitorenter指令时会尝试获取对象所对应的monitor的所有权，即获取对应的锁。
 
 #### 2.2.1 Java对象头
 
