@@ -352,8 +352,6 @@ public class Counter {
 
 <font color="red">Java的并发采用的是共享内存模型，Java线程之间的通信总是隐式进行，整个通信过程对 程序员完全透明。</font>
 
-1. 
-
 #### Java内存模型的抽象结构
 
 Java线程之间的通信由Java内存模型（本文简称为JMM）控制，JMM决定一个线程对共享 变量的写入何时对另一个线程可见。
