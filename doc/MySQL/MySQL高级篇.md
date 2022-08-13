@@ -1776,11 +1776,29 @@ update student set;
 
 #### 4.1什么是ReadView
 
+在MVCC中多个事务对同一个行记录进行更新是会产生多个历史快照，这些历史快照保存在undo log。如果一个事务想要查询这个行记录，需要读取哪个版本的行记录呢？这个时候就需要用到ReadView了（它帮我们解决了行的可见性问题）。
+
+ReadView就是一个事务在使用MVCC机制进行快照读操作时产生的读视图。
+
 #### 4.2设计思路
+
+ 使用READ UNCOMMITTED隔离级别的事务，由于可以读取到为提交事务修改过的记录（<font color="red">脏读</font>），所以直接读取记录的最新版本就好了，<font color="red">不需要使用MVCC</font>。
+
+使用<font color="red">SERIALIZABLE</font>级别的事务是串行执行的，InnoDB规定使用加锁的方式来访问记录， <font color="red">不需要使用MVCC</font>。
+
+使用<font color="red">READ COMMITTED</font>和<font color="red">REPEATABLE READ</font>隔离级别的事务，都必须保证<font color="red">读到的是已经提交了的事务修改记录</font>。假如另外一个事务已经修改记录但是尚未提交，是不能直接读取尚未提交的最新修改的记录的，核心问题是需要判断当前版本链中哪个版本的记录对当前事务是可见的，这是read view要解决的问题。
 
 #### 4.3ReadView的规则
 
 #### 4.4MVCC整体操作流程
+
+<font color="red">MVCC的整体操作流程，即查询一条记录的时候，数据库系统是如何通过MVCC找到这条数据的</font>
+
+1. 首先获取当前事务的版本号，即事务ID
+2. 获取当前事务的ReadView（事务和Read View是一一对应的）
+3. 查询得到的数据，然后与readview中的事务版本号进行比较
+4. 如果不符合read view规则（该版本是不可访问的），就需要从undo log中获取历史快照数据
+5. 最后返回符合规则的数据
 
 ### 5.举例说明
 
@@ -1804,5 +1822,4 @@ update student set;
 
 <font color="red"></font>
 
-
-
+## 
