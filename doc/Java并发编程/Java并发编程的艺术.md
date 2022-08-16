@@ -382,7 +382,9 @@ Java线程之间的通信由Java内存模型（本文简称为JMM）控制，JMM
 
 #### <font color="red">happens-before简介</font>
 
-在JMM中，如果一 个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须要存在happens-before关 系
+<font color="red">在JMM中，如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须要存在happens-before关系。</font>
+
+两个操作之间具有happens-before关系，并不意味着前一个操作必须要在后一个 操作之前执行！happens-before仅仅要求前一个操作（执行的结果）对后一个操作可见。
 
 ### 3.2 重排序❗❗
 
