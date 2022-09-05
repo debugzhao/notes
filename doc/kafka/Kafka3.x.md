@@ -95,27 +95,75 @@ Kafka、ActiveMQ、RabbitMQ、RocketMQ
 
    每个分区<font color="red">副本组的从</font>，follower会从leader实时同步数据，保持和leader数据的同步。当leader发生故障时，某个follower会成为新的leader
 
+## ~~第二章 Kafka快速入门~~
+
+### ~~2.1安装部署~~
+
+#### ~~2.1.1集群规划~~
+
+#### ~~2.1.2集群部署~~
+
+#### ~~2.1.3集群启动停止脚本~~
+
+### ~~2.2Kafka命令行操作~~
+
+#### ~~2.2.1主题命令行操作~~
+
+#### ~~2.2.2生产者命令行操作~~
+
+#### ~~2.2.3消费者命令行操作~~
+
+## 第三章Kafka生产者
+
+### 3.1生产者消息发送流程
+
+在消费的发送过程中涉及到两个线程，分别是main线程和sender线程。在main线层中会创建一个双端队列Record Accumulator，main线程将消息发送给RecordAccumulatot，sender线程会不断从队列中拉去消息发送到kafka broker。
+
+![kafka生产者消息发送流程.png](https://img1.imgtp.com/2022/09/06/cmKkhL7x.png)
+
+1. 分区器
+
+   分区器负责将消息发往不同分区
+
+2. record accumulator
+
+   双端队列的默认大小是32MB，其中每个分区细分batch，batch size达到16KB，sender线程才会从双端队列中拉取消息。
+
+   1. batch.size
+
+      只有数据积累到batch.size之后，sender线程才会发送消息，默认是16KB
+
+   2. Linger.ms
+
+      如果数据迟迟没有累积到batch.size，sender线程会等待linger.ms设置的时间，时间到了之后就会发送消息。单位是ms，默认值是0ms，表示没有延迟。
+
+3.  Ack应答机制 
+
+    0：生产者发送过来的数据，不需要等待数据落盘，kafka集群就任务数据发送成功
+
+    1：生产者发送过来的数据，leader收到数据后应答才算数据发送成功。
+
+    -1(all)：生产者发送过来的数据，leader和ISR队列（follower）里的所有节点收到数据之后才算数据发送成功
+
+### 3.2异步发送API
+
+### 3.3同步发送API
+
+### 3.4生产者分区
+
+### 3.5生产经验 生产者如何提高吞吐量
+
+### 3.6生产经验 数据可靠性
+
+### 3.7生产经验 数据去重
+
+### 3.8生产经验 数据有序
+
+### 3.9生产经验 数据乱序
 
 
 
 
-## 第二章 Kafka快速入门
-
-### 2.1安装部署
-
-#### 2.1.1集群规划
-
-#### 2.1.2集群部署
-
-#### 2.1.3集群启动停止脚本
-
-### 2.2Kafka命令行操作
-
-#### 2.2.1主题命令行操作
-
-#### 2.2.2生产者命令行操作
-
-#### 2.2.3消费者命令行操作
 
 
 
@@ -125,4 +173,20 @@ Kafka、ActiveMQ、RabbitMQ、RocketMQ
 
 
 
-#### <font color="red"></font>
+
+
+```shell
+node1:2181,node2:2181,node3:2181/kafka
+
+/opt/kafka/logs
+```
+
+
+
+
+
+
+
+
+
+### <font color="red"></font>
