@@ -147,6 +147,37 @@ Kafka、ActiveMQ、RabbitMQ、RocketMQ
 
 ### 3.2异步发送API
 
+```java
+public class ProducerCallback {
+    public static void main(String[] args) {
+        // 配置
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.211.55.8:9092,10.211.55.9:9092,10.211.55.10:9092");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        // 创建kafka生产者对象
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+        // 发送消息
+        try {
+            kafkaProducer.send(new ProducerRecord<>("first", "hello kafka!!!!!!!!"), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                    if (e == null) {
+                        System.out.println("主题：" + recordMetadata.topic() + " 分区：" + recordMetadata.partition());
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } finally {
+            kafkaProducer.close();
+        }
+    }
+}
+```
+
+
+
 ### 3.3同步发送API
 
 ### 3.4生产者分区
