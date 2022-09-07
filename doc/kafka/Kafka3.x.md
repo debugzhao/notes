@@ -176,13 +176,60 @@ public class ProducerCallback {
 }
 ```
 
-
-
 ### 3.3同步发送API
 
 ### 3.4生产者分区
 
+#### 分区的好处
+
+1. 便于合理使用分区资源
+
+    通过合理使用分区的，可以实现负载均衡的效果
+
+2. 提高并行度
+
+   生产者可以以分区发送数据，消费者可以以分区消费数据，提高了数据发送、消费的并行度。
+
+#### 分区策略
+
+1. 在指明partition的情况下，数据直接写入指定分区
+2. 在没有指定partition但是有key的情况下，数据写入hash(key) %  partitionNum的分区中
+3. 没有指定partition并且没有key的情况下，kafka会随机选择一个分区写入数据，直到这个分区被写满为止
+
+#### 自定义分区策略
+
+```java
+public class MyPartition implements Partitioner {
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+        String message = value.toString();
+        int partition;
+        if (message.contains("usa")) {
+            partition = 0;
+        } else {
+            partition = 1;
+        }
+        return partition;
+    }
+
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public void configure(Map<String, ?> map) {
+
+    }
+}
+```
+
 ### 3.5生产经验 生产者如何提高吞吐量
+
+1. batch.size：批次大小，默认16k 
+2. linger.ms：等待时间，修改为5-100ms
+3. compression.type：压缩snappy
+4. RecordAccumulator：缓冲区大小，修改为64m
 
 ### 3.6生产经验 数据可靠性
 
@@ -191,6 +238,14 @@ public class ProducerCallback {
 ### 3.8生产经验 数据有序
 
 ### 3.9生产经验 数据乱序
+
+
+
+
+
+
+
+
 
 
 
@@ -220,4 +275,4 @@ node1:2181,node2:2181,node3:2181/kafka
 
 
 
-### <font color="red"></font>
+#### <font color="red"></font>
