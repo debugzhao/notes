@@ -233,6 +233,32 @@ public class MyPartition implements Partitioner {
 
 ### 3.6生产经验 数据可靠性
 
+1. ack = 0
+
+   可靠性分析：丢数据
+
+   生产者发送过来的数据，不需要等待数据落盘就认为消息发送成功。如果leader节点收到的数据还在内存中，数据还没有落盘或者还没有来得及和follower节点同步，此时leader节点挂掉数据会丢失。
+
+2. ack = 1
+
+   可靠性分析：丢数据
+
+   生产者发送过来的数据，leader节点收到数据后（落盘）认为消息发送成功。如果leader节点应答完成之后还没有和follower节点同步数据挂掉，此时kafka集群会重新选举新的leader节点，新的leader节点不会再次收到之前的数据，因为在上一轮消息发送过程中生产者已经认为消息发送成功了。<font color="red">所以最终新的leade节点和其他的follower节点会丢失数据</font>
+
+   <img src="https://img1.imgtp.com/2022/09/08/p64Ct5hF.png" alt="ack_1.png" style="zoom:33%;" />
+
+3. ack = -1
+
+   生产者发送过来的数据，leader节点和ISR队列中的所有节点收到数据后才消息发送成功
+
+   <img src="https://img1.imgtp.com/2022/09/08/Xqwcci66.png" alt="ack_-1.png" style="zoom:33%;" />
+
+   Leader收到数据，所有Follower都开始同步数据，但有一个Follower，因为某种故障，迟迟不能与Leader进行同步，那这个问题怎么解决呢？
+
+   Leader维护了一个动态的in-sync replica set（ISR），意为和Leader保持同步的Follower+Leader集合(leader：0，isr:0,1,2)。如果Follower长时间未向Leader发送通信请求或同步数据，则该Follower将被踢出ISR。该时间阈值由replica.lag.time.max.ms参数设定，默认30s。例如2超时，(leader:0, isr:0,1)。这样就不用等长期联系不上或者已经故障的节点。
+
+   <font color="red">数据完全可靠条件 = ACK级别设置为-1 + 分区副本大于等于2 + ISR里应答的最小副本数量大于等于2</font>
+
 ### 3.7生产经验 数据去重
 
 ### 3.8生产经验 数据有序
