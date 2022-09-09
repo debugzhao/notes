@@ -337,9 +337,14 @@ public class Producer04Trancaction {
 }
 ```
 
-
-
 ### 3.8生产经验 数据有序
+
+<img src="https://img1.imgtp.com/2022/09/09/uql1cwWh.png" alt="数据有序.png" style="zoom: 33%;" />
+
+1. 单分区数据可以有序（通过排序的方式实现数据有序）
+2. 多分区、分区与分区之间数据是无序的
+
+
 
 ### 3.9生产经验 数据乱序
 
