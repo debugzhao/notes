@@ -344,15 +344,25 @@ public class Producer04Trancaction {
 1. 单分区数据可以有序（通过排序的方式实现数据有序）
 2. 多分区、分区与分区之间数据是无序的
 
-
-
 ### 3.9生产经验 数据乱序
 
+Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
+1. 未开启幂等性
 
+   ```properties
+   # 需要设置为1
+   max.in.flight.requests.per.connection = 1
+   ```
 
+2. 开启幂等性
 
+   ```properties
+   # 需要设置小于等于5
+   max.in.flight.requests.per.connection <=5
+   ```
 
+   开启幂等性之后kafka broker会缓存producer发来的最近5个request的元数据，所以无论如何都可以保证最近五个requst的数据是有序的。
 
 
 
