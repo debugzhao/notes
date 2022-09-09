@@ -261,6 +261,84 @@ public class MyPartition implements Partitioner {
 
 ### 3.7生产经验 数据去重
 
+#### 数据传递的语义
+
+1. 数据至少发送一次
+
+   ack = -1 + 分区副本书 > 2  + ISR队列中follower数量 > 2
+
+2. 数据最多发送一次
+
+    ack = 0
+
+3. 精确一次
+
+   对于一些非常重要的数据（和金钱相关的数据），要求数据即不能丢失也不能重复。<font color="red">因此通过幂等性操作 + 事物操作可以保证数据去重。</font>
+
+ 总结：
+
+at least one：可以保证数据不丢失，但是不能保证数据不重复
+
+at most one：可以保证数据不重复，但是不能保证数据不丢失
+
+#### 幂等性
+
+1. 幂等性原理
+
+   幂等性就是无论producer向broker发送多少条重复数据，broker端都是会持久化一条数据。
+
+   <font color="red">精确数据发送一次：幂等性 + 至少一次（ack = -1 +  分区副本数 >= 2 + ISR队列中follower数量 >= 2）</font>
+
+   重复数据的判断标准：具有<PID,partitionID,SeqNumber>相同主键的消息提交是，broker只会提交一条，其中PID在kafka进程每次重启之后都会生成一个新的id，<font color="red">所有幂等性只能保证在单分区单会话内消息不会重复，不能满足我们的需求。</font>
+
+   <img src="https://img1.imgtp.com/2022/09/09/uQgIBnm9.png" alt="幂等性原理.png" style="zoom:67%;" />
+
+2. 开启幂等性
+
+   ```yaml
+   enable.idempotence: true
+   ```
+
+#### 事物
+
+ 开启事物之前必须开启幂等性，只有幂等性+事物操作才可以保证在kafka集群中（多会话场景中）数据的不重复。
+
+producer在使用事物之前必须先指定唯一的事物ID，有了事物id即使客户端挂了，在重启之后也能保证继续恢复之前的事物。
+
+```java
+public class Producer04Trancaction {
+    public static void main(String[] args) {
+        // 配置
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.211.55.8:9092,10.211.55.9:9092,10.211.55.10:9092");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "transaction_id_01");
+
+        // 创建kafka生产者对象
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+        // 初始化事物
+        kafkaProducer.initTransactions();
+        // 开启事物
+        kafkaProducer.beginTransaction();
+        // 发送消息
+        try {
+            kafkaProducer.send(new ProducerRecord<>("first", "test transaction!!!"));
+            int a = 1 / 0;
+            // 提交事物
+            kafkaProducer.commitTransaction();
+        } catch (Exception e) {
+            // 出现异常终止事物
+            kafkaProducer.abortTransaction();
+        } finally {
+            kafkaProducer.close(Duration.ofMillis(3000));
+        }
+    }
+}
+```
+
+
+
 ### 3.8生产经验 数据有序
 
 ### 3.9生产经验 数据乱序
@@ -286,12 +364,6 @@ public class MyPartition implements Partitioner {
 
 
 
-
-```shell
-node1:2181,node2:2181,node3:2181/kafka
-
-/opt/kafka/logs
-```
 
 
 
