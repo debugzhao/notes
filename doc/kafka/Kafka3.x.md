@@ -364,7 +364,55 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
    开启幂等性之后kafka broker会缓存producer发来的最近5个request的元数据，所以无论如何都可以保证最近五个requst的数据是有序的。
 
+## 第四章 Kafka Broker
 
+### 4.1 Broker工作流程
+
+#### 4.1.1 Zookeeper存储kafka信息
+
+<img src="https://img1.imgtp.com/2022/09/14/2FmE58HC.png" alt=" zk中存储的kafka信心.png" style="zoom:33%;" />
+
+1. 记录有哪些服务器信息
+2. 记录谁是leader，有哪些服务器可用
+3.  辅助选举leader信息
+
+#### 4.1.2 Kafka总体工作流程
+
+<img src="https://img1.imgtp.com/2022/09/14/APYNKms3.png" alt="broker总体工作流程.png" style="zoom: 33%;" />
+
+1. broker启动之后在zk中注册信息
+
+2. 每个broker中都有controller节点，zk中维护controller节点，在zk节点中controller谁先注册谁说了算
+
+3. 由选举出来的controller监听brokers节点的变化
+
+4. controller决定leader选举
+
+   选举规则：再ISR队列中存活为前提，按照AR中排在前面的优先。例如AR[1,0,2]，ISR为[0,1,2]，那么leader就会按照[1,0,2]的顺序轮询
+
+5. controller将leader节点、follower节点信息上传到zk
+
+6.  其他controller节点从zk中同步信息
+
+7.  假设leader节点挂掉了
+
+8. controller监听到节点发生了变化，获取最新的ISR
+
+9. zk中的controller获取最新的ISR
+
+10. 选举出新的leader（在ISR队列中为前提，按照AR中排在前面的优先）
+
+11. 将最新的leader信息、follower信息更新到zk中
+
+#### 4.1.3 Broker重要参数
+
+### 4.2  生产经验（节点退役和服役）
+
+### 4.3 Kafka副本
+
+### 4.4 文件存储
+
+### 4.5 高效读写数据
 
 
 
