@@ -412,6 +412,20 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 #### 4.3.1 副本基本信息
 
+1. kafka副本作用：提高数据可靠性
+
+2. kafka默认副本一个，生产环境副本数量一般配置为两个，保证数据的可靠性。太多的副本反而会增加磁盘的存储空间，降低效率。
+
+3. kafka副本分为leader和follower。kafka生产者之后给leader副本发数据，然后follower副本找leader副本同步数据。
+
+4. kafka分区中所有的副本统称为AR（Assigned Repllicas） AR = ISR + OSR
+
+   ISR：表示和leader保持同步的follower集合，如果follower副本长时间没有向leader副本所在节点通信或者同步数据，leader将该follower从ISR队列中剔除。该阈值由***\*replica.lag.time.max.ms\**** 配置。
+
+   leader发生故障之后，将会从ISR队列中选取新的leader。
+
+   OSR：表示follower与leader同步时，延迟过多的副本
+
 #### 4.3.2 Leader选举流程
 
 #### 4.3.3 Leader和Follower故障处理细节
