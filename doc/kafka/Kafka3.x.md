@@ -430,9 +430,117 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 #### 4.3.3 Leader和Follower故障处理细节
 
+**LEO（Log  End Offset）：每个副本中最后一个offset + 1**
+
+**HW（High watermark）：所有副本中最小的LEO**
+
+ **消费者能够看到的最小的offset是HW -1，也是分区副本组中最小的offset**
+
+![1663403501473.png](https://img1.imgtp.com/2022/09/17/RNqv9Yee.png)
+
+故障情况：
+
+1. follower 故障
+   1. follower故障之后会被剔除ISR队列
+   2.  此时其他的follower分区和leader分区还会接受数据
+   3.  等故障的follower恢复之后，follower会读取本读磁盘记录的上次的HW，并将log文件中高于HW部分的数据截取掉，从上次的HW处开始从leader同步数据。
+
+2. leader故障
+
+   <img src="https://img1.imgtp.com/2022/09/19/GFrHLwDi.png" alt="leader故障处理细节.png" style="zoom:33%;" />
+
+   1. leader发生故障之后会从ISR队列中选出一个新的leader
+   2. 为保证所有副本之间的数据一致性，其余的follower会先将各自log文件中高于HW的数据截掉，然后从新的leader中同步数据
+
+    *这只能保证所有副本之间数据的一致性，不能保证数据不丢失或者不重复*
+
 #### 4.3.4 分区副本分配
 
+如果kafka服务器只有4个节点，那么设置kafka的分区数大于服务器台数，在kafka底层如何分配存储副本呢？
+
+1. 创建16分区，3个副本，名称为second的topic
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-topics.sh --bootstrap-server hadoop102:9092 --create --partitions 16 --replication-factor 3 --topic second
+   ```
+
+2. 查看分区和副本情况
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-topics.sh --bootstrap-server hadoop102:9092 --describe --topic second
+   
+   Topic: second4	Partition: 0	Leader: 0	Replicas: 0,1,2	Isr: 0,1,2
+   Topic: second4	Partition: 1	Leader: 1	Replicas: 1,2,3	Isr: 1,2,3
+   Topic: second4	Partition: 2	Leader: 2	Replicas: 2,3,0	Isr: 2,3,0
+   Topic: second4	Partition: 3	Leader: 3	Replicas: 3,0,1	Isr: 3,0,1
+   
+   Topic: second4	Partition: 4	Leader: 0	Replicas: 0,2,3	Isr: 0,2,3
+   Topic: second4	Partition: 5	Leader: 1	Replicas: 1,3,0	Isr: 1,3,0
+   Topic: second4	Partition: 6	Leader: 2	Replicas: 2,0,1	Isr: 2,0,1
+   Topic: second4	Partition: 7	Leader: 3	Replicas: 3,1,2	Isr: 3,1,2
+   
+   Topic: second4	Partition: 8	Leader: 0	Replicas: 0,3,1	Isr: 0,3,1
+   Topic: second4	Partition: 9	Leader: 1	Replicas: 1,0,2	Isr: 1,0,2
+   Topic: second4	Partition: 10	Leader: 2	Replicas: 2,1,3	Isr: 2,1,3
+   Topic: second4	Partition: 11	Leader: 3	Replicas: 3,2,0	Isr: 3,2,0
+   
+   Topic: second4	Partition: 12	Leader: 0	Replicas: 0,1,2	Isr: 0,1,2
+   Topic: second4	Partition: 13	Leader: 1	Replicas: 1,2,3	Isr: 1,2,3
+   Topic: second4	Partition: 14	Leader: 2	Replicas: 2,3,0	Isr: 2,3,0
+   Topic: second4	Partition: 15	Leader: 3	Replicas: 3,0,1	Isr: 3,0,1
+   ```
+
+   <img src="https://img1.imgtp.com/2022/09/19/WWREXXnr.png" alt="分区副本分配.png" style="zoom: 33%;" />
+
 #### 4.3.5 生产经验 手动调整分区副本存储
+
+在生产环境中，每台服务器的配置和性能不一致，但是Kafka只会根据自己的代码规则创建对应的分区副本，就会导致个别服务器存储压力较大。所有需要手动调整分区副本的存储。
+
+需求：创建一个新的topic，4个分区，两个副本，名称为three。将该topic的所有副本都存储到broker0和broker1两台服务器上。
+
+<img src="https://img1.imgtp.com/2022/09/19/MYktYrQb.png" alt=" 调整分区副本存储.png" style="zoom: 33%;" />
+
+1. 创建一个新的topic，名称为three
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-topics.sh --bootstrap-server hadoop102:9092 --create --partitions 4 --replication-factor 2 --topic three
+   ```
+
+2. 查看分区副本存储情况
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-topics.sh --bootstrap-server hadoop102:9092 --describe --topic three
+   ```
+
+3. 创建新的副本存储计划
+
+   ```shell
+   vim increase-replication-factor.json
+   
+   {
+   "version":1,
+   "partitions":[{"topic":"three","partition":0,"replicas":[0,1]},
+   {"topic":"three","partition":1,"replicas":[0,1]},
+   {"topic":"three","partition":2,"replicas":[1,0]},
+   {"topic":"three","partition":3,"replicas":[1,0]}]
+   }
+   ```
+
+4. 执行副本存储计划
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-reassign-partitions.sh --
+   bootstrap-server hadoop102:9092 --reassignment-json-file 
+   increase-replication-factor.json --execute
+   ```
+
+5. 验证副本存储计划
+
+   ```shell
+   [atguigu@hadoop102 kafka]$ bin/kafka-reassign-partitions.sh --
+   bootstrap-server hadoop102:9092 --reassignment-json-file 
+   increase-replication-factor.json --verify
+   ```
 
 #### 4.3.6 生产经验  Leader partiton负载均衡
 
@@ -465,3 +573,6 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 
 #### <font color="red"></font>
+
+[]: 
+
