@@ -566,6 +566,20 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 ### 4.4 文件存储
 
+ 从文件存储的角度而言，topic是逻辑上的概念，<font color="red">partition是物理上的概念</font> ，每个partition对应一个log文件（实际上这里的log文件也是逻辑概念），该log 文件存储的就是producer生产的数据（<font color="red">producer生产的数据会追加写到log文件末尾</font> ）。为了防止log文件过大导致数据定位效率低下，kafka采用<font color="red">分片</font> 和<font color="red"> 索引</font>的方式定位数据，<font color="red">将每个partition分为多个segment</font> （每个segment默认为1GB大小），每个segment包括：<font color="red"> .index文件、.log文件、.timeindex文件</font>。这些文件位于一个文件夹中，文件夹的命名规则为topic名称+ 分区号，例如first-0。
+
+> 一个topic会分为多个partition
+>
+> 一个partition会切分成多个segment
+>
+>  .log文件：日志文件
+>
+> .index文件： 偏移量索引文件
+>
+> .timeindex文件： 时间戳索引文件 []()
+>
+> <font color="red"> .index文件和.log文件是以当前segment文件的第一条消息的offset命名的</font> 
+
 ### 4.5 高效读写数据
 
 
@@ -590,7 +604,5 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 
 
-#### <font color="red"></font>
-
-[]: 
+#### <font color="red"></font> 
 
