@@ -635,6 +635,8 @@ Kafka集群高效读写数据的原因：
 
 ### 5.1 kafka消费方式
 
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.3l8585xmp4e0.webp" alt="image" style="zoom: 33%;" />
+
 1. pull模式
 
    由消费者主动拉取数据，<font color="red">kafka采用的是pull模式。</font>
@@ -648,6 +650,27 @@ Kafka集群高效读写数据的原因：
    Kafka没有采用这种方式，因为由broker决定消息发送速率，很难适应所有消费者的消费速率
 
 ### 5.2 Kafka消费者工作流程
+
+#### 5.2.1 消费者工作流程
+
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.75nmcrzfbfk0.webp" alt="image" style="zoom: 50%;" />
+
+<font color="red">消费者与消费者之间是完全独立的， 因此多个消费者可以消费同一个分区数据。</font> 
+
+一个消费者可以消费多个分区的数据
+
+每个分区的数据只能由消费者组的一个消费者消费
+
+每个消费者的offset由消费者提交到系统主题（_consumer_offsets）里面保存
+
+#### 5.2.2 消费者组原理
+
+消费者组（Consumer Group）： 由多个groupid相同的消费者构成一个消费者组 
+
+1. 消费者组内的每个消费者负责消费不同分区的数据
+2. 消费者组之间互相独立，每个消费者组是一个逻辑上的订阅者
+
+#### 5.2.3 消费者工作原理
 
 ### 5.3 消费者API
 
