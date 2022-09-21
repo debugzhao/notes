@@ -566,6 +566,8 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 ### 4.4 文件存储
 
+#### 4.4.1文件存储机制
+
  从文件存储的角度而言，topic是逻辑上的概念，<font color="red">partition是物理上的概念</font> ，每个partition对应一个log文件（实际上这里的log文件也是逻辑概念），该log 文件存储的就是producer生产的数据（<font color="red">producer生产的数据会追加写到log文件末尾</font> ）。为了防止log文件过大导致数据定位效率低下，kafka采用<font color="red">分片</font> 和<font color="red"> 索引</font>的方式定位数据，<font color="red">将每个partition分为多个segment</font> （每个segment默认为1GB大小），每个segment包括：<font color="red"> .index文件、.log文件、.timeindex文件</font>。这些文件位于一个文件夹中，文件夹的命名规则为topic名称+ 分区号，例如first-0。
 
 > 一个topic会分为多个partition
@@ -582,9 +584,9 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 
 <img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.4g530n25eqy0.webp" alt="image" style="zoom: 33%;" />
 
-kafka log索引注意事项
+**kafka log索引注意事项**
 
-1. index为稀疏索引，大约每往日志文件中写4kb的数据，会往索引文件中写入一条索引
+1. index为<font color="red">稀疏索引</font>，大约每往日志文件中写4kb的数据，会往索引文件中写入一条索引
 
    ```shell
    log.index.interval.bytes默认大小为4KB
@@ -592,16 +594,28 @@ kafka log索引注意事项
 
 2.  index文件中保存的offset为相对offset，可以将offset值控制在固定大小范围内，这样可以确保offset的值占用的空间不会太大
 
-kafka log文件索引数据流程
+**kafka log文件索引数据流程**
 
 1. 根据目标offset定位到segment文件
 2. 找到小于等于目标offset的最大offset对应的索引项
 3. 定位到log文件
 4. 根据position向下遍历，找到对应的record
 
+#### 4.4.2文件清除策略
 
+kafka保存日志的时间默认为7天。
 
+ kafka提供了两种日志清除策略，分别是delete删除策略、 compact压缩策略
 
+1. 删除策略（默认策略）
+
+   将过期数据删除，以segment中所有记录中的最大时间戳作为该文件时间戳
+
+2. 压缩策略
+
+   <font color="red">对于相同key的不同value值，只保留最后一个版本。</font> 
+
+   <font color="red">这种策略只适合特殊场景，比如消息的key是用户ID，value是用户的资料，通过这种压缩策略，整个消息集里就保存了所有用户最新的资料。</font> 
 
 ### 4.5 高效读写数据
 
