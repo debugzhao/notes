@@ -635,6 +635,18 @@ Kafka集群高效读写数据的原因：
 
 ### 5.1 kafka消费方式
 
+1. pull模式
+
+   由消费者主动拉取数据，<font color="red">kafka采用的是pull模式。</font>
+
+   pull模式的缺点：如果kafka没有数据，消费者可能会陷入循环之中，一直返回空数据
+
+2. push模式
+
+    由broker主动推送数据
+
+   Kafka没有采用这种方式，因为由broker决定消息发送速率，很难适应所有消费者的消费速率
+
 ### 5.2 Kafka消费者工作流程
 
 ### 5.3 消费者API
@@ -670,4 +682,3 @@ Kafka集群高效读写数据的原因：
 
 
 #### <font color="red"></font> 
-
