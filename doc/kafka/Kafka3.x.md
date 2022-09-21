@@ -580,6 +580,29 @@ Kafka1.x以后的版本保证数据单分区有序，条件如下：
 >
 > <font color="red"> .index文件和.log文件是以当前segment文件的第一条消息的offset命名的</font> 
 
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.4g530n25eqy0.webp" alt="image" style="zoom: 33%;" />
+
+kafka log索引注意事项
+
+1. index为稀疏索引，大约每往日志文件中写4kb的数据，会往索引文件中写入一条索引
+
+   ```shell
+   log.index.interval.bytes默认大小为4KB
+   ```
+
+2.  index文件中保存的offset为相对offset，可以将offset值控制在固定大小范围内，这样可以确保offset的值占用的空间不会太大
+
+kafka log文件索引数据流程
+
+1. 根据目标offset定位到segment文件
+2. 找到小于等于目标offset的最大offset对应的索引项
+3. 定位到log文件
+4. 根据position向下遍历，找到对应的record
+
+
+
+
+
 ### 4.5 高效读写数据
 
 
