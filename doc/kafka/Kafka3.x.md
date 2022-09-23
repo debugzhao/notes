@@ -674,6 +674,49 @@ Kafka集群高效读写数据的原因：
 
 ### 5.3 消费者API
 
+#### 5.3.1 消费者消费数据
+
+```java
+public class CustomerConsumer01 {
+    public static void main(String[] args) {
+
+        // 1.配置
+        Properties properties = new Properties();
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.211.55.8:9092,10.211.55.9:9092,10.211.55.10:9092");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "test");
+
+        // 2.创建消费者
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+
+        // 订阅主题
+        ArrayList<String> topics = new ArrayList<>();
+        topics.add("first");
+        consumer.subscribe(topics);
+
+        // 3.消费消息
+        while (true) {
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.println(record);
+            }
+        }
+    }
+}
+```
+
+#### 5.3.2 指定分区消费数据
+
+```java
+// 指定要消费的分区
+ArrayList<TopicPartition> topicPartitions = new ArrayList<>();
+topicPartitions.add(new TopicPartition("first", 0));
+consumer.assign(topicPartitions);
+```
+
+
+
 ### 5.4 分区的分配以及再平衡
 
 ### 5.5 offset位移
