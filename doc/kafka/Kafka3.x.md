@@ -715,9 +715,45 @@ topicPartitions.add(new TopicPartition("first", 0));
 consumer.assign(topicPartitions);
 ```
 
+### 5.4 分区分配以及再平衡
 
+> 注意： 通过命令行的方式操作分区只能增加不能减少
 
-### 5.4 分区的分配以及再平衡
+**分区分配的背景**：一个消费者组中由多个consumer组成，一个topic中有多个partition组成，<font color="red">现在的问题是到底由哪个consumer消费哪个partition？这就是分区分配策略要考虑的事情</font> 
+
+kafka有四种主流的分区分配策略： Range、RoundRobin、Sticky、CooperativeSticky。 可以通过参数partition.assignment.strategy 配置项修改分区分配策略。默认的分区分配策略为：Range + CooperativeSticky（kafka可以同时配置多个分区分配策略）
+
+#### Range分区策略以及再均衡（根据partition范围进行分区）
+
+<font color="red">**Range分区策略针对的是某一个分区**</font> 
+
+1. Range分区策略原理
+
+   <img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.h9irgjx8cds.webp" alt="image" style="zoom: 50%;" />
+
+2. Range分区策略再均衡案例
+
+   停止掉0号消费者，快速重新发送消息观看结果（45s以内，越快越好）
+
+   1号消费者：消费到3、4号分区数据
+
+   2号消费者：消费到5、6号分区数据
+
+   0号消费者的任务会整体被分配到1号消费者或者2号消费者。
+
+   说明：0号消费者挂掉后，消费者组需要按照超时时间45s来判断它是否退出，所以需要等待，时间到了45s后，判断它真的退出就会把任务分配给其他broker执行。
+
+3. Range分区策略缺点 
+
+   <font color="red">容易产生数据倾斜</font> 
+
+#### RoundRobin分区策略以及再均衡（轮询方式进行分区）
+
+RoundRobin分区策略是针对集群中所有的topic而言的。RoundRobin轮询分区策略，是把集群中所有的partition和所有的消费者列出来，然后按照hashcode进行排序，最后通过轮询算法分配patititon给到各个消费者。
+
+<img src="https://cdn.staticaly.com/gh/Andre235/-community@master/src/image.5s9nmrohafc0.webp" alt="image" style="zoom:50%;" />
+
+#### Sticky分区策略以及再均衡
 
 ### 5.5 offset位移
 
