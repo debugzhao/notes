@@ -757,29 +757,56 @@ RoundRobin分区策略是针对集群中所有的topic而言的。RoundRobin轮�
 
 粘性分区分配策略：可以理解为分配的结果带有“粘性的”。即在执行一次新的分配之前，考虑上一次分配的结果，尽量少的调整分配的变动，可以节省大量的开销。
 
-
-
 ### 5.5 offset位移
+
+#### offset的默认位置
+
+<font color="red">在kafka0.9版本之前consumer默认将offset保存在zookeeper中，在0.9版本之后offset保存在一个__consumer_offset的系统内置topic中</font> 
+
+#### 自动提交offset
+
+为了使我们能够专注于自己的业务逻辑，Kafka提供了自动提交offset的功能。
+
+`enable.auto.commit`：是否开启自动提交offset功能，默认是true
+
+#### 手动提交offset
+
+1. 同步提交offset（commitSync）
+
+   必须等待offset提交完毕之后，再去消费下一批数据（会阻塞当前消费者线程）
+
+2. 异步提交offset（commitAsync）
+
+   发送完提交offset请求之后（不会管请求是否处理完毕），就开始处理下一批数据
+
+#### 指定offset消费
+
+#### 指定时间消费
+
+#### 漏消费和重复消费
+
+1. 重复消费（自动提交offset引起的）
+   1. consumer每隔5s自动提交offset
+   2. 如果提交offset后的2s，consumer挂掉
+   3. 再次重启consumer，会从上一次提交的offset处继续消费，会导致重复消费
+2. 漏消费（手动提交offset）
+   1. 设置手动提交offset
+   2. 当offset被提交后，数据还在consumer内存中还没有落盘
+   3. 此时消费者线程被kill掉，那么offset已经被提交但是数据还没有被处理，导致内存中的数据都是（漏消费）
 
 ### 5.6 生产经验 消费者事务
 
+如果consumer端完成精确一次性消费，则需要consumer端将消费过程和提交offset做原子绑定。
+
 ### 5.7 生产经验 数据积压（如何提高消费者吞吐量）
 
+1. 如果是kafka消费能力不足
 
+   则可以考虑增加topic的分区数，同时提升消费者组的消费者消费者数量（消费者数 = 分区数量）。二者缺一不可
 
+2. 如果是下游的数据处理不及时
 
-
-
-
-
-
-
-
-
-
-
-
-
+   提神每批次拉去的数据量，拉去的数据量过少，使得处理的数据量 <  生产的数据量也会造成数据积压
 
 
 
