@@ -115,6 +115,21 @@ zookeeper主要用在集群中不同节点之间的通信。在kafka中，被用
 
 -1：生产者发送过来数据之后，leader和ISR队列中的所有节点收到消息后才认为消息发送成功
 
+12、消费者如何不自动提交偏移量，由应用提交
+
+为了我们专注于自己的业务逻辑，kafka提供了自动提交offse功能，但是通过`enable.auto.commit `配置项可以改成`false`，由开发者手动提交offset，其中手动提交又分为`commitSync`（同步提交）和`commitAsync`（异步提交）
+
+```java
+ConsumerRecords<> records = consumer.poll();
+for (ConsumerRecord<> record : records){
+    // ......
+    tyr{
+        consumer.commitSync()
+    }
+    // ......
+}
+```
+
 13、消费者故障，出现活锁问题如何解决？
 14、如何控制消费的位置
 15、**kafka 分布式（不是单机）的情况下，如何保证消息的顺序消费?**
