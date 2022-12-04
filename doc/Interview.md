@@ -130,20 +130,71 @@ for (ConsumerRecord<> record : records){
 }
 ```
 
-13、消费者故障，出现活锁问题如何解决？
+13、消费者故障，出现活锁问题如何解决？   
+
 14、如何控制消费的位置
+
+1. 指定offset开始消费
+
+   kafka 使用`seek(TopicPartition, long)`指定新的消费位置，用于查找服务器保留的最早和最新的 offset 的特殊的方法也可用`seekToBeginning(Collection)` 和`seekToEnd(Collection)）`
+
+   ```java
+   // 遍历所有分区，并指定offset从1700的位置开始消费
+   for (TopicPartition tp: assignment) {
+     kafkaConsumer.seek(tp, 1700);
+   }
+   ```
+
+2. 指定时间开始消费
+
 15、**kafka 分布式（不是单机）的情况下，如何保证消息的顺序消费?**
+
+针对消息的顺序性需要从 producer 和 consumer两个角度来考虑；面对有顺序消费业务的需求，还分为全局有序和局部有序
+
+1. 全局有序
+
+   一个 topic下的所有消息都需要按照生产顺序去消费
+
+2. 局部有序
+
+   一个 topic 下的消息，只需要满足针对指定业务字段的生产顺序消费。例如 topic的消息是订单流水表，只需要针对订单 id 的生产顺序消费即可
+
+**全局有序**
+
+一个 topic 可以由多个 partition 组成，当生产者按照顺序发送消息到 kafka 集群时，消息可能会发送到不同的 partition，此时消费者再去消费就会出现乱序现象。因此要想 topic 全局有序，一个 topic 只能对应一个 partition。
+
+并且对应的消费者应该使用单线程或者可以保证消息顺序线程模型来消费，否则消费端还是会出现消费乱序。
+
+**局部有序**
+
+要满足局部有序，只需要在发消息的时候指定 partition key，kafka 对其进行 hash运算，然后根据运算结果决定将消息放到对应的 partition中。这样 partition key 相同的消息就会被放入同一个 partition 中。
+
+此时topic的 partiton数量仍然可以设置为多个，可以提升 topic 总体的吞吐量。
+
+**消息重试对顺序消费的影响**
+
+对于一个有着先后顺序的消息 AB，正常情况下是先发送 A 再发送 B；但是在异常情况下A 发送失败了，B 发送成功了，由于重试机制A 在 B 发送成功以后再次重试发送成功。此时原本正常情况的 AB 变成了 BA
+
+这种情况下，严格的顺序消费还需要将`max.in.flight.requests.per.connection`参数配置为 1。这个参数控制着生产者在服务器响应之前可以发送多少条消息，它的值越高内存占用就越高，同时也会提高系统的吞吐量。把它设置为 1 就可以使消息按照发送的顺序写入服务器
+
+ 把`max.in.flight.requests.per.connection` 配置为 1 会严重降低系统吞吐量，在某些业务场景下是不能接受的。如果放弃使用失败重试机制，可以在消费端增加失败标记的记录，然后用定时任务轮询重试失败的消息，并做好监控报警
+
 16、**kafka 的高可用机制是什么？**
+
+
+
 17、**kafka 如何减少数据丢失**
+
 18、**kafka 如何不消费重复数据？**比如扣款，我们不能重复的扣。
+
+19、kafka partitions分区路由规则
 
 
 
 引用
 
 - [18道kafka题哪些你还不会](https://developer.aliyun.com/article/740170)
-
-
+- [一文理解Kafka如何保证消息顺序性](https://cloud.tencent.com/developer/article/1839597)
 
 
 
