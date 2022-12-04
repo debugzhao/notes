@@ -1,0 +1,1089 @@
+### 1.原始字面量
+
+在 C++11 中添加了定义原始字符串的字面量，定义方式为：R “xxx(原始字符串)xxx” 其中（）两边的字符串可以省略。原始字面量 R 可以直接表示字符串的实际含义，而不需要额外对字符串做转义或连接等操作。
+
+### 2.nullptr
+
+C++ 中将 NULL 定义为字面常量 0，并不能保证在所有场景下都能很好的工作，比如，函数重载时，NULL 和 0 无法区分：
+
+```C++
+void func(int ptr) {
+    cout << "func(int ptr)" << endl;
+}
+
+void func(char* ptr) {
+    cout << "func(char* ptr)" << endl;
+}
+
+int main(int argc, char const *argv[]) {
+    int num1 = 0;
+    char* ptr2 = NULL;
+    func(num1);
+    func(ptr2);
+    return 0;
+}
+
+// 控制台会输出
+func(int ptr)
+func(int ptr)
+```
+
+*上面ptr2虽然声明的是一个char\*类型的数据，但是被赋值为NULL，NULL本质是(void\*) 0，所以还会调用void func(int ptr) 方法。但是如果赋值为nullptr的话，就会将空指针转换为char\*，因此会调用func(char\* ptr)方法。*
+
+nullptr 无法隐式转换为整形，但是可以隐式匹配指针类型。在 C++11 标准下，相比 NULL 和 0，使用 nullptr 初始化空指针可以令我们编写的程序更加健壮。
+
+### 3.类成员的快速初始化
+
+#### c++98标准的类成员初始化
+
+C++98标准中，支持 <font color="red">就地初始化类中的静态常量成员</font>，非静态常量成员的初始化只能在构造方法中初始化
+
+#### c++11标准的类成员初始化
+
+##### 初始化类的非静态成员
+
+在进行类成员变量初始化的时候，c++11标准对于c++98标准做了补充， <font color="red">允许在类内部直接对非静态常量成员初始化，在初始化的时候可以用 = 赋值，也可以用{} 赋值</font>
+
+```cpp
+class Test {
+private:
+    int a = 9;
+    int b = {5};
+    int c{12}; // 如果使用花括号赋值，则 = 可以不写
+    double array[4] = { 3.14, 3.15, 3.16, 3.17};
+    double array1[4] { 3.14, 3.15, 3.16, 3.17 };
+    string s1("hello");     // error，不能使用()对变量赋值
+    string s2{ "hello, world" };
+};
+```
+
+##### 类内部赋值和初始化列表
+
+在c++11中也可以使用初始化列表对类成员进行初始化 <font color="red">（这种方式比在构造函数内部赋值效率要高）</font>
+
+```cpp
+class Init {
+public:
+    // 使用初始化列表初始化
+    Init(int x, int y, int z) :a(x), b(y), c(z) {}
+
+  	// 非静态成员变量就地初始化
+    int a = 1;
+    int b = 2;
+    int c = 3;
+};
+
+int main() {
+    Init tmp(10, 20, 30);
+    cout << "a: " << tmp.a << ", b: " << tmp.b << ", c: " << tmp.c << endl;
+    return 0;
+}
+```
+
+```cpp
+// 输出结果
+a: 10, b: 20, c: 30
+```
+
+ <font color="red">初始化列表指定的值会覆盖就地初始化时指定的值。</font>
+
+### 4.constexpr常量表达式
+
+#### const
+
+在 C++11 之前只有 const 关键字，从功能上来说这个关键字有双重语义：**变量只读**，**修饰常量**，举一个简单的例子：
+
+```cpp
+void func(const int num)
+{
+    const int count = 24;
+    int array[num];            // error，num是一个只读变量，不是常量
+    int array1[count];         // ok，count是一个常量
+}
+```
+
+####  constexpr
+
+在c++ 11版本中新添加了一个`constexpr`关键字，这个关键字是用来修饰`常量表达式`的。所谓的常量表达式指的是由多个常量组成，并且**在编译过程中就能过得到计算结果的表达式。**
+
+c++程序从编写到执行分为四个阶段：  <font color="red">**预处理**、 **编译**、**汇编**、**链接**四个过程</font>，得到可执行程序就可以运行了。需要额外强调的是，常量表达式和非常量表达式的计算时机不同， <font color="red">非常量表达式只能在程序运行阶段计算出结果，但是常量表达式的计算往往发生在程序编译阶段，这可以极大地提高程序执行效率。</font>因为表达式只需要在编译阶段计算一次，节省了每次程序运行时都需要计算一次的时间。
+
+在使用中建议将 const 和 constexpr 的功能区分开，即凡是表达“只读”语义的场景都使用 const，表达“常量”语义的场景都使用 constexpr。
+
+在定义常量时，const和constexpr是等价的，都可以在编译期得到计算结果
+
+```cpp
+const int m = f();  // 不是常量表达式，m的值只有在运行时才会获取。
+const int i=520;    // 是一个常量表达式
+const int j=i+1;    // 是一个常量表达式
+
+constexpr int i=520;    // 是一个常量表达式
+constexpr int j=i+1;    // 是一个常量表达式
+```
+
+对于c++内置的数据类型，可以直接用constexpr修饰，但是自定义的数据类型（结构体、类）不能直接用constexpr修饰。
+
+```cpp
+// 此处的constexpr修饰是无效的
+constexpr struct Test
+{
+    int id;
+    int num;
+};
+```
+
+#### 常量表达式函数
+
+也可以使用constexpr修饰函数的返回值，这种函数被称为常量表达式函数。这些函数包括：普通函数/类成员函数、类的构造函数、模板函数
+
+##### 修饰函数
+
+constexpr 并不能修改任意函数的返回值，时这些函数成为常量表达式函数，必须要满足以下几个条件：
+
+1. 函数必须要有返回值，并且 return 返回的表达式必须是常量表达式
+
+   ```cpp
+   // error，不是常量表达式函数，没有返回值
+   constexpr void func1()
+   {
+       int a = 100;
+       cout << "a: " << a << endl;
+   }
+   
+   // error，不是常量表达式函数
+   constexpr int func1()
+   {
+       int a = 100;
+       return a;
+   }
+   ```
+
+2. 函数在使用之前，必须要有对应的定义函数（实现函数）
+
+3. 整个函数的函数体中，不能出现非常量表达式之外的语句（using 指令、typedef 语句以及 static_assert 断言、return 语句除外）。
+
+##### 修饰模板函数
+
+##### 修饰构造函数
+
+也可以使用 constexpr 修饰一个构造函数，这样就可以得到一个常量构造函数了。常量构造函数有一个要求： <font color="red">构造函数的函数体必须为空，并且必须采用初始化列表的方式为各个成员赋值。</font>
+
+C++
+
+```cpp
+struct Person {
+    constexpr Person(const char* p, int age) :name(p), age(age){}
+    const char* name;
+    int age;
+};
+```
+
+### 5.auto自动类型推导
+
+可以使用auto自动推导变量的类型，还可以使用decltype来表示函数的返回值，使用这些新特性可以让我们写出更加简介、现代的代码。
+
+#### auto
+
+auto关键字可以自动推导出变量的实际类型
+
+##### 推导规则
+
+使用auto声明的变量必须要进行初始化，以便让编译器推导出它的实际类型，然后在编译时将auto占位符替换为真正的类型。
+
+```cpp
+auto x = 3.14;      // x 是浮点型 double
+auto y = 520;       // y 是整形 int
+auto z = 'a';       // z 是字符型 char
+auto nb;            // error，变量必须要初始化
+auto double nbl;    // 语法错误, 不能修改数据类型   
+```
+
+不仅如此，auto还可以和指针、引用结合起来使用，也可以带上const、volatile限定符。在不同的场景下有对应的推导规则
+
+- 当变量不是指针或者引用是，推导的结果不会保留const、volatile关键字
+- 当变量是指针或者引用类型时，推导的结果会保留const、volatile关键字
+
+```cpp
+int temp = 110;
+// 变量 a 的数据类型为 int*，因此 auto 关键字被推导为 int类型
+auto *a = &temp;	
+// 变量 b 的数据类型为 int*，因此 auto 关键字被推导为 int* 类型
+auto b = &temp;		
+// 变量 c 的数据类型为 int&，因此 auto 关键字被推导为 int类型
+auto &c = temp;		
+// 变量 d 的数据类型为 int，因此 auto 关键字被推导为 int 类型
+auto d = temp;	
+```
+
+##### auto的限制
+
+1. 不能作为函数的参数使用
+
+   ```cpp
+   int func(auto a, auto b){  // error 	
+       cout << "a: " << a <<", b: " << b << endl;
+   }
+   ```
+
+2. 不能用于类的非静态成员变量的初始化（可以用于类的静态常量的初始化）
+
+   ```cpp
+   class Test
+   {
+       auto v1 = 0;                    // error
+       static auto v2 = 0;             // error,类的静态非常量成员不允许在类内部直接初始化
+       static const auto v3 = 10;      // ok
+   }
+   ```
+
+3. 不能使用auto关键字定义数组
+
+   ```cpp
+   void fun() {
+     int array[] = {1,2,3,4}; // 定义数组
+     auto a1 = array;         // OK，a1被推导为int*
+     auto t2[] = array;       // error，auto无法定义数组
+     auto t3[] = {1,2,3,4}    // error，auto无法定义数组
+   }
+   ```
+
+4.  无法使用auto推导处模板参数
+
+   ```cpp
+   template <typename T>
+   struct Test{}
+   
+   int func()
+   {
+       Test<double> t;
+       Test<auto> t1 = t;           // error, 无法推导出模板类型
+       return 0;
+   }
+   ```
+
+##### auto的应用
+
+1. 用于STL容器的遍历
+
+   ```cpp
+   map<int, string> map1;
+   map1.insert(make_pair(1, "lucas"));
+   map1.insert(make_pair(2, "love"));
+   map1.insert(make_pair(3, "huxianmei"));
+   
+   // map<int, string>::iterator it = map1.begin();
+   auto it = map1.begin();
+   for(; it != map1.end(); it++) {
+     cout << it->first << " -> " << it->second << endl;
+   }
+   return 0;
+   ```
+
+   
+
+2. 用于泛型编程
+
+#### decltype
+
+#### 返回类型后置
+
+### 7.final和override  
+
+#### final
+
+final关键字可以限制某个类不能被继承，某个虚函数不能被重写。如果要用final修饰函数，那么该函数必须是虚函数，并且final关键字只能放在类或者函数名字的后面。
+
+##### 修饰函数
+
+如果使用final修饰函数，那只能修饰虚函数，这样就能阻止子类重写父类的这个函数了
+
+```cpp
+class Base {
+public:
+    virtual void test() {
+        cout << "base class";
+    }
+};
+
+class Child: public Base {
+public:
+    void test() final {
+        cout << "child class";
+    }
+};
+
+class GrandChild: public Child {
+public:
+    void test() { // 语法错误，不允许重写
+        cout << "child class";
+    }
+};
+```
+
+##### 修饰类
+
+使用final关键字修饰类表示该类是不允许被继承的，也就是说这个类不能有派生类
+
+#### override
+
+override 关键字确保在派生类中声明的重写函数与基类的虚函数有相同的签名，同时也明确表明将会重写基类的虚函数。
+
+```cpp
+class Base
+{
+public:
+    virtual void test()
+    {
+        cout << "Base class...";
+    }
+};
+
+class Child : public Base
+{
+public:
+    void test() override // 重写父类test方法
+    {
+        cout << "Child class...";
+    }
+};
+
+class GrandChild : public Child
+{
+public:
+    void test() override // 重写父类test方法
+    {
+        cout << "Child class...";
+    }
+};
+```
+
+### 8.模板的优化
+
+#### 模板的右尖括号
+
+在泛型编程中，模板实例化有一个非常繁琐的地方，那就是连续的两个右尖括号（>>）会被编译器解析成右移操作符，而不是模板参数表的结束
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+template<typename T>
+class Base {
+public:
+    void ergodic(T& t) {
+        auto iter = t.begin();
+        for(; iter != t.end(); iter++) {
+            cout << *iter << " ";
+        }
+    }
+};
+
+int main(int argc, char const *argv[]) {
+    vector<int> v {1, 2, 3, 4, 5, 6};
+    Base<vector<int>> b;  // 模板的右尖括号
+    b.ergodic(v);
+    return 0;
+}
+```
+
+ <font color="red">C++11改进了编译器的解析规则，尽可能地将多个右尖括号（>）解析成模板参数结束符</font>，方便我们编写模板相关的代码。
+
+#### 默认模板参数
+
+### 9.静态断言static_assert
+
+#### 断言
+
+如果我们需要在程序中使用断言，需要引入<assert.h>头文件，头文件为我们提供了assert宏，用于在 <font color="red">进行时断言。</font>
+
+```cpp
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+// 创建一个指定大小的 char 类型数组
+char* createArray(int size)
+{
+    // 通过断言判断数组大小是否大于0
+    assert(size > 0);	// 必须大于0, 否则程序中断
+    char* array = new char[size];
+    return array;
+}
+```
+
+#### 静态断言
+
+在上面的例子中我们使用了断言 assert。<font color="red">但assert 是一个运行时断言，也就是说它只有在程序运行时才能起作用。</font>这意味着不运行程序我们将无法得知某些条件是否是成立的。对于这种情况我们就需要使用 C++11 提供的静态断言了。
+
+<font color="red">static_assert静态断言，所谓的静态断言即在程序编译时就能够自我检查的断言。使用时不需要引用头文件。</font>
+
+```cpp
+// assert.cpp
+#include <iostream>                                         
+using namespace std;
+  
+int main()
+{
+    // 字体原因看起来是一个=, 其实这是两个=
+    static_assert(sizeof(long) == 4, "错误, 不是32位平台...");
+    cout << "64bit Linux 指针大小: " << sizeof(char*) << endl;
+    cout << "64bit Linux long 大小: " << sizeof(long) <<endl;
+  
+    return 0;
+}
+```
+
+#####  注意事项
+
+<font color="red"> 由于静态断言的表达式是在程序编译阶段进行检测，所以在它的表达式中不能出现变量，也就是这个表达式只能是常量表达式</font>
+
+### [10.noexcept](https://subingwen.cn/cpp/noexcept/)
+
+### 11.基于范围for循环
+
+### 12.using的使用
+
+在c++中using用于声明命名空间，使用命名空间可以防止命名冲突。在c++11中赋予了using新的功能：分别是定义别名、模板的定义
+
+#### 定义别名
+
+可以使用typedef定义别名
+
+```cpp
+typedef 旧的类型名 新的类型名;
+// 使用举例
+typedef unsigned int uint_t;
+```
+
+可以使用using定义别名
+
+```cpp
+using 新的类型 = 旧的类型;
+// 使用举例
+using uint_t = int;
+```
+
+定义函数指针
+
+```cpp
+// 使用typedef定义函数指针
+typedef int(*func_ptr)(int, double);
+// 使用usig定义函数指针，阅读性更强
+using func_ptr1 = int(*)(int, double);
+```
+
+```cpp
+using fun_ptr1 = void(*)(int, string);
+typedef void(*fun_ptr2)(int, string);
+
+void test(int a, string b) {
+    cout << a;
+    cout << b;
+}
+
+int main() {
+    fun_ptr1 f1 = test;
+    fun_ptr2 f2 = test;
+
+    f1(1, "a");
+    f2(2, "b");
+    return 0;
+}
+```
+
+#### 模板的定义
+
+1. 使用typedef定义模板的别名
+
+   ```cpp
+   template<typename T>
+   struct MyMap1{
+       typedef map<int, T> Map;
+   };
+   ```
+
+2. 使用using定义模板的别名
+
+   ```cpp
+   template<typename T>
+   using MyMap2 = map<int, T>;
+   ```
+
+```cpp
+#include <iostream>
+#include <cassert>
+#include <map>
+using namespace std;
+
+// 类模板
+template<typename T>
+class Container {
+public: 
+    void print(T& t) {
+        for(const auto& value : t) {
+            cout << value.first << " -> " << value.second << endl;
+        }
+    }
+};
+
+// 使用typedef定义模板的别名
+template<typename T>
+struct MyMap1{
+    typedef map<int, T> Map;
+};
+
+// 使用using定义模板的别名
+template<typename T>
+using MyMap2 = map<int, T>;
+
+int main(int argc, char const *argv[]) {
+    MyMap1<int>::Map m1;
+    m1.insert(make_pair(1, 1));
+    m1.insert(make_pair(2, 2));
+    m1.insert(make_pair(3, 3));
+
+    Container<MyMap1<int>::Map> c1;
+    c1.print(m1);
+
+    MyMap2<string> mmp2;
+    mmp2.insert(make_pair(1, "hello"));
+    mmp2.insert(make_pair(2, "world"));
+    mmp2.insert(make_pair(3, "nihao"));
+    Container<MyMap2<string>> c2;
+    c2.print(mmp2);
+
+    return 0;
+}
+```
+
+### 13.委托构造函数和继承构造函数
+
+#### 委托构造函数
+
+<font color="red">委托构造函数允许使用同一个类的一个构造函数调用其他的构造函数，从而简化相关变量的初始化过程。</font>
+
+```cpp
+class Test
+{
+public:
+    Test() {};
+    Test(int max)
+    {
+        this->m_max = max > 0 ? max : 100;
+    }
+
+    Test(int max, int min)
+    {
+        this->m_max = max > 0 ? max : 100;              // 冗余代码
+        this->m_min = min > 0 && min < max ? min : 1;   
+    }
+
+    Test(int max, int min, int mid)
+    {
+        this->m_max = max > 0 ? max : 100;             // 冗余代码
+        this->m_min = min > 0 && min < max ? min : 1;  // 冗余代码
+        this->m_middle = mid < max && mid > min ? mid : 50;
+    }
+
+    int m_min;
+    int m_max;
+    int m_middle;
+};
+```
+
+在上面的程序中有三个构造函数，但是这三个函数中都有重复的代码，在 C++11 之前构造函数是不能调用构造函数的，加入了委托构造之后，我们就可以轻松地完成代码的优化了：
+
+```cpp
+class Test
+{
+public:
+    Test() {};
+    Test(int max)
+    {
+        this->m_max = max > 0 ? max : 100;
+    }
+
+    Test(int max, int min):Test(max)
+    {
+        this->m_min = min > 0 && min < max ? min : 1;
+    }
+
+    Test(int max, int min, int mid):Test(max, min)
+    {
+        this->m_middle = mid < max && mid > min ? mid : 50;
+    }
+
+    int m_min;
+    int m_max;
+    int m_middle;
+};
+```
+
+<font color="red">这种链式的构造函数调用不能形成一个闭环（死循环），否则会在运行期抛异常。</font> 
+
+#### 继承构造函数
+
+c++提供的继承构造函数可以让派生类直接使用基类的构造函数，派生类无需再写构造函数。
+
+```cpp
+class Base {
+public:
+    Base(int age): age_(age) {}
+    Base(int age, double salary, string name): age_(age), salary_(salary), name_(name) {}
+
+private:
+    int age_;
+    double salary_;
+    string name_;
+};
+
+class Child : public Base{
+public:
+    using Base::Base;
+};
+```
+
+在修改之后的子类中，没有添加任何构造函数，而是添加了 using Base::Base; 这样就可以在子类中直接继承父类的所有的构造函数，通过他们去构造子类对象了。
+
+### 14.初始化列表
+
+#### 统一的初始化
+
+在c++11中使用{ } 的方式统一了初始化方式
+
+```cpp
+int main(void) {
+ 		// 通过构造函数初始化 
+    Test t1(520);
+  	// 隐式构造函数初始化
+    Test t2 = 520; 
+  	// 通过初始化列表方式初始化
+    Test t3 = { 520 };
+  	// 通过初始化列表方式初始化，其中 = 可以省略不写
+    Test t4{ 520 };
+  	// 初始化列表初始化基本数据类型
+    int a1 = { 1314 };
+  	// 初始化列表初始化基本数据类型，= 可以忽略不写
+    int a2{ 1314 };
+  	// 初始化列表初始化数组
+    int arr1[] = { 1, 2, 3 };
+  	// 初始化列表初始化数组
+    int arr2[]{ 1, 2, 3 };
+    return 0;
+}
+```
+
+#### 列表初始化细节
+
+##### 聚合体
+
+##### 非聚合体
+
+#### std::initializer_list 
+
+##### 作为普通函数参数
+
+特点：
+
+1. 它可以接收任何个相同数据类型的初始化列表
+2.  他是一个轻量级的容器类型，内部定义了迭代器，但是迭代的元素是只读的
+3. 在 std::initializer_list 内部有三个成员接口：size(), begin(), end()。
+
+```cpp
+void traversal(std::initializer_list<int> a) {
+    for (auto it = a.begin(); it != a.end(); ++it)
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+// 函数调用
+traversal({ 2, 4, 6, 8, 0 });
+```
+
+##### 作为构造函数参数
+
+```cpp
+class Test {
+public:
+    Test(std::initializer_list<string> list) {
+        for (auto it = list.begin(); it != list.end(); ++it) {
+            cout << *it << " ";
+            m_names.push_back(*it);
+        } 
+        cout << endl;
+    }
+private:
+    vector<string> m_names;
+};
+```
+
+### 15.基于范围的for循环
+
+#### for循环新语法
+
+在基于范围的for循环中，不需要再传递容器的两端，循环会自动以容器为范围展开，并且循环中也屏蔽掉了迭代器的遍历细节，直接抽取容器中的元素进行运算，使用这种方式进行循环遍历会让编码和维护变得更加简便。
+
+```cpp
+int main(int argc, char const *argv[]) {
+    vector<int> vec {1,2,3,4};
+    for(auto item: vec) {
+        cout << item <<  endl;
+    } 
+    return 0;
+}
+```
+
+<font color="red">上述代码中item是vec元素的拷贝，拷贝有两个缺点：拷贝会消耗性能，不能直接修改容器元素的数据，但是引用的方式可以解决以上两个问题。</font> 
+
+```cpp
+for(const auto &item: vec) {
+  cout << item <<  endl;
+} 
+```
+
+#### 使用细节
+
+##### 关系型容器
+
+```cpp
+int main(int argc, char const *argv[]) {
+    map<int, string> m {
+        {1, "a"}, {2, "b"}, {3, "c"}
+    };
+    // 基于迭代器的for循环 it是一个指针
+    for(auto it = m.begin(); it != m.end(); it ++) {
+        cout << it->first << ":" << it->second << endl;
+    }
+
+    // 基于范围的for循环 it是一个对组对象
+    for(auto &it :  m) {
+        cout << it.first << ":" << it.second << endl;
+    }
+    return 0;
+}
+```
+
+1. 使用普通的 for 循环方式（基于迭代器）遍历关联性容器， auto 自动推导出的是一个迭代器类型，需要使用迭代器的方式取出元素中的键值对（和指针的操作方法相同）
+2. 使用基于范围的 for 循环遍历关联性容器，auto 自动推导出的类型是容器中的 value_type，相当于一个对组（std::pair）对象
+
+##### 元素只读
+
+1. 对应 set 容器来说，内部元素都是只读的，这是由容器的特性决定的，因此在 for 循环中 auto & 会被视为 const auto & 
+2. 在遍历关联型容器时也会出现同样的问题，虽然可以得到一个std::pair引用，但是我们是不能修改里边的first值的，也就是key值，因为它是只读的
+
+##### 访问次数
+
+<font color="red">基于范围的for循环在第一次遍历的时候就确定了边界，边界函数只会调用一次，提高效率的同时也带来了其他问题，如果在遍历过程中删除了元素，那么使用基于范围的for循环就会出错</font> 
+
+### [16.可调用对象包装器、绑定器](https://subingwen.cn/cpp/bind/)
+
+#### 可调用对象
+
+#### 可调用对象包装器
+
+#### 绑定器
+
+### 17.lambda表达式
+
+#### 基本用法
+
+lambda表达式特点：
+
+1. 声明式的编程风格
+
+   就地匿名实现目标函数或者函数对象，不需要额外写一个函数或者对象
+
+2. 简洁
+
+   避免了代码膨胀和功能分散，让开发更加高效
+
+3. 在需要的时间和地点实现功能闭包，使程序更加分散
+
+**lambda表达式语法：**
+
+```cpp
+[capture](params) opt -> ret {body;};
+```
+
+1. capture是捕获列表
+
+   捕获一定范围的变量
+
+2. params是参数列表
+
+   ```cpp
+   auto f = [](){return 1;}	// 没有参数, 参数列表为空
+   auto f = []{return 1;}		// 没有参数, 参数列表省略不写
+   ```
+
+3. opt是函数选项（不需要可以省略）
+
+   1. mutable
+
+      可以修改按值传进来的拷贝（注意：修改的是拷贝值，而不是值本身）
+
+   2. exception
+
+      指定函数抛出来的异常，如抛出整数类型的异常，可以使用throw
+
+4. ret是返回值类型
+
+   lambda表达式的返回值是通过返回值后置语法来定义的
+
+5. body是函数体
+
+   函数的实现，这部分不能省略，但是函数体可以为空
+
+#### 捕获列表
+
+lambda表达式的捕获列表可以捕获一定范围内的变量，具体使用方式如下：
+
+1. []：不捕获任何类型的变量
+
+2. [&]：捕获外部作用域的所有变量，并且作为引用在函数体内使用（按照引用捕获）
+
+3. [=]：捕获外部作用域的所有变量，并且作为副本在函数体内使用（按值捕获）
+
+   拷贝的副本在匿名函数体内部是只读的，但是通过增加mutable函数选项可以修改变量读写属性
+
+4. [=, &foo]：按值捕获外部作用域中所有变量，并按照引用捕获外部变量 foo
+
+5. [bar]： 按值捕获 bar 变量，同时不捕获其他变量
+
+6. [&bar]：按引用捕获 bar 变量，同时不捕获其他变量
+
+7. [this]：捕获当前类中的 this 指针
+
+   1. 让 lambda 表达式拥有和当前类成员函数同样的访问权限
+   2. 如果已经使用了 & 或者 =, 默认添加此选项
+
+ ```cpp
+ #include <iostream>
+ #include <functional>
+ using namespace std;
+ 
+ class Test
+ {
+ public:
+     void output(int x, int y)
+     {
+         auto x1 = [] {return m_number; };                      // error
+         auto x2 = [=] {return m_number + x + y; };             // ok
+         auto x3 = [&] {return m_number + x + y; };             // ok
+         auto x4 = [this] {return m_number; };                  // ok
+         auto x5 = [this] {return m_number + x + y; };          // error
+         auto x6 = [this, x, y] {return m_number + x + y; };    // ok
+         auto x7 = [this] {return m_number++; };                // ok
+     }
+     int m_number = 100;
+ };
+ ```
+
+<font color="red">在匿名函数内部，需要通过lambda表达式的捕获列表控制如何捕获外部变量，以及可以访问哪些变量。lambda表达式无法修改通过复制的方式捕获外部变量，如果希望修改外部变量只能通过引用的方式捕获变量。</font> 
+
+#### 返回值
+
+ 在c++11中允许省略lambda表达式的返回值
+
+```cpp
+// 完整的lambda表达式定义
+auto f = [](int a) -> int {
+    return a+10;  
+};
+
+// 忽略返回值的lambda表达式定义
+auto f = [](int a) {
+    return a+10;  
+};
+```
+
+#### [TODO:函数本质](https://www.bilibili.com/video/BV1bX4y1G7ks?p=35&vd_source=f3478dde6c64ccf1e4a7d6ed91877d4b)
+
+### 18.TODO:右值引用
+
+### 19.TODO:转移和完美转发
+
+### 20.共享智能指针
+
+<font color="red">在c++中如果通过new申请内存，就必须使用delete销毁内存；如果通过malloc申请内存，那么必须通过free去释放内存。</font>
+
+在c++中没有垃圾回收机制，必须自己释放分配的内存，否则会造成内存泄露。解决这个问题最有效的办法就是使用智能指针（smart point）。智能指针是存储指向动态分配（堆）对象指针的类，用于生存期的控制，能够确保在离开指针所在的作用域是，自动地销毁动态分配的对象，防止内存泄露。
+
+<font color="red">智能指针的核心技术实现是引用技术，每使用它一次，内部引用计数器加1，每析构一次内部的引用计数器减1，减为0时，释放所指向的堆内存。</font> 
+
+c++11中提供了三种智能指针，使用这些智能指针时需要引用头文件<memory>;
+
+1. std::shared_ptr（共享智能指针）
+2. std::unique_ptr（独占智能指针）
+3. std::weak_ptr（弱引用智能指针，它不共享指针，不能操作资源，是用来监视shared_ptr的
+
+#### shared_ptr的初始化
+
+共享智能指针对象初始化完毕之后就指向了要管理的那块堆内存。
+
+```cpp
+// use_count函数可以查看当前有多少个智能指针同时管理着这块堆内存
+// 管理当前对象的 shared_ptr 实例数量，或若无被管理对象则为 0。
+long use_count() const noexcept;
+```
+
+##### 通过构造函数初始化
+
+```cpp
+#include <iostream>
+#include <memory>
+using namespace std;
+
+int main()
+{
+    // 使用智能指针管理一块 int 型的堆内存
+    shared_ptr<int> ptr1(new int(520));
+    cout << "ptr1管理的内存引用计数: " << ptr1.use_count() << endl;
+    // 使用智能指针管理一块字符数组对应的堆内存
+    shared_ptr<char> ptr2(new char[12]);
+    cout << "ptr2管理的内存引用计数: " << ptr2.use_count() << endl;
+    // 创建智能指针对象, 不管理任何内存
+    shared_ptr<int> ptr3;
+    cout << "ptr3管理的内存引用计数: " << ptr3.use_count() << endl;
+    // 创建智能指针对象, 初始化为空
+    shared_ptr<int> ptr4(nullptr);
+    cout << "ptr4管理的内存引用计数: " << ptr4.use_count() << endl;
+
+    return 0;
+}
+```
+
+```cpp
+ptr1管理的内存引用计数: 1
+ptr2管理的内存引用计数: 1
+ptr3管理的内存引用计数: 0
+ptr4管理的内存引用计数: 0
+```
+
+##### 通过拷贝和移动构造函数初始化
+
+当一个智能指针被初始化之后，就可以通过这个智能指针初始化其他新对象。在创建新对象的时候，对应的拷贝构造函数或者移动构造函数就被自动调用了。
+
+<font color="red">如果使用拷贝的方式初始化共享的智能指针对象，这两个对象会同时管理同一块堆内存，堆内存对应的引用技术也会增加；如果使用移动的方式初始化智能指针对象，只是转让了内存的所有权，管理的内存对象并不会增加，因此内存的引用计数也不会变化。</font> 
+
+```cpp
+#include <iostream>
+#include <memory>
+using namespace std;
+
+int main()
+{
+    // 使用智能指针管理一块 int 型的堆内存, 内部引用计数为 1
+    shared_ptr<int> ptr1(new int(520));
+    cout << "ptr1管理的内存引用计数: " << ptr1.use_count() << endl;
+    //调用拷贝构造函数
+    shared_ptr<int> ptr2(ptr1);
+    cout << "ptr2管理的内存引用计数: " << ptr2.use_count() << endl;
+    shared_ptr<int> ptr3 = ptr1;
+    cout << "ptr3管理的内存引用计数: " << ptr3.use_count() << endl;
+    //调用移动构造函数
+    shared_ptr<int> ptr4(std::move(ptr1));
+    cout << "ptr4管理的内存引用计数: " << ptr4.use_count() << endl;
+    std::shared_ptr<int> ptr5 = std::move(ptr2);
+    cout << "ptr5管理的内存引用计数: " << ptr5.use_count() << endl;
+
+    return 0;
+}
+```
+
+```cpp
+ptr1管理的内存引用计数: 1
+ptr2管理的内存引用计数: 2
+ptr3管理的内存引用计数: 3
+ptr4管理的内存引用计数: 3
+ptr5管理的内存引用计数: 3
+```
+
+##### 通过std::make_shared初始化
+
+<font color="red">使用std::make_shared()模板函数可以完成内存地址的创建，并将最终得到的内存地址传递给共享智能指针对象管理。如果申请的内存是普通类型，通过函数的()可完成地址的初始化；如果要创建一个类对象，函数的（）内部需要指定构造对象需要的参数，也就是类构造函数的参数。</font> 
+
+```cpp
+int main()
+{
+    // 使用智能指针管理一块 int 型的堆内存, 内部引用计数为 1
+    shared_ptr<int> ptr1 = make_shared<int>(520);
+    cout << "ptr1管理的内存引用计数: " << ptr1.use_count() << endl;
+
+    shared_ptr<Test> ptr2 = make_shared<Test>();
+    cout << "ptr2管理的内存引用计数: " << ptr2.use_count() << endl;
+
+    shared_ptr<Test> ptr3 = make_shared<Test>(520);
+    cout << "ptr3管理的内存引用计数: " << ptr3.use_count() << endl;
+
+    shared_ptr<Test> ptr4 = make_shared<Test>("我是要成为海贼王的男人!!!");
+    cout << "ptr4管理的内存引用计数: " << ptr4.use_count() << endl;
+    return 0;
+}
+```
+
+##### 通过reset初始化
+
+对于一个未初始化的共享智能指针，可以通过reset方法来初始化。当智能指针有值的时候，调用reset方法可以时智能指针的引用计数-1。
+
+```cpp
+shared_ptr<int> ptr5;
+ptr5.reset(new int(250));
+cout << "ptr5管理的内存引用计数: " << ptr5.use_count() << endl;
+```
+
+##### 获取原始指针
+
+可以调用共享智能指针类提供的 get () 方法得到原始地址。
+
+```cpp
+T* get() const noexcept;
+```
+
+#### 指定删除器
+
+<font color="red">当智能指针管理的内存对应的引用计数变为0时，这块内存就会被智能指针析构掉了。另外我们在初始化智能指针的时候也可以自己指定删除动作，这个删除操作对应的函数被称之为删除器，这个删除函数本质上是一个回调函数，我们只需要进行实现，其调用是由智能指针完成的。</font> 
+
+```CPP
+void deleteCallBack(int* p) {
+    delete p;
+    cout << "int型内存被释放..." << endl;
+}
+
+int main(int argc, char const *argv[]) {
+    shared_ptr<int> ptr(new int(250), deleteCallBack);
+
+    shared_ptr<int> ptr1(new int(250), [](int* p){
+        delete p;
+        cout << "ptr1 int 型内存被释放..." << endl;
+    });
+    return 0;
+}
+
+```
+
+
+
+### 21.独占智能指针
+
+### 22.弱引用智能指针
+
+### 数值类型和字符串之间的转换
+
+
+
+
+
+
+
+[c++11实用特性](https://www.bilibili.com/video/BV1bX4y1G7ks?p=2&vd_source=f3478dde6c64ccf1e4a7d6ed91877d4b)
+
+### 零碎知识点
+
+1. 在c++中，结构体也是类，只不过它的访问权限是public
+
+<font color="red"></font> 
+
