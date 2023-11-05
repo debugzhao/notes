@@ -1,3 +1,13 @@
+---
+title: Shell编程
+tags:
+  - Shell编程
+categories:
+  - Shell
+comments: true
+date: 2023-09-22 00:55:38
+---
+
 ### Shell编程
 
 #### 小技巧
@@ -8,16 +18,16 @@
    # 创建添加账户的脚本文件
    [root@ansible shell]# cat add_user.sh
    #!/bin/bash
-   useradd zhaojingchao
+   useradd admin
    
-   passwd zhaojingchao
+   passwd admin
    
    # 通过调试方式执行脚本
    [root@ansible shell]# sh -x add_user.sh
-   + useradd zhaojingchao
-   useradd：用户“zhaojingchao”已存在
-   + passwd zhaojingchao
-   更改用户 zhaojingchao 的密码 。
+   + useradd admin
+   useradd：用户“admin”已存在
+   + passwd admin
+   更改用户 admin 的密码 。
    新的 密码：
    ```
 
@@ -25,7 +35,7 @@
 
    ```shell
    # 免交互方式执行脚本 (将echo输出的内容再传入给stdin)
-   echo zhaojingchao1234 passwd --stdin zhaojingchao
+   echo admin1234 passwd --stdin admin
    ```
 
 3. 忽略无关输出（黑洞设备实现）
@@ -38,7 +48,7 @@
 
    ```shell
    # 忽略无关输出
-   echo zhaojingchao1234 passwd --stdin zhaojingchao $> /dev/null
+   echo admin1234 passwd --stdin admin $> /dev/null
    ```
 
 4. 记录错误输出
@@ -46,13 +56,13 @@
    根据错误需要，可以将错误信息报错到指定文件
 
    ```shell
-   [root@ansible dev]# useradd zhaojingchao
-   useradd：用户“zhaojingchao”已存在
+   [root@ansible dev]# useradd admin
+   useradd：用户“admin”已存在
    
-   [root@ansible dev]# useradd zhaojingchao 2> /tmp/error.log
+   [root@ansible dev]# useradd admin 2> /tmp/error.log
    
    [root@ansible dev]# cat /tmp/error.log
-   useradd：用户“zhaojingchao”已存在
+   useradd：用户“admin”已存在
    ```
 
 5. 一个免交互更友好的脚本
@@ -99,7 +109,7 @@ id mikey || useradd mikey
 ##### 简单的判断操作
 
 ```shell
-id zhaojingchao &> /dev/null && echo yes || echo no
+id admin &> /dev/null && echo yes || echo no
 ```
 
 ![image-20210610154659394](https://i.loli.net/2021/06/10/JUrq8zaxlDAp46G.png)
@@ -527,7 +537,7 @@ fi
 
 ```shell
 [root@hplap2104 lucas]# cat user.txt
-zhaojingchao
+admin
 lucas
 andre
 
@@ -693,7 +703,6 @@ nigolon/nibs/:nibs/:nomead:2:2:x:nomead
 3.10.0-1160.el7.x86_64
 ```
 
-#### xargs多参数处理
 
 
 
@@ -708,8 +717,47 @@ nigolon/nibs/:nibs/:nomead:2:2:x:nomead
 
 
 
+```java
+public class ProducerConsumerExample {
+    // 消息队列容量
+    private static final int QUEUE_CAPACITY = 100;
+    // 每秒10个消息
+    private static final int PRODUCER_RATE = 10;
+    // 每秒1个消息
+    private static final int CONSUMER_RATE = 1;
 
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<AtomicInteger> queue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+        ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
 
+        AtomicInteger message = new AtomicInteger(0);
+        // 生产者任务
+        threadPool.scheduleAtFixedRate(() -> {
+            // 将消息放入队列，如果队列已满则阻塞等待
+            try {
+                message.getAndIncrement();
+                queue.put(message);
+                System.out.println("生产者生产消息：" + message.get());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        },0, 1000 / PRODUCER_RATE, TimeUnit.MILLISECONDS);
+
+        threadPool.scheduleAtFixedRate(() -> {
+            // 从消息队列中取出消息，如果队列为空则阻塞
+            try {
+                System.out.println("----消费者消费消息----：" + queue.take().get());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }, 0, 1000 / CONSUMER_RATE, TimeUnit.MILLISECONDS);
+
+        // 等待一段时间后关闭线程池
+        TimeUnit.SECONDS.sleep(30);
+        threadPool.shutdownNow();
+    }
+}
+```
 
 
 

@@ -91,5 +91,32 @@ nginx: /usr/sbin/nginx /usr/lib/nginx /etc/nginx /usr/share/nginx
 
 解决方式：复制webapps.list目录中的文件到webapps目录中
 
+### M1 mbp docker部署spring boot
+
+```dockerfile
+# 基于jdk8开始制作基础镜像
+FROM java:8
+
+# 将应用的配置文件也拷贝到镜像中
+COPY *.jar /app.jar
+
+CMD ["--server.port=8080"]
+
+# 声明端口
+EXPOSE 8080
+
+# 指定这个容器启动的时候要运行的命令，可以追加命令
+ENTRYPOINT ["java","-jar","/app.jar"]
+```
+
+```shell
+# 构建docker镜像命令
+# 如果处理器是arm架构，则需要指定平台类型 --platform linux/arm64
+docker buildx build --platform linux/arm64 -t springbootg  .
+
+# 启动docker镜像，需要指定平台类型
+docker run --platform linux/amd64 -d springboot -p 8888:8888 --name springboot
+```
+
 
 

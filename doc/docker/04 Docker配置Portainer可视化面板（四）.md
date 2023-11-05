@@ -12,7 +12,7 @@
 - 安装并启动命令
 
   ```shell
-  ocker run -d -p 8088:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --privileged=true portainer/portainer
+  docker run -d -p 8088:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --privileged=true portainer/portainer
   
   #参数说明
   --restart    重启方式
@@ -31,5 +31,4 @@
 
   - 基本信息
 
-    
 
