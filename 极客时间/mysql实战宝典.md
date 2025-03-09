@@ -229,6 +229,8 @@ OPTIMIZE TABLE Transaction202102;
 
 ### 07 表的访问设计
 
+带你了解了通过 SQL、Memcache 协议、X Protocol 访问 MySQL 中的表，即我们可以将 MySQL 打造成一个关系型数据库、KV 数据库、文档数据库，但底层都是通过表格的方式进行数据的存储，并且数据都存储在 InnoDB 引擎中。
+
 ### 08 索引：排序的艺术
 
 ### 09 索引组织表：万物皆索引
@@ -236,6 +238,34 @@ OPTIMIZE TABLE Transaction202102;
 ### 10 组合索引：用好性能提升10倍
 
 ### 11 索引出错：请理解CBO的工作原理
+
+#### mysql是如何选择索引的
+
+ 要理解索引失效原因，首先要理解MySQL 数据库中的优化器是怎么执行的，然后才能明白为什么最终优化器没有选择你预想的索引。**优化器的选择是基于成本（cost），哪个索引的成本越低，优先使用哪个索引。**
+
+<img src="https://github.com/debugzhao/geek-time/raw/main/book/%E4%B8%93%E6%A0%8F/MySQL%E5%AE%9E%E6%88%98%E5%AE%9D%E5%85%B8/assets/Cgp9HWCvUQGAR_xXAACOy0gME7Q765.png" alt="image" style="zoom:50%;" />
+
+如上图所示，MySQL 数据库由 Server 层和 Engine 层组成：
+
+- Server层
+
+  Server 层有 SQL 分析器、SQL优化器、SQL 执行器，用于负责 SQL 语句的具体执行过程
+
+- Engine层
+
+  Engine 层负责存储具体的数据，如最常使用的 InnoDB 存储引擎。
+
+**SQL 优化器会分析所有可能的执行计划，选择成本最低的执行**，这种优化器称之为：CBO（Cost-based Optimizer，基于成本的优化器）
+
+而在 MySQL中，**一条 SQL 的计算成本计算如下所示：**
+
+```shell
+Cost  = Server Cost + Engine Cost
+
+      = CPU Cost + IO Cost
+```
+
+其中，CPU Cost 表示计算的开销，比如索引键值的比较、记录值的比较、结果集的排序……这些操作都在 Server 层完成；IO Cost 表示引擎层 IO 的开销（内存IO/磁盘IO）。
 
 ### 12 JOIN：到底能不能写JOIN
 
